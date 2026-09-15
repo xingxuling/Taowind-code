@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync as nodeSpawnSync} from 'node:child_process';
 
-export const GAME_MANUFACTURING_PROTOCOL='taowind-code.game-manufacturing.v0.2';
+export const GAME_MANUFACTURING_PROTOCOL='taowind-code.game-manufacturing.v0.3';
 
 export function detectLocalGameProject(workspace,{fsImpl=fs}={}){
   const root=path.resolve(workspace);
@@ -42,6 +42,7 @@ export function compileGameMissionGoal(goal,route){
     '引擎角色：primary 负责正式生产构建；secondary 默认只做独立原型、基准、资产验证或目标平台专用身体，除非存在经过验证的跨引擎桥。',
     '权威边界：RCL/RNCS 保留 canonical authority；Godot/Unity/Unreal 只作为外部 runtime/build provider。',
     '硬验收要求：validation 必须至少包含一次主引擎真实 CLI 构建/导出命令成功，以及一次对构建产物真实存在的文件系统检查成功；只有普通单元测试通过不能宣称游戏制造完成。',
+    '优先执行入口：python <DWAC>/scripts/dwac_game_engine_provider.py execute <project> <build|package|archive|export> ...；该入口只有在真实引擎执行、返回码与输出工件门全部通过时才返回成功。',
     '执行要求：沿用 Taowind Code 自主北极星闭环，完成源码、资产、测试、真实构建验证、失败修复、证据账本与可回滚交付；没有真实引擎构建证据不得宣称完成。',
   ].join('\n');
 }
@@ -60,13 +61,14 @@ export function assessGameBuildEvidence(run,contract=parseGameManufacturingContr
   const engine=contract.primaryEngine;
   const rows=Array.isArray(run?.validation?.results)?run.validation.results:[];
   const successful=rows.filter(x=>Number(x?.code)===0&&x?.timedOut!==true);
+  const providerExecute=/dwac_game_engine_provider\.py(?:["']|\s|[^\r\n])*\bexecute\b(?:["']|\s|[^\r\n])*\b(build|package|archive|export)\b/i;
   const patterns={
-    godot:/(^|[\\/\s"'])(godot4?|godot\.exe)([\s"']|$).*?(--export-release|--export-debug|--headless)|(--export-release|--export-debug).*?(godot4?|godot\.exe)/i,
+    godot:/(^|[\\/\s"'])(godot4?|godot\.exe)([\s"']|$).*?(--export-release|--export-debug)|(--export-release|--export-debug).*?(godot4?|godot\.exe)/i,
     unity:/(^|[\\/\s"'])(Unity(?:\.exe)?|unity-editor)([\s"']|$).*?(-batchmode|-executeMethod|-buildTarget)/i,
     'unreal-engine':/(UnrealEditor-Cmd(?:\.exe)?|RunUAT(?:\.bat|\.sh)?|BuildCookRun)/i,
   };
   const matcher=patterns[engine]||/$a/;
-  const buildCommand=successful.find(x=>matcher.test(String(x?.command||'')))||null;
+  const buildCommand=successful.find(x=>{const command=String(x?.command||'');return providerExecute.test(command)||matcher.test(command)})||null;
   const artifactMatcher=/(test\s+-[ef]\s|Test-Path\s|Get-Item\s|if\s+exist\s|\bstat\s+|\bdir\s+|\bls\s+-l\s)/i;
   const artifactCheck=successful.find(x=>artifactMatcher.test(String(x?.command||'')))||null;
   const passed=run?.validation?.passed===true&&!!buildCommand&&!!artifactCheck;
@@ -77,6 +79,30 @@ export function assessGameBuildEvidence(run,contract=parseGameManufacturingContr
     buildCommand:buildCommand?{command:buildCommand.command,code:buildCommand.code,durationMs:buildCommand.durationMs}:null,
     artifactCheck:artifactCheck?{command:artifactCheck.command,code:artifactCheck.code,durationMs:artifactCheck.durationMs}:null,
     reason:passed?'GAME_ENGINE_BUILD_EVIDENCE_VERIFIED':!buildCommand?'PRIMARY_ENGINE_BUILD_COMMAND_MISSING':!artifactCheck?'BUILD_ARTIFACT_EXISTENCE_CHECK_MISSING':'GENERIC_VALIDATION_NOT_PASSED',
+  };
+}
+
+export function createGameAwareGoalAssessor(baseAssess){
+  if(typeof baseAssess!=='function')throw new TypeError('baseAssess must be a function');
+  return async payload=>{
+    const contract=parseGameManufacturingContract(payload?.rootGoal);
+    if(contract.enabled&&contract.buildEvidenceRequired){
+      const evidence=assessGameBuildEvidence(payload?.run||{},contract);
+      if(!evidence.passed){
+        return {
+          closed:false,
+          confidence:1,
+          reason:`非补偿性游戏构建证据门未通过：${evidence.reason}`,
+          gaps:[{kind:'game-engine-build-evidence',problem:evidence.reason,primary_engine:contract.primaryEngine}],
+          next_goal:`补齐 ${contract.primaryEngine||'主引擎'} 的真实 CLI 构建/导出，并把成功构建命令与构建产物存在性检查同时加入 validation；不得用普通单元测试替代真实引擎构建。`,
+          recommended_mode:'DEEP_DEVELOPMENT',
+          game_build_evidence:evidence,
+        };
+      }
+      const assessment=await baseAssess({...payload,gameBuildEvidence:evidence});
+      return {...assessment,game_build_evidence:evidence};
+    }
+    return await baseAssess(payload);
   };
 }
 

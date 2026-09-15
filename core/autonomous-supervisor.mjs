@@ -26,20 +26,25 @@ export class AutonomousMissionStore{
 }
 
 export class AutonomousGoalSupervisor{
-  constructor({runner,runtimeDir,assessGoal=requestGoalAssessment,contextProvider=null}){this.runner=runner;this.store=new AutonomousMissionStore(runtimeDir);this.assessGoal=assessGoal;this.contextProvider=contextProvider;this.busy=new Set();this.timer=null}
+  constructor({runner,runtimeDir,assessGoal=requestGoalAssessment,contextProvider=null,authorityGate=null}){this.runner=runner;this.store=new AutonomousMissionStore(runtimeDir);this.assessGoal=assessGoal;this.contextProvider=contextProvider;this.authorityGate=authorityGate;this.busy=new Set();this.timer=null}
   start(goal,options={}){return this.store.create(goal,options)}
   get(id){return this.store.get(id)}
   list(limit=30){return this.store.list(limit)}
   resume(id){const mission=this.store.get(id);if(TERMINAL.has(mission.status))throw new Error('MISSION_TERMINAL');return this.store.update(id,{status:'ACTIVE',blocker:null},'MISSION_RESUMED',{from:mission.status})}
+  async _authorizeMission(id,approvalMode){
+    if(!this.authorityGate)throw Object.assign(new Error('RCL authority gate is required for autonomous mission advance'),{code:'RCL_RUNTIME_UNBOUND'});
+    try{const receipt=await this.authorityGate.assert('mission_advance',{approvalMode,requestId:`mission:${id}:advance:${Date.now()}`,metadata:{missionId:id}});this.store.addEvidence(id,{kind:'rcl-authority',action:'mission_advance',receipt});return receipt}
+    catch(error){if(error.receipt)this.store.addEvidence(id,{kind:'rcl-authority-denied',action:'mission_advance',receipt:error.receipt});throw error}
+  }
   async _advance(run,mission,approvalMode){
     if(['PLANNED','WAITING_PROVIDER'].includes(run.status)&&run.dwac?.connected&&run.dwac?.status==='COMPILED')run=await this.runner.synthesize(run.id);
     if(run.status==='CHANGESET_STAGED'){
       if(approvalMode==='read_only')return run;
-      this.runner.apply(run.id,{approvalMode});run=this.runner.get(run.id);
+      await this.runner.apply(run.id,{approvalMode});run=this.runner.get(run.id);
     }
     if(run.status==='CHANGES_APPLIED')run=await this.runner.validate(run.id,{approvalMode});
     let repairs=0;while(run.status==='REPAIR_REQUIRED'&&repairs<mission.config.maxRepairs&&approvalMode!=='read_only'){run=await this.runner.repair(run.id,{approvalMode});repairs++}
-    if(run.status==='READY_FOR_DELIVERY'&&!run.delivery)run=this.runner.delivery(run.id,{commit:mission.config.autoCommit&&approvalMode==='full_access',approvalMode,message:`Taowind Code autonomous cycle ${mission.cycle+1}: ${mission.rootGoal.slice(0,60)}`});
+    if(run.status==='READY_FOR_DELIVERY'&&!run.delivery)run=await this.runner.delivery(run.id,{commit:mission.config.autoCommit&&approvalMode==='full_access',approvalMode,message:`Taowind Code autonomous cycle ${mission.cycle+1}: ${mission.rootGoal.slice(0,60)}`});
     return run;
   }
   _repoObservation(mission,run){
@@ -49,6 +54,7 @@ export class AutonomousGoalSupervisor{
     if(this.busy.has(id))throw Object.assign(new Error('MISSION_BUSY'),{code:'MISSION_BUSY'});this.busy.add(id);
     try{
       let mission=this.store.get(id);if(TERMINAL.has(mission.status))return mission;
+      try{await this._authorizeMission(id,approvalMode)}catch(error){const unbound=error.code==='RCL_RUNTIME_UNBOUND';return this.store.update(id,{status:unbound?'WAITING_PROVIDER':'WAITING_APPROVAL',blocker:unbound?'RCL Authority 未绑定，自治循环按失败关闭原则暂停':`RCL Authority 拒绝推进：${error.receipt?.reason||error.message}`},unbound?'MISSION_RCL_PROVIDER_BLOCKED':'MISSION_RCL_AUTHORITY_DENIED',{receiptId:error.receipt?.id||null})}
       mission=this.store.update(id,{status:'ACTIVE',blocker:null},'MISSION_TICK_STARTED',{cycle:mission.cycle+1});
       let run=mission.currentRunId?this.runner.get(mission.currentRunId):null;
       if(!run||['ROLLED_BACK','FAILED','DELIVERED_LOCAL'].includes(run.status)){run=this.runner.create(mission.nextGoal||mission.rootGoal);mission=this.store.update(id,{currentRunId:run.id},'MISSION_RUN_BOUND',{runId:run.id,cycle:mission.cycle+1})}

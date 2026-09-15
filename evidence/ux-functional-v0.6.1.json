@@ -1,0 +1,25 @@
+{
+  "protocol": "taowind-code.ux-functional-repair.v0.6.1",
+  "status": "SOURCE_IMPLEMENTED_LOCAL_STATIC_VERIFIED",
+  "trigger": "real user runtime screenshot reported that primary navigation had no effect and the all-at-once dashboard was unusable",
+  "implemented": [
+    "functional view navigation for Agent, Code, Preview, Game, Git and Setup",
+    "single-purpose views instead of all panels on one screen",
+    "explicit provider-missing banner and Setup view",
+    "provider failures route users to actionable setup guidance instead of silent no-op behavior",
+    "safe event binding so missing optional controls do not crash the client",
+    "Promise.allSettled startup so one failed provider does not abort the rest of the UI",
+    "responsive desktop and mobile layout",
+    "focused code editor, terminal, preview and game forge workspaces"
+  ],
+  "local_validation": {
+    "app_js_node_check": "PASS",
+    "ui_contract_tests": "3/3 PASS",
+    "github_actions": "NOT_USED"
+  },
+  "truth_boundaries": [
+    "provider-dependent actions still fail closed when RCL/DWAC/Tao AI are unbound",
+    "this change fixes interaction and onboarding; it does not fabricate missing provider capabilities",
+    "real browser clickthrough on the user's Windows runtime remains the next acceptance step"
+  ]
+}

@@ -1,11 +1,89 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Taowind Code</title><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/north-star.css"><link rel="stylesheet" href="/game-forge.css"></head><body>
-<div class="app-shell">
-<header class="topbar"><div class="brand"><div class="brandmark">◉</div><div><strong>Taowind Code</strong><small>DWAC × Tao AI × RCL</small></div></div><div class="command"><span>⌕</span><input id="globalSearch" placeholder="搜索文件、符号、任务，或直接告诉 Taowind 要完成什么…"><kbd>⌘ K</kbd></div><div class="top-actions"><button id="newTaskBtn" class="primary">＋ 自主北极星</button><span id="providerDot" class="live-dot"></span><button class="avatar">T</button></div></header>
-<div class="hero-strip"><div><h1>目标交给它，然后让它自己一轮一轮闭合。</h1><p>DWAC 选择全工件/深度开发；RCL 对真实写入、终端、验收与 Git 提交作非补偿性授权；游戏任务可自主路由 Godot / Unity / Unreal。</p></div><div class="hero-pills"><span>Autonomous Mission</span><span>Whole Artifact</span><span>Deep Development</span><span>Game Forge</span><span>RCL Authority</span></div></div>
-<aside class="sidebar"><nav><button class="nav active" data-view="chat">◈ <span>Agent</span></button><button class="nav" data-view="code">⌘ <span>Code</span></button><button class="nav" data-view="browser">◎ <span>Browser</span></button><button class="nav" data-view="research">⌕ <span>Research</span></button><button class="nav" data-view="git">⑂ <span>Git / GitHub</span></button><button class="nav" data-view="deploy">△ <span>Deploy</span></button></nav><div class="sidebar-bottom"><div class="mini-card"><b>Workspace</b><span id="workspaceName">Loading…</span></div><div class="mini-card provider-mini"><b>AI Core</b><span id="providerMini">Checking…</span></div></div></aside>
-<main class="workspace-grid">
-<section class="panel agent-panel"><div class="panel-head"><div><b>DWAC × Tao AI × RCL</b><span class="sub">Autonomous North-Star Coding Agent</span></div><select id="approvalMode"><option value="read_only">Read only</option><option value="workspace" selected>Workspace</option><option value="full_access">Full access</option></select></div><div id="conversation" class="conversation"><div class="message agent"><div class="agent-badge">DWAC</div><div class="bubble"><b>自主北极星已就绪。</b><p>每次真实副作用都必须先拿到 RCL Authority Receipt；没有 RCL、没有权限或没有验收证据，就不会把候选现实提交为正式现实。</p></div></div></div><div class="composer"><textarea id="prompt" rows="3" placeholder="例如：做一款高质量手机动作游戏，自己决定 Godot / Unity / Unreal，补齐源码、资产、测试和真实构建验证。"></textarea><div class="composer-row"><div class="tool-chips"><span>∞ Autonomous</span><span>◉ North Star</span><span>⌘ Code</span><span>🎮 Game Forge</span><span>◈ RCL Gate</span></div><div class="composer-actions"><button id="gameForgeBtn" title="让 DWAC 自主选择游戏引擎并启动制造">游戏制造</button><button id="singleRunBtn" title="仅执行单轮">单轮</button><button id="planBtn" class="primary send" title="启动自主北极星任务">↑</button></div></div></div></section>
-<section class="panel editor-panel"><div class="editor-toolbar"><div class="file-tree-title">项目文件</div><div id="editorTabs" class="tabs"><span class="tab active" id="activeTab">README.md</span></div><div class="editor-actions"><button id="saveBtn">保存</button><button id="refreshBtn">刷新</button></div></div><div class="editor-body"><div id="fileTree" class="file-tree"></div><div class="code-wrap"><div id="lineNumbers" class="line-numbers">1</div><textarea id="codeEditor" spellcheck="false"></textarea></div></div><div class="terminal-wrap"><div class="terminal-head"><b>终端</b><span id="terminalStatus">RCL-gated Workspace Shell · authority receipt required</span></div><div id="terminalOutput" class="terminal-output"><div class="term-line muted">Taowind terminal ready. 命令执行前经过 RCL Authority + destructive-command 双 Gate。</div></div><div class="terminal-input"><span>$</span><input id="terminalCommand" placeholder="npm test"><button id="terminalRun">运行</button></div></div></section>
-<aside class="right-stack"><section class="panel preview-panel"><div class="panel-head"><b>实时预览</b><div class="preview-controls"><input id="previewUrl" value="http://127.0.0.1:4877"><button id="openPreview">打开</button></div></div><div class="preview-frame"><iframe id="previewIframe" src="about:blank"></iframe><div id="previewPlaceholder" class="preview-placeholder"><div class="orb"></div><b>Preview Surface</b><span>运行 Web / 本地服务后，可持续观察真实界面。</span></div></div></section><section class="panel game-forge-panel"><div class="panel-head"><div><b>游戏制造路由</b><span class="sub" id="gameForgeStatus">检查 DWAC 三引擎 Provider…</span></div><button id="gameRouteBtn">只判断</button></div><div class="game-forge-body"><div class="game-forge-grid"><label>目标平台<select id="gameTarget"><option value="">自动判断</option><option value="android">Android</option><option value="ios">iOS</option><option value="web">Web</option><option value="win64">Windows</option><option value="linux">Linux</option><option value="xr">XR</option></select></label><label>额外要求<input id="gameRequirements" placeholder="如：多引擎, 跨平台, AAA"></label></div><div id="engineRouteSummary" class="engine-route-summary empty"><div class="engine-route-head"><strong>等待游戏目标</strong><span class="engine-route-mode">AUTO</span></div><div class="game-forge-note">DWAC 会根据现有项目、目标平台、引擎可执行性和需求选择 Godot / Unity / Unreal；多引擎默认是“一个主生产引擎 + 独立验证/原型引擎”，不是伪装成三个引擎共享同一运行时。</div></div></div></section><section class="panel tasks-panel north-star-panel"><div class="panel-head"><div><b>自主北极星执行图</b><span class="sub" id="taskSummary">等待目标</span></div><button id="gitRefresh">Git</button></div><div id="missionStrip" class="mission-strip empty"><div><span class="mission-pill">MISSION</span><b id="missionStatus">尚未启动</b></div><small id="missionMeta">持久循环 · 关闭应用后可恢复</small><strong id="missionGoal"></strong><p id="missionBlocker"></p><div class="mission-actions"><button id="resumeMission" disabled>恢复</button><button id="tickMission" disabled>立即推进一轮</button></div></div><div id="runStrip" class="run-strip empty"><div><span class="mode-pill">IDLE</span><b id="runStatus">等待子运行</b></div><small id="runMeta">DWAC 会依据证据选择模式</small><p id="runBlocker"></p></div><div id="taskList" class="task-list"></div><div class="run-actions"><button id="synthesizeRun">生成变更</button><button id="applyRun">应用</button><button id="validateRun">验收</button><button id="repairRun">Repair</button><button id="deliveryRun">交付预览</button><button id="rollbackRun" class="danger-ghost">回滚</button><span id="evidenceCount">0 evidence</span></div><div class="git-card"><div class="git-meta"><b id="gitBranch">branch —</b><span id="gitState">Git 未读取</span></div><pre id="gitDiff">Diff 会显示在这里</pre></div></section></aside>
-</main><footer class="statusbar"><span>Taowind Code · v0.6 alpha</span><span id="statusWorkspace">Workspace boundary</span><span id="statusProviders">Providers</span><span id="statusGameForge">Game Forge · checking</span><span id="statusNorthStar">North Star · idle</span><span class="right">UTF-8 · Executable RCL Authority · Rollbackable · Evidence-first</span></footer>
-</div><div id="toast" class="toast"></div><script type="module" src="/app.js"></script></body></html>
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Taowind Code</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/north-star.css" />
+  <link rel="stylesheet" href="/game-forge.css" />
+  <link rel="stylesheet" href="/ux-v061.css" />
+</head>
+<body>
+<div class="app-v061">
+  <header class="top-v061">
+    <div class="brand-v061"><div class="brandmark-v061">◉</div><div><strong>Taowind Code</strong><small>v0.6.1 · DWAC × Tao AI × RCL</small></div></div>
+    <div class="project-pill"><span id="workspaceName">Workspace</span><small id="statusWorkspace">loading…</small></div>
+    <div class="top-spacer"></div>
+    <div class="health-cluster">
+      <button id="providerHealthBtn" class="health-pill"><i id="providerDot"></i><span id="statusProviders">Providers</span></button>
+      <span id="statusGameForge" class="health-pill passive">Game Forge · checking</span>
+    </div>
+    <button id="newTaskBtn" class="btn primary">＋ 新任务</button>
+  </header>
+
+  <aside class="nav-v061">
+    <button class="nav-v061-item active" data-view="agent"><span>◈</span><b>Agent</b></button>
+    <button class="nav-v061-item" data-view="code"><span>⌘</span><b>Code</b></button>
+    <button class="nav-v061-item" data-view="preview"><span>◎</span><b>Preview</b></button>
+    <button class="nav-v061-item" data-view="game"><span>🎮</span><b>Game</b></button>
+    <button class="nav-v061-item" data-view="git"><span>⑂</span><b>Git</b></button>
+    <button class="nav-v061-item" data-view="setup"><span>⚙</span><b>Setup</b></button>
+  </aside>
+
+  <main class="main-v061">
+    <section id="providerBanner" class="provider-banner hidden">
+      <div><b>运行器还没接齐</b><span id="providerBannerText">DWAC / RCL / Tao AI 未绑定时，写入、终端和自主任务会按失败关闭原则阻断。</span></div>
+      <button class="btn" data-open-view="setup">去配置</button>
+    </section>
+
+    <section class="view-v061 active" data-view-panel="agent">
+      <div class="agent-layout-v061">
+        <div class="agent-main-v061">
+          <div class="view-head"><div><h1>把结果目标交给 Taowind</h1><p>它会规划、改代码、验证、修复，并在证据不足时明确告诉你缺什么。</p></div><select id="approvalMode" class="select-v061"><option value="read_only">只读</option><option value="workspace" selected>工作区</option><option value="full_access">完全访问</option></select></div>
+          <div id="conversation" class="conversation-v061"><div class="message-v061 agent"><div class="avatar-v061">DW</div><div class="bubble-v061"><b>可以开始。</b><p>先给我一个结果目标。如果运行器还没绑定，我会直接告诉你需要配置什么，而不是让按钮“没反应”。</p></div></div></div>
+          <div class="composer-v061">
+            <textarea id="prompt" rows="4" placeholder="例如：把这个产品的登录流程做成可真实使用的版本，修到测试通过并给我交付结果。"></textarea>
+            <div class="composer-bottom-v061"><div class="mode-hint"><span>Autonomous</span><span>Whole Artifact</span><span>Deep Development</span></div><div class="composer-actions-v061"><button id="singleRunBtn" class="btn">单轮</button><button id="gameForgeBtn" class="btn">游戏制造</button><button id="planBtn" class="btn primary">启动自主任务 ↑</button></div></div>
+          </div>
+        </div>
+        <aside class="agent-side-v061">
+          <div class="card-v061"><div class="card-title"><b>当前任务</b><span id="statusNorthStar">idle</span></div><div id="missionStrip" class="mission-v061 empty"><strong id="missionStatus">尚未启动</strong><small id="missionMeta">等待目标</small><p id="missionGoal"></p><p id="missionBlocker" class="danger-text"></p><div class="row-actions"><button id="resumeMission" class="btn small" disabled>恢复</button><button id="tickMission" class="btn small" disabled>推进一轮</button></div></div><div id="runStrip" class="run-v061 empty"><div><span class="mode-pill">IDLE</span><b id="runStatus">等待子运行</b></div><small id="runMeta"></small><p id="runBlocker"></p></div></div>
+          <div class="card-v061"><div class="card-title"><b>执行节点</b><span id="taskSummary">等待目标</span></div><div id="taskList" class="task-list-v061"><div class="empty-state">还没有任务</div></div><div class="row-actions wrap"><button id="synthesizeRun" class="btn small">生成变更</button><button id="applyRun" class="btn small">应用</button><button id="validateRun" class="btn small">验收</button><button id="repairRun" class="btn small">修复</button><button id="deliveryRun" class="btn small">交付</button><button id="rollbackRun" class="btn small danger">回滚</button></div><small id="evidenceCount">0 evidence</small></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="view-v061" data-view-panel="code">
+      <div class="view-head"><div><h1>代码工作区</h1><p>文件、编辑器和终端只在这里出现，不再挤在 Agent 首屏。</p></div><div class="row-actions"><button id="refreshBtn" class="btn">刷新</button><button id="saveBtn" class="btn primary">保存</button></div></div>
+      <div class="code-layout-v061"><aside class="file-panel-v061"><div class="panel-label">项目文件</div><div id="fileTree" class="file-tree-v061"></div></aside><section class="editor-v061"><div class="editor-tab-v061"><span id="activeTab">README.md</span></div><div class="editor-body-v061"><div id="lineNumbers" class="line-numbers-v061">1</div><textarea id="codeEditor" spellcheck="false"></textarea></div></section></div>
+      <div class="terminal-v061"><div class="terminal-head-v061"><b>终端</b><span id="terminalStatus">RCL-gated workspace shell</span></div><pre id="terminalOutput">Taowind terminal ready. 命令执行前会经过权限门。</pre><div class="terminal-input-v061"><span>$</span><input id="terminalCommand" placeholder="npm test" /><button id="terminalRun" class="btn primary">运行</button></div></div>
+    </section>
+
+    <section class="view-v061" data-view-panel="preview">
+      <div class="view-head"><div><h1>实时预览</h1><p>把真正需要观察的界面单独放大。</p></div><div class="preview-controls-v061"><input id="previewUrl" value="http://127.0.0.1:4877" /><button id="openPreview" class="btn primary">打开</button></div></div>
+      <div class="preview-v061"><iframe id="previewIframe" src="about:blank"></iframe><div id="previewPlaceholder" class="empty-state big"><b>还没有打开预览</b><span>输入本地 URL 后点击“打开”。</span></div></div>
+    </section>
+
+    <section class="view-v061" data-view-panel="game">
+      <div class="view-head"><div><h1>Game Forge</h1><p>给目标即可，DWAC 决定 Godot / Unity / Unreal；已有工程不会被静默迁移。</p></div><span id="gameForgeStatus" class="status-chip">检查中</span></div>
+      <div class="game-grid-v061"><div class="card-v061"><label>目标平台<select id="gameTarget" class="select-v061"><option value="">自动判断</option><option value="android">Android</option><option value="ios">iOS</option><option value="web">Web</option><option value="win64">Windows</option><option value="linux">Linux</option><option value="xr">XR</option></select></label><label>额外要求<input id="gameRequirements" class="input-v061" placeholder="例如：跨平台、AAA、XR" /></label><div class="row-actions"><button id="gameRouteBtn" class="btn">只判断引擎</button><button id="gameManufactureFromView" class="btn primary">开始制造</button></div></div><div id="engineRouteSummary" class="card-v061"><div class="empty-state"><b>等待游戏目标</b><span>目标仍从 Agent 输入框读取。先回 Agent 写目标，再回来判断或制造。</span></div></div></div>
+    </section>
+
+    <section class="view-v061" data-view-panel="git">
+      <div class="view-head"><div><h1>Git / 交付</h1><p>只显示真正与版本控制和交付有关的信息。</p></div><button id="gitRefresh" class="btn">刷新</button></div>
+      <div class="git-layout-v061"><div class="card-v061"><div class="card-title"><b id="gitBranch">branch —</b><span id="gitState">Git 未读取</span></div><p>当前工作区状态</p></div><div class="card-v061 git-diff-card"><div class="card-title"><b>Diff</b></div><pre id="gitDiff">Diff 会显示在这里</pre></div></div>
+    </section>
+
+    <section class="view-v061" data-view-panel="setup">
+      <div class="view-head"><div><h1>运行器设置</h1><p>先把缺的运行器接上。这里会明确显示为什么某个功能不可用。</p></div><button id="refreshSetupBtn" class="btn">重新检测</button></div>
+      <div id="setupSummary" class="setup-summary-v061"></div>
+      <div class="setup-help-v061"><div class="card-v061"><b>DWAC</b><p>需要设置 <code>TAOWIND_DWAC_ROOT</code>，目录内应包含 <code>structural_generation</code>；Game Forge 还需要 <code>scripts/dwac_game_engine_route.py</code>。</p></div><div class="card-v061"><b>RCL</b><p>需要设置 <code>TAOWIND_RCL_ROOT</code>，目录内应包含 <code>src/index.mjs</code>。未绑定时写文件、终端和提交会失败关闭。</p></div><div class="card-v061"><b>Tao AI</b><p>在运行包 <code>config.json</code> 中填写 <code>aiEndpoint</code> 和 <code>aiModel</code>。它可以接 OpenAI 兼容接口。</p></div></div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast-v061"></div>
+</div>
+<script type="module" src="/app.js"></script>
+</body>
+</html>

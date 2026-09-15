@@ -2,8 +2,10 @@ import {RunStore} from './run-store.mjs';
 import {ChangesetStore} from './changesets.mjs';
 import {WorkspaceService} from './workspace.mjs';
 import {compileWithDWAC} from './dwac-adapter.mjs';
-import {requestChangeset,taoAIStatus} from './tao-ai-adapter.mjs';
-import {selectContextPaths,repositorySummary} from './repo-context.mjs';
+import {requestChangesetCandidates,taoAIStatus} from './tao-ai-adapter.mjs';
+import {buildSemanticRepoGraph,selectSemanticContext,graphSummary} from './semantic-repo-graph.mjs';
+import {selectFederatedProposal} from './federated-generation.mjs';
+import {repositorySummary} from './repo-context.mjs';
 import {runAcceptance} from './acceptance.mjs';
 import {gitDeliveryPreview,gitLocalCommit} from './git.mjs';
 
@@ -15,12 +17,23 @@ export class NorthStarRunner{
  }
  list(){return this.runs.list()}
  get(id){return this.runs.get(id)}
+ _semanticContext(goal){
+   const manifest=this.ws.manifest();const seedPaths=manifest.filter(x=>x.size<=80_000).map(x=>x.path);const seed=this.ws.contextBundle(seedPaths,{maxFiles:180,maxBytes:650_000});
+   const graph=buildSemanticRepoGraph(seed.files,{goal});const selection=selectSemanticContext(graph,{maxFiles:36,maxBytes:280_000});const bundle=this.ws.contextBundle(selection.paths,{maxFiles:36,maxBytes:280_000});
+   return {manifest,graph,selection,bundle};
+ }
+ async _federatedProposal(goal,dwac,ctx){
+   const candidates=await requestChangesetCandidates({goal,dwac,repository:{...repositorySummary(ctx.manifest),semanticGraph:graphSummary(ctx.graph)},files:ctx.bundle.files});
+   const federation=selectFederatedProposal(candidates,{goal,manifest:ctx.manifest});return {candidates,federation,proposal:federation.winner};
+ }
  async synthesize(id){
    let run=this.runs.get(id);if(!run.dwac?.connected||run.dwac?.status!=='COMPILED')throw new Error('DWAC_REQUIRED');if(!taoAIStatus().connected){run=this.runs.update(id,{status:'WAITING_PROVIDER',blocker:'Tao AI 代码变更 Provider 未绑定'},'TAO_AI_BLOCKED');this.tasks.syncRun(run);return run}
-   const manifest=this.ws.manifest();const paths=selectContextPaths(manifest);const bundle=this.ws.contextBundle(paths);const proposal=await requestChangeset({goal:run.goal,dwac:run.dwac,repository:repositorySummary(manifest),files:bundle.files});
-   if(Array.isArray(proposal.needs_more_context)&&proposal.needs_more_context.length){const extra=this.ws.contextBundle(proposal.needs_more_context,{maxFiles:24,maxBytes:260_000});if(extra.files.length){const merged=[...bundle.files,...extra.files.filter(x=>!bundle.files.some(y=>y.path===x.path))];Object.assign(proposal,await requestChangeset({goal:run.goal,dwac:run.dwac,repository:repositorySummary(manifest),files:merged}))}}
-   if(!Array.isArray(proposal.changes)||!proposal.changes.length){run=this.runs.update(id,{status:'WAITING_PROVIDER',blocker:'Provider 未生成可执行 changeset',proposal},'CHANGESET_EMPTY');this.tasks.syncRun(run);return run}
-   const cs=this.changesets.stage(id,proposal.changes,{source:'tao-ai'});run=this.runs.update(id,{status:'CHANGESET_STAGED',changesets:[...run.changesets,cs.id],proposal,validation:{commands:proposal.validation_commands||[],status:'NOT_RUN'}},'CHANGESET_STAGED',{changesetId:cs.id,files:cs.changes.length});this.runs.addEvidence(id,{kind:'changeset-staged',changesetId:cs.id,files:cs.changes.map(x=>({path:x.path,op:x.op,before:x.before.sha256,after:x.after.sha256}))});run=this.runs.get(id);this.tasks.syncRun(run);return run;
+   const ctx=this._semanticContext(run.goal);let {candidates,federation,proposal}=await this._federatedProposal(run.goal,run.dwac,ctx);
+   const needs=[...new Set((proposal?.needs_more_context||[]).filter(Boolean))];if(needs.length){const extra=this.ws.contextBundle(needs,{maxFiles:32,maxBytes:320_000});if(extra.files.length){const merged=[...ctx.bundle.files,...extra.files.filter(x=>!ctx.bundle.files.some(y=>y.path===x.path))];const second=await requestChangesetCandidates({goal:run.goal,dwac:run.dwac,repository:{...repositorySummary(ctx.manifest),semanticGraph:graphSummary(ctx.graph)},files:merged});candidates=[...candidates,...second];federation=selectFederatedProposal(candidates,{goal:run.goal,manifest:ctx.manifest});proposal=federation.winner}}
+   this.runs.addEvidence(id,{kind:'semantic-context',graph:graphSummary(ctx.graph),selectedPaths:ctx.selection.paths,totalBytes:ctx.bundle.totalBytes});
+   this.runs.addEvidence(id,{kind:'federated-generation',protocol:federation.protocol,consensus:federation.consensus,ranked:federation.ranked.map(x=>({provider:x.provider,role:x.role,summary:x.summary,evaluation:x.evaluation,files:x.changes.map(c=>c.path)})),winner:proposal?{provider:proposal.provider,role:proposal.role,evaluation:proposal.evaluation}:null});
+   if(!proposal||!Array.isArray(proposal.changes)||!proposal.changes.length){run=this.runs.update(id,{status:'WAITING_PROVIDER',blocker:'联邦候选未生成可执行 changeset',proposal,federation},'CHANGESET_EMPTY');this.tasks.syncRun(run);return run}
+   const cs=this.changesets.stage(id,proposal.changes,{source:`federation:${proposal.provider}:${proposal.role}`});run=this.runs.update(id,{status:'CHANGESET_STAGED',changesets:[...run.changesets,cs.id],proposal,federation:{protocol:federation.protocol,consensus:federation.consensus,winner:{provider:proposal.provider,role:proposal.role,evaluation:proposal.evaluation}},semanticContext:{graph:graphSummary(ctx.graph),selection:ctx.selection},validation:{commands:proposal.validation_commands||[],status:'NOT_RUN'}},'CHANGESET_STAGED',{changesetId:cs.id,files:cs.changes.length});this.runs.addEvidence(id,{kind:'changeset-staged',changesetId:cs.id,files:cs.changes.map(x=>({path:x.path,op:x.op,before:x.before.sha256,after:x.after.sha256}))});run=this.runs.get(id);this.tasks.syncRun(run);return run;
  }
  stage(id,changes,validationCommands=[]){let run=this.runs.get(id);const cs=this.changesets.stage(id,changes,{source:'api'});run=this.runs.update(id,{status:'CHANGESET_STAGED',changesets:[...run.changesets,cs.id],validation:{commands:validationCommands,status:'NOT_RUN'}},'CHANGESET_STAGED',{changesetId:cs.id,files:cs.changes.length});this.tasks.syncRun(run);return {run,changeset:cs}}
  apply(id,{approvalMode='workspace'}={}){if(approvalMode==='read_only')throw new Error('APPROVAL_REQUIRED');let run=this.runs.get(id);const csid=run.changesets.at(-1);if(!csid)throw new Error('CHANGESET_REQUIRED');const cs=this.changesets.apply(csid);run=this.runs.update(id,{status:'CHANGES_APPLIED',blocker:null},'CHANGESET_APPLIED',{changesetId:csid,receipt:cs.applyReceipt?.receiptSha256});this.runs.addEvidence(id,{kind:'changeset-applied',changesetId:csid,receipt:cs.applyReceipt});run=this.runs.get(id);this.tasks.syncRun(run);return {run,changeset:cs}}
@@ -28,14 +41,11 @@ export class NorthStarRunner{
  async repair(id,{approvalMode='workspace'}={}){
    let run=this.runs.get(id);if(run.status!=='REPAIR_REQUIRED')throw new Error('REPAIR_NOT_REQUIRED');if(approvalMode==='read_only')throw new Error('APPROVAL_REQUIRED');
    if(!taoAIStatus().connected){run=this.runs.update(id,{status:'WAITING_PROVIDER',mode:'DEEP_DEVELOPMENT',blocker:'Repair 需要 Tao AI 代码变更 Provider'},'REPAIR_PROVIDER_BLOCKED');this.tasks.syncRun(run);return run}
-   const manifest=this.ws.manifest();const paths=selectContextPaths(manifest);const bundle=this.ws.contextBundle(paths);
-   const failure={validation:run.validation,previousProposal:run.proposal||null,changesets:run.changesets};
-   const repairGoal=`Repair the failed Taowind Code run without broadening scope. Original goal: ${run.goal}`;
-   const proposal=await requestChangeset({goal:repairGoal,dwac:{...run.dwac,mode:'DEEP_DEVELOPMENT',failure},repository:repositorySummary(manifest),files:bundle.files});
-   if(!Array.isArray(proposal.changes)||!proposal.changes.length){run=this.runs.update(id,{status:'WAITING_PROVIDER',mode:'DEEP_DEVELOPMENT',blocker:'Repair Provider 未生成可执行 changeset',proposal},'REPAIR_CHANGESET_EMPTY');this.tasks.syncRun(run);return run}
-   const cs=this.changesets.stage(id,proposal.changes,{source:'tao-ai-repair'});run=this.runs.update(id,{status:'CHANGESET_STAGED',mode:'DEEP_DEVELOPMENT',cycle:(run.cycle||1)+1,changesets:[...run.changesets,cs.id],proposal,validation:{commands:proposal.validation_commands||run.validation?.commands||[],status:'NOT_RUN'},blocker:null},'REPAIR_CHANGESET_STAGED',{changesetId:cs.id,files:cs.changes.length});
-   this.runs.addEvidence(id,{kind:'repair-changeset-staged',changesetId:cs.id,files:cs.changes.map(x=>({path:x.path,op:x.op,before:x.before.sha256,after:x.after.sha256}))});this.tasks.syncRun(this.runs.get(id));
-   this.apply(id,{approvalMode});return await this.validate(id,{approvalMode});
+   const ctx=this._semanticContext(`${run.goal} ${JSON.stringify(run.validation||{})}`);const failure={validation:run.validation,previousProposal:run.proposal||null,changesets:run.changesets};const repairGoal=`Repair the failed Taowind Code run without broadening scope. Original goal: ${run.goal}`;
+   const {federation,proposal}=await this._federatedProposal(repairGoal,{...run.dwac,mode:'DEEP_DEVELOPMENT',failure},ctx);
+   if(!proposal||!Array.isArray(proposal.changes)||!proposal.changes.length){run=this.runs.update(id,{status:'WAITING_PROVIDER',mode:'DEEP_DEVELOPMENT',blocker:'Repair 联邦未生成可执行 changeset',proposal},'REPAIR_CHANGESET_EMPTY');this.tasks.syncRun(run);return run}
+   const cs=this.changesets.stage(id,proposal.changes,{source:`federation-repair:${proposal.provider}:${proposal.role}`});run=this.runs.update(id,{status:'CHANGESET_STAGED',mode:'DEEP_DEVELOPMENT',cycle:(run.cycle||1)+1,changesets:[...run.changesets,cs.id],proposal,federation:{protocol:federation.protocol,consensus:federation.consensus,winner:{provider:proposal.provider,role:proposal.role,evaluation:proposal.evaluation}},validation:{commands:proposal.validation_commands||run.validation?.commands||[],status:'NOT_RUN'},blocker:null},'REPAIR_CHANGESET_STAGED',{changesetId:cs.id,files:cs.changes.length});
+   this.runs.addEvidence(id,{kind:'repair-federated-generation',consensus:federation.consensus,winner:{provider:proposal.provider,role:proposal.role,evaluation:proposal.evaluation}});this.tasks.syncRun(this.runs.get(id));this.apply(id,{approvalMode});return await this.validate(id,{approvalMode});
  }
  rollback(id){let run=this.runs.get(id);const csid=run.changesets.at(-1);if(!csid)throw new Error('CHANGESET_REQUIRED');const cs=this.changesets.rollback(csid);run=this.runs.update(id,{status:'ROLLED_BACK',blocker:null},'CHANGESET_ROLLED_BACK',{changesetId:csid,receipt:cs.rollbackReceipt?.receiptSha256});this.runs.addEvidence(id,{kind:'rollback',changesetId:csid,receipt:cs.rollbackReceipt});run=this.runs.get(id);this.tasks.syncRun(run);return run}
  delivery(id,{commit=false,message='',approvalMode='workspace'}={}){let run=this.runs.get(id);if(run.status!=='READY_FOR_DELIVERY')throw new Error('VALIDATION_REQUIRED');const changedPaths=[...new Set(run.changesets.flatMap(csid=>{try{return this.changesets.get(csid).changes.map(x=>x.path)}catch{return[]}}))];let delivery={...gitDeliveryPreview(this.workspace),changedPaths};if(commit){if(approvalMode!=='full_access')throw new Error('FULL_ACCESS_REQUIRED_FOR_COMMIT');delivery={...delivery,localCommit:gitLocalCommit(this.workspace,message||`Taowind Code: ${run.goal.slice(0,72)}`,changedPaths)}}run=this.runs.update(id,{status:commit&&delivery.localCommit?.ok?'DELIVERED_LOCAL':'READY_FOR_DELIVERY',delivery},'DELIVERY_PREVIEWED',{localCommitPerformed:!!delivery.localCommit?.ok,pushPerformed:false,prPerformed:false,changedPaths});this.runs.addEvidence(id,{kind:'git-delivery',branch:delivery.branch,head:delivery.head,stat:delivery.stat,changedPaths,localCommitPerformed:!!delivery.localCommit?.ok,pushPerformed:false,prPerformed:false});run=this.runs.get(id);this.tasks.syncRun(run);return run}

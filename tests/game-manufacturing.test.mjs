@@ -3,9 +3,22 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {GameManufacturingGateway,buildGameRouteArgs,compileGameMissionGoal,detectLocalGameProject} from '../core/game-manufacturing.mjs';
+import {
+  GameManufacturingGateway,
+  assessGameBuildEvidence,
+  buildGameRouteArgs,
+  compileGameMissionGoal,
+  createGameAwareGoalAssessor,
+  detectLocalGameProject,
+  parseGameManufacturingContract,
+} from '../core/game-manufacturing.mjs';
 
 function temp(){return fs.mkdtempSync(path.join(os.tmpdir(),'taowind-game-forge-'))}
+function result(command,code=0){return {command,code,timedOut:false,durationMs:12}}
+function gameRun(engine,commands,{genericPassed=true}={}){
+  const goal=compileGameMissionGoal('目标',{primary_engine:engine,secondary_engines:[],hybrid:false});
+  return {goal,validation:{passed:genericPassed,results:commands.map(c=>typeof c==='string'?result(c):c)}};
+}
 
 test('detects Godot, Unity and Unreal project markers',()=>{
   const g=temp();fs.writeFileSync(path.join(g,'project.godot'),'');assert.equal(detectLocalGameProject(g).engine,'godot');
@@ -33,6 +46,7 @@ test('gateway consumes DWAC routing decision and compiles autonomous mission goa
   assert.equal(out.decision.primary_engine,'unreal-engine');
   assert.match(out.missionGoal,/DWAC 主引擎：unreal-engine/);
   assert.match(out.missionGoal,/RCL\/RNCS/);
+  assert.match(out.missionGoal,/TAOWIND_GAME_BUILD_EVIDENCE_REQUIRED=1/);
   assert.equal(calls[0].opt.shell,false);
 });
 
@@ -48,4 +62,64 @@ test('mission contract does not pretend secondary engines share one runtime',()=
   const text=compileGameMissionGoal('目标',{primary_engine:'godot',secondary_engines:['unity','unreal-engine'],hybrid:true});
   assert.match(text,/secondary 默认只做独立原型、基准、资产验证或目标平台专用身体/);
   assert.match(text,/没有真实引擎构建证据不得宣称完成/);
+});
+
+test('machine-readable game manufacturing contract preserves engine route',()=>{
+  const text=compileGameMissionGoal('目标',{primary_engine:'unity',secondary_engines:['godot'],hybrid:true});
+  assert.deepEqual(parseGameManufacturingContract(text),{enabled:true,buildEvidenceRequired:true,primaryEngine:'unity',secondaryEngines:['godot']});
+  assert.equal(parseGameManufacturingContract('ordinary coding goal').enabled,false);
+});
+
+test('generic tests cannot compensate for a missing primary engine build',()=>{
+  const run=gameRun('godot',['node --test tests/*.test.mjs','test -f build/game.x86_64']);
+  const evidence=assessGameBuildEvidence(run);
+  assert.equal(evidence.passed,false);
+  assert.equal(evidence.reason,'PRIMARY_ENGINE_BUILD_COMMAND_MISSING');
+});
+
+test('real engine build still requires an explicit artifact existence check',()=>{
+  const run=gameRun('unity',['Unity -batchmode -projectPath . -executeMethod BuildScript.Build -quit']);
+  const evidence=assessGameBuildEvidence(run);
+  assert.equal(evidence.passed,false);
+  assert.equal(evidence.reason,'BUILD_ARTIFACT_EXISTENCE_CHECK_MISSING');
+});
+
+for(const [engine,build,artifact] of [
+  ['godot','godot --headless --path . --export-release Linux build/game.x86_64','test -f build/game.x86_64'],
+  ['unity','Unity -batchmode -projectPath . -executeMethod BuildScript.Build -quit','test -e Builds/Game.exe'],
+  ['unreal-engine','RunUAT.sh BuildCookRun -project=Demo.uproject -build -cook -stage -package -archive','test -e Saved/DWACBuild'],
+]){
+  test(`${engine} real build plus artifact check passes non-compensatory gate`,()=>{
+    const evidence=assessGameBuildEvidence(gameRun(engine,[build,artifact]));
+    assert.equal(evidence.passed,true);
+    assert.equal(evidence.reason,'GAME_ENGINE_BUILD_EVIDENCE_VERIFIED');
+  });
+}
+
+test('DWAC provider execute command counts as measured engine build only when artifact check also passes',()=>{
+  const run=gameRun('godot',['python /dwac/scripts/dwac_game_engine_provider.py execute . build --preset Linux --output build/game.x86_64','stat build/game.x86_64']);
+  const evidence=assessGameBuildEvidence(run);
+  assert.equal(evidence.passed,true);
+  assert.match(evidence.buildCommand.command,/dwac_game_engine_provider\.py execute/);
+});
+
+test('game-aware closure assessor refuses AI closure before build evidence exists',async()=>{
+  let delegated=0;
+  const assessor=createGameAwareGoalAssessor(async()=>{delegated++;return {closed:true,confidence:1,reason:'model says done'}});
+  const run=gameRun('unreal-engine',['node --test tests/*.test.mjs']);
+  const out=await assessor({rootGoal:run.goal,run});
+  assert.equal(out.closed,false);
+  assert.equal(out.confidence,1);
+  assert.equal(out.game_build_evidence.reason,'PRIMARY_ENGINE_BUILD_COMMAND_MISSING');
+  assert.equal(delegated,0);
+});
+
+test('game-aware closure assessor delegates only after hard build evidence passes',async()=>{
+  let delegated=0;
+  const assessor=createGameAwareGoalAssessor(async payload=>{delegated++;assert.equal(payload.gameBuildEvidence.passed,true);return {closed:true,confidence:.93,reason:'verified'}});
+  const run=gameRun('godot',['godot --headless --path . --export-release Linux build/game.x86_64','test -f build/game.x86_64']);
+  const out=await assessor({rootGoal:run.goal,run});
+  assert.equal(out.closed,true);
+  assert.equal(out.game_build_evidence.passed,true);
+  assert.equal(delegated,1);
 });

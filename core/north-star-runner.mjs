@@ -4,11 +4,12 @@ import {WorkspaceService} from './workspace.mjs';
 import {compileWithDWAC} from './dwac-adapter.mjs';
 import {requestChangeset,taoAIStatus} from './tao-ai-adapter.mjs';
 import {selectContextPaths,repositorySummary} from './repo-context.mjs';
+import {RepositoryGraph} from './repo-graph.mjs';
 import {runAcceptance} from './acceptance.mjs';
 import {gitDeliveryPreview,gitLocalCommit} from './git.mjs';
 
 export class NorthStarRunner{
- constructor({workspace,runtimeDir,taskStore}){this.workspace=workspace;this.runtimeDir=runtimeDir;this.tasks=taskStore;this.runs=new RunStore(runtimeDir);this.changesets=new ChangesetStore(runtimeDir,workspace);this.ws=new WorkspaceService(workspace)}
+ constructor({workspace,runtimeDir,taskStore,repoGraph=null}){this.workspace=workspace;this.runtimeDir=runtimeDir;this.tasks=taskStore;this.runs=new RunStore(runtimeDir);this.changesets=new ChangesetStore(runtimeDir,workspace);this.ws=new WorkspaceService(workspace);this.repoGraph=repoGraph||new RepositoryGraph(workspace)}
  create(goal){
    const dwac=compileWithDWAC(goal,this.workspace);const mode=dwac.mode||'WHOLE_ARTIFACT';let run=this.runs.create({goal,mode,dwac});const tasks=this.tasks.plan(goal,{mode,runId:run.id});
    const status=dwac.connected&&dwac.status==='COMPILED'?'PLANNED':'WAITING_PROVIDER';run=this.runs.update(run.id,{status,tasks,dwac,blocker:status==='WAITING_PROVIDER'?'DWAC runtime 未绑定或编译失败':null,message:dwac.decision_reason||null},'DWAC_COMPILED',{mode,cycleId:dwac.cycle_id||null});this.tasks.syncRun(run);return run;
@@ -17,8 +18,8 @@ export class NorthStarRunner{
  get(id){return this.runs.get(id)}
  async synthesize(id){
    let run=this.runs.get(id);if(!run.dwac?.connected||run.dwac?.status!=='COMPILED')throw new Error('DWAC_REQUIRED');if(!taoAIStatus().connected){run=this.runs.update(id,{status:'WAITING_PROVIDER',blocker:'Tao AI 代码变更 Provider 未绑定'},'TAO_AI_BLOCKED');this.tasks.syncRun(run);return run}
-   const manifest=this.ws.manifest();const paths=selectContextPaths(manifest);const bundle=this.ws.contextBundle(paths);const proposal=await requestChangeset({goal:run.goal,dwac:run.dwac,repository:repositorySummary(manifest),files:bundle.files});
-   if(Array.isArray(proposal.needs_more_context)&&proposal.needs_more_context.length){const extra=this.ws.contextBundle(proposal.needs_more_context,{maxFiles:24,maxBytes:260_000});if(extra.files.length){const merged=[...bundle.files,...extra.files.filter(x=>!bundle.files.some(y=>y.path===x.path))];Object.assign(proposal,await requestChangeset({goal:run.goal,dwac:run.dwac,repository:repositorySummary(manifest),files:merged}))}}
+   const manifest=this.ws.manifest();const graph=this.repoGraph.build();const semanticPaths=this.repoGraph.contextPaths(run.goal,{maxFiles:32});const paths=semanticPaths.length?semanticPaths:selectContextPaths(manifest);const bundle=this.ws.contextBundle(paths);const proposal=await requestChangeset({goal:run.goal,dwac:run.dwac,repository:repositorySummary(manifest,graph),files:bundle.files});
+   if(Array.isArray(proposal.needs_more_context)&&proposal.needs_more_context.length){const extra=this.ws.contextBundle(proposal.needs_more_context,{maxFiles:24,maxBytes:260_000});if(extra.files.length){const merged=[...bundle.files,...extra.files.filter(x=>!bundle.files.some(y=>y.path===x.path))];Object.assign(proposal,await requestChangeset({goal:run.goal,dwac:run.dwac,repository:repositorySummary(manifest,graph),files:merged}))}}
    if(!Array.isArray(proposal.changes)||!proposal.changes.length){run=this.runs.update(id,{status:'WAITING_PROVIDER',blocker:'Provider 未生成可执行 changeset',proposal},'CHANGESET_EMPTY');this.tasks.syncRun(run);return run}
    const cs=this.changesets.stage(id,proposal.changes,{source:'tao-ai'});run=this.runs.update(id,{status:'CHANGESET_STAGED',changesets:[...run.changesets,cs.id],proposal,validation:{commands:proposal.validation_commands||[],status:'NOT_RUN'}},'CHANGESET_STAGED',{changesetId:cs.id,files:cs.changes.length});this.runs.addEvidence(id,{kind:'changeset-staged',changesetId:cs.id,files:cs.changes.map(x=>({path:x.path,op:x.op,before:x.before.sha256,after:x.after.sha256}))});run=this.runs.get(id);this.tasks.syncRun(run);return run;
  }
@@ -28,10 +29,10 @@ export class NorthStarRunner{
  async repair(id,{approvalMode='workspace'}={}){
    let run=this.runs.get(id);if(run.status!=='REPAIR_REQUIRED')throw new Error('REPAIR_NOT_REQUIRED');if(approvalMode==='read_only')throw new Error('APPROVAL_REQUIRED');
    if(!taoAIStatus().connected){run=this.runs.update(id,{status:'WAITING_PROVIDER',mode:'DEEP_DEVELOPMENT',blocker:'Repair 需要 Tao AI 代码变更 Provider'},'REPAIR_PROVIDER_BLOCKED');this.tasks.syncRun(run);return run}
-   const manifest=this.ws.manifest();const paths=selectContextPaths(manifest);const bundle=this.ws.contextBundle(paths);
+   const manifest=this.ws.manifest();const graph=this.repoGraph.build();const semanticPaths=this.repoGraph.contextPaths(run.goal,{maxFiles:32});const paths=semanticPaths.length?semanticPaths:selectContextPaths(manifest);const bundle=this.ws.contextBundle(paths);
    const failure={validation:run.validation,previousProposal:run.proposal||null,changesets:run.changesets};
    const repairGoal=`Repair the failed Taowind Code run without broadening scope. Original goal: ${run.goal}`;
-   const proposal=await requestChangeset({goal:repairGoal,dwac:{...run.dwac,mode:'DEEP_DEVELOPMENT',failure},repository:repositorySummary(manifest),files:bundle.files});
+   const proposal=await requestChangeset({goal:repairGoal,dwac:{...run.dwac,mode:'DEEP_DEVELOPMENT',failure},repository:repositorySummary(manifest,graph),files:bundle.files});
    if(!Array.isArray(proposal.changes)||!proposal.changes.length){run=this.runs.update(id,{status:'WAITING_PROVIDER',mode:'DEEP_DEVELOPMENT',blocker:'Repair Provider 未生成可执行 changeset',proposal},'REPAIR_CHANGESET_EMPTY');this.tasks.syncRun(run);return run}
    const cs=this.changesets.stage(id,proposal.changes,{source:'tao-ai-repair'});run=this.runs.update(id,{status:'CHANGESET_STAGED',mode:'DEEP_DEVELOPMENT',cycle:(run.cycle||1)+1,changesets:[...run.changesets,cs.id],proposal,validation:{commands:proposal.validation_commands||run.validation?.commands||[],status:'NOT_RUN'},blocker:null},'REPAIR_CHANGESET_STAGED',{changesetId:cs.id,files:cs.changes.length});
    this.runs.addEvidence(id,{kind:'repair-changeset-staged',changesetId:cs.id,files:cs.changes.map(x=>({path:x.path,op:x.op,before:x.before.sha256,after:x.after.sha256}))});this.tasks.syncRun(this.runs.get(id));

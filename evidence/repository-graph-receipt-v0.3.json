@@ -1,0 +1,13 @@
+{
+  "protocol": "taowind-code.repository-graph-receipt.v0.3",
+  "fingerprint": "38025f5c00811d49e9de2df5c38b229bcac094439a3729474a2e8ccd5dd9ce1c",
+  "summary": {"manifestFiles":44,"indexedFiles":41,"codeFiles":25,"symbols":80,"importEdges":32,"testFiles":7},
+  "exampleQuery": "improve North Star repository intelligence and repair",
+  "search": [
+    {"path":"core/north-star-runner.mjs","score":16.4,"test":false,"symbols":[{"name":"NorthStarRunner","kind":"class","line":11,"exported":true}],"imports":9,"dependents":2},
+    {"path":"core/repo-graph.mjs","score":13,"test":false,"symbols":[{"name":"RepositoryGraph","kind":"class","line":55,"exported":true}],"imports":2,"dependents":3},
+    {"path":"core/changesets.mjs","score":8.2,"test":false,"symbols":[{"name":"ChangesetStore","kind":"class","line":14,"exported":true}],"imports":2,"dependents":2}
+  ],
+  "context": ["core/north-star-runner.mjs","core/terminal.mjs","contracts/north-star-run.schema.json","docs/NORTH_STAR_EXECUTION_KERNEL_v0.2.md","evidence/dwac-north-star-bridge-v0.2.json","evidence/dwac-north-star-cycle-v0.3.json","tests/north-star-runner.test.mjs","core/acceptance.mjs","core/repo-context.mjs","core/repo-graph.mjs","public/app.js","docs/SEMANTIC_REPOSITORY_GRAPH_v0.3.md","core/run-store.mjs","core/changesets.mjs","core/workspace.mjs","core/dwac-adapter.mjs"],
+  "claimLimit": "Lightweight static graph: not a full compiler AST/LSP; dynamic imports/reflection/macros remain conservative or unresolved."
+}

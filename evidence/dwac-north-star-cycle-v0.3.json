@@ -1,0 +1,27 @@
+{
+  "cycle_id": "NSC-538694b01d33ed47833a",
+  "mode": "WHOLE_ARTIFACT",
+  "selected": {
+    "candidate_id": "semantic-repository-graph",
+    "domain": "repository-intelligence",
+    "problem": "symbol/import/dependency/test topology with queryable repository graph and targeted context packs",
+    "expected_goal_gain": 0.98,
+    "reuse_gain": 0.99,
+    "autonomy_gain": 0.96,
+    "evidence_gain": 0.96,
+    "implementation_cost": 0.42,
+    "regression_risk": 0.12,
+    "externally_blocked": false,
+    "evidence": [],
+    "metadata": {}
+  },
+  "reason": "multiple high-pressure domains remain coupled; expand the system graph before local optimization",
+  "gate": "AUTONOMOUS",
+  "ranked": [
+    {"id": "semantic-repository-graph", "score": 0.8446},
+    {"id": "multi-candidate-worker-graph", "score": 0.7948},
+    {"id": "persistent-pty-runtime", "score": 0.7874},
+    {"id": "browser-observation-gate", "score": 0.7674},
+    {"id": "github-remote-provider", "score": 0.7282}
+  ]
+}

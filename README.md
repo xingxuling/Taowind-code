@@ -1,4 +1,4 @@
-# Taowind Code v0.2.0-alpha.1
+# Taowind Code v0.3.0-alpha.1
 
 **DWAC × Tao AI · North-Star Coding Agent Workbench**
 
@@ -17,8 +17,9 @@ Taowind Code 的目标不是“给 IDE 加一个聊天框”，而是把一个�
 → Git delivery preview / local commit
 ```
 
-## v0.2 新增的真实执行内核
+## v0.3 当前真实执行内核
 
+- **Semantic Repository Graph（语义仓库图）**：抽取文件、符号、import、反向依赖与测试拓扑，目标上下文不再只靠路径猜。
 - **North Star Run**：每个目标拥有持久 run、cycle、mode、event 与 evidence。
 - **DWAC 原生桥接**：调用 `NorthStarSelfDevelopmentController` + `SoftwareProductionPipelineCompiler`，不再只返回“已规划”。
 - **Transactional Changeset**：最多 128 文件；写入前绑定 SHA-256 preimage；应用前检测冲突。
@@ -65,7 +66,7 @@ npm test
 npm run check
 ```
 
-v0.2 的本地 Gate 覆盖：changeset apply/rollback、preimage/postimage conflict、symlink escape、run durability、validation fail-fast、DWAC 未绑定时的诚实阻断、手工 changeset 的 apply→validate→rollback 闭环。
+v0.3 的本地 Gate 当前为 16 项：覆盖 changeset apply/rollback、preimage/postimage conflict、symlink escape、run durability、validation/Repair、路径限定 Git commit，以及 Semantic Repository Graph 的符号/import/测试拓扑、目标 Context Pack 与 impact traversal。
 
 ## 权限边界
 
@@ -80,4 +81,4 @@ v0.2 的本地 Gate 覆盖：changeset apply/rollback、preimage/postimage confl
 - GitHub push / PR / merge 属于外部副作用，当前本地产品只做可审计的 delivery preview / local commit；平台连接器可在授权后承担远端交付。
 - Web 预览仍以 URL / 本地端口为主，Tao Browser DOM/Network 深层回传继续器官化。
 
-详见 `docs/NORTH_STAR_EXECUTION_KERNEL_v0.2.md` 与 `evidence/`。
+详见 `docs/NORTH_STAR_EXECUTION_KERNEL_v0.2.md`、`docs/SEMANTIC_REPOSITORY_GRAPH_v0.3.md` 与 `evidence/`。

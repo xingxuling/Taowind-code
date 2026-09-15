@@ -1,0 +1,11 @@
+{
+  "protocol": "taowind-code.local-test-receipt.v0.3",
+  "command": "npm run check",
+  "result": "PASS",
+  "tests": 16,
+  "passed": 16,
+  "failed": 0,
+  "static_checks": ["server/main.mjs","public/app.js"],
+  "covered": ["acceptance pass/fail and no duplicate npm gates","changeset apply/rollback","preimage conflict","postimage rollback conflict","path-scoped local Git delivery","DWAC-unbound honesty","manual run closure","repair gate honesty","lexical traversal","symlink escape","durable run evidence","terminal state guard","semantic repository graph topology","goal context expansion","bounded impact traversal"],
+  "claim_limit": "Local Node/Python validation only. Semantic graph is static/heuristic, not a full compiler AST/LSP. No external Tao AI provider call, PTY, Electron UI screenshot, or production deployment was claimed."
+}

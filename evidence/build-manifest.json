@@ -1,0 +1,9 @@
+{
+  "product": "Taowind Code",
+  "version": "0.1.0-alpha.1",
+  "status": "SOURCE_RUNNABLE_BASELINE",
+  "dwac": {"software_production_stages":24,"declared_subsystems":15,"shards":3,"artifact_nodes":52},
+  "verified": ["Node/JS syntax gates","Python bridge compile","HTTP server boot","workspace tree/read","Git status","terminal command execution","DWAC plan compilation with bound local runtime","Tao Browser search index/frontier local organ"],
+  "candidate": ["Electron wrapper source","file write UX","Browser Preview iframe"],
+  "unverified": ["Electron desktop runtime boot","Monaco/LSP","true PTY/VT","Tao AI live provider","Tao Browser live public-web crawler","GitHub PR/merge from inside product"]
+}

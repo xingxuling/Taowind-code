@@ -1,0 +1,27 @@
+reality TaoBrowserWebCrawlerV08 {
+  facet world.browser_navigation_unrestricted : Truth = true
+  facet world.seed_frontier : Truth = true
+  facet world.robots_and_sitemap : Truth = true
+  facet world.per_host_politeness : Truth = true
+  facet world.canonical_dedup : Truth = true
+  facet world.incremental_recrawl : Truth = true
+  facet world.transient_failure_backoff : Truth = true
+  facet world.remote_https_only : Truth = true
+  facet world.crawler_credentials_absent : Truth = true
+  facet world.remote_authority_denied : Truth = true
+  facet world.local_execution_gate : Truth = true
+  facet world.candidate_allowed : Truth = false
+  subject owner { warrant browser.search.crawler.ship on world }
+  emergence permit_candidate {
+    cause owner
+    when world.browser_navigation_unrestricted and world.seed_frontier and world.robots_and_sitemap and world.per_host_politeness and world.canonical_dedup and world.incremental_recrawl and world.transient_failure_backoff and world.remote_https_only and world.crawler_credentials_absent and world.remote_authority_denied and world.local_execution_gate
+    needs browser.search.crawler.ship on world
+    alter world.candidate_allowed <- true
+    preserve world.browser_navigation_unrestricted == true
+    preserve world.crawler_credentials_absent == true
+    preserve world.remote_authority_denied == true
+    witness "taobrowser:v0.8-web-crawler-candidate"
+  }
+  foresee permit_candidate
+  realize permit_candidate
+}

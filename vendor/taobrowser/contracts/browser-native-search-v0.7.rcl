@@ -1,0 +1,28 @@
+reality TaoBrowserNativeSearchV07 {
+  facet world.local_query_default : Truth = true
+  facet world.external_fallback_explicit : Truth = true
+  facet world.http_compatibility : Truth = true
+  facet world.crawler_bounded : Truth = true
+  facet world.crawler_no_credentials : Truth = true
+  facet world.robots_respected : Truth = true
+  facet world.noindex_respected : Truth = true
+  facet world.private_tabs_not_indexed : Truth = true
+  facet world.provider_authority_denied : Truth = true
+  facet world.search_receipts_rooted : Truth = true
+  facet world.query_not_authority : Truth = true
+  facet world.candidate_allowed : Truth = false
+  subject owner { warrant browser.search.ship on world }
+  emergence permit_candidate {
+    cause owner
+    when world.local_query_default and world.external_fallback_explicit and world.http_compatibility and world.crawler_bounded and world.crawler_no_credentials and world.robots_respected and world.noindex_respected and world.private_tabs_not_indexed and world.provider_authority_denied and world.search_receipts_rooted and world.query_not_authority
+    needs browser.search.ship on world
+    alter world.candidate_allowed <- true
+    preserve world.local_query_default == true
+    preserve world.crawler_no_credentials == true
+    preserve world.private_tabs_not_indexed == true
+    preserve world.provider_authority_denied == true
+    witness "taobrowser:v0.7-native-search-candidate"
+  }
+  foresee permit_candidate
+  realize permit_candidate
+}

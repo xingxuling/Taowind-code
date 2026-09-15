@@ -1,0 +1,50 @@
+{
+  "protocol": "taowind-code.evidence-ledger.v0.1",
+  "cycle_id": "NSC-c842bb9e754e01e057ae",
+  "dwac_source": "DWAC-main(6)",
+  "decision": {
+    "selected": "autonomous-goal-closure-loop",
+    "mode": "WHOLE_ARTIFACT",
+    "score": 0.856,
+    "reason": "multiple high-pressure domains remain coupled; expand the system graph before local optimization",
+    "sovereignty_gate": "AUTONOMOUS"
+  },
+  "ranked_candidates": [
+    {"id":"autonomous-goal-closure-loop","score":0.856},
+    {"id":"executable-rcl-authority-gate","score":0.814},
+    {"id":"browser-observation-gate","score":0.7218},
+    {"id":"github-remote-provider","score":0.7122,"external_side_effect":true},
+    {"id":"persistent-pty-runtime","score":0.6752}
+  ],
+  "software_production_plan": {
+    "stage_count": 24,
+    "profile": "application",
+    "includes": ["product-context","prd","engineering-spec","architecture","ux-spec","acceptance-spec","module-implementation","runtime-validation","repair-loop","final-acceptance","release-evidence"]
+  },
+  "local_targeted_verification": {
+    "syntax": [
+      "core/tao-ai-adapter.mjs PASS",
+      "core/autonomous-supervisor.mjs PASS",
+      "server/main.mjs candidate PASS",
+      "public/app.js candidate PASS"
+    ],
+    "tests": {
+      "suite": "tests/autonomous-supervisor.test.mjs",
+      "passed": 5,
+      "failed": 0,
+      "cases": [
+        "validated run + closure audit",
+        "gap causes next autonomous cycle",
+        "cycle budget exhausts fail-closed",
+        "read-only pauses before apply",
+        "mission state survives reconstruction"
+      ]
+    }
+  },
+  "limitations": [
+    "Sandbox DNS could not resolve github.com, so the complete remote repository was not cloned for a full npm run check.",
+    "No GitHub Actions were invoked.",
+    "Goal closure auditors are model judgments gated behind real Acceptance; they are not themselves reality evidence.",
+    "Remote GitHub push/PR/merge remains outside the local runtime and requires explicit external authorization."
+  ]
+}

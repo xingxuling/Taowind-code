@@ -63,29 +63,29 @@ const api=async(req,res,u)=>{
  const mr=missionRoute(u.pathname);if(mr){
    if(req.method==='GET'&&!mr.action)return send(res,200,{mission:supervisor.get(mr.id)});
    if(req.method==='POST'&&mr.action==='tick')return send(res,200,{mission:await supervisor.tick(mr.id,{approvalMode})});
-   if(req.method==='POST'&&mr.action==='run'){const b=await body(req);return send(res,200,{mission:await supervisor.run(mr.id,{approvalMode,maxTicks:b.maxTicks||8})});
+   if(req.method==='POST'&&mr.action==='run'){const b=await body(req);return send(res,200,{mission:await supervisor.run(mr.id,{approvalMode,maxTicks:b.maxTicks||8})});}
    if(req.method==='POST'&&mr.action==='resume')return send(res,200,{mission:supervisor.resume(mr.id)});
  }
  const rr=runRoute(u.pathname);if(rr){
    if(req.method==='GET'&&!rr.action)return send(res,200,{run:runner.get(rr.id)});
    if(req.method==='POST'&&rr.action==='synthesize')return send(res,200,{run:await runner.synthesize(rr.id),tasks:tasks.list()});
-   if(req.method==='POST'&&rr.action==='changeset'){const b=await body(req);const out=runner.stage(rr.id,b.changes,b.validation_commands||[]);return send(res,200,{...out,tasks:tasks.list()});
+   if(req.method==='POST'&&rr.action==='changeset'){const b=await body(req);const out=runner.stage(rr.id,b.changes,b.validation_commands||[]);return send(res,200,{...out,tasks:tasks.list()});}
    if(req.method==='POST'&&rr.action==='apply')return send(res,200,{...await runner.apply(rr.id,{approvalMode}),tasks:tasks.list()});
-   if(req.method==='POST'&&rr.action==='validate'){const b=await body(req);return send(res,200,{run:await runner.validate(rr.id,{approvalMode,commands:b.commands||null}),tasks:tasks.list()});
+   if(req.method==='POST'&&rr.action==='validate'){const b=await body(req);return send(res,200,{run:await runner.validate(rr.id,{approvalMode,commands:b.commands||null}),tasks:tasks.list()});}
    if(req.method==='POST'&&rr.action==='repair')return send(res,200,{run:await runner.repair(rr.id,{approvalMode}),tasks:tasks.list()});
    if(req.method==='POST'&&rr.action==='rollback')return send(res,200,{run:await runner.rollback(rr.id,{approvalMode}),tasks:tasks.list()});
-   if(req.method==='POST'&&rr.action==='delivery'){const b=await body(req);return send(res,200,{run:await runner.delivery(rr.id,{commit:!!b.commit,message:b.message||'',approvalMode}),tasks:tasks.list()});
+   if(req.method==='POST'&&rr.action==='delivery'){const b=await body(req);return send(res,200,{run:await runner.delivery(rr.id,{commit:!!b.commit,message:b.message||'',approvalMode}),tasks:tasks.list()});}
  }
  if(req.method==='POST'&&u.pathname==='/api/tasks'){const b=await body(req);return send(res,200,{tasks:tasks.replace(b.tasks||[])});}
  if(req.method==='POST'&&u.pathname==='/api/terminal/run'){const b=await body(req);const receipt=await authorityGate.assert('shell_execute',{approvalMode,workspace,requestId:`api:shell:${Date.now()}`,metadata:{command:String(b.command||'').slice(0,500)}});return send(res,200,{...await runCommand(workspace,b.command,{mode:approvalMode}),authorityReceipt:receipt});}
  if(req.method==='GET'&&u.pathname==='/api/providers')return send(res,200,{...providerStatus(),authority:authorityGate.status(),browserOrgan:browserOrgan.status(),gameForge:gameGateway.status(workspace)});
  if(req.method==='GET'&&u.pathname==='/api/research/search')return send(res,200,{query:u.searchParams.get('q')||'',results:browserOrgan.search(u.searchParams.get('q')||'',Number(u.searchParams.get('limit')||12))});
- if(req.method==='POST'&&u.pathname==='/api/research/index'){const b=await body(req);return send(res,200,browserOrgan.indexDocument(b));
- if(req.method==='POST'&&u.pathname==='/api/research/frontier'){const b=await body(req);return send(res,200,browserOrgan.enqueue(b.url,{priority:b.priority,source:b.source}));
+ if(req.method==='POST'&&u.pathname==='/api/research/index'){const b=await body(req);return send(res,200,browserOrgan.indexDocument(b));}
+ if(req.method==='POST'&&u.pathname==='/api/research/frontier'){const b=await body(req);return send(res,200,browserOrgan.enqueue(b.url,{priority:b.priority,source:b.source}));}
  if(req.method==='GET'&&u.pathname==='/api/approval')return send(res,200,{mode:approvalMode});
  if(req.method==='POST'&&u.pathname==='/api/approval'){const b=await body(req);if(!['read_only','workspace','full_access'].includes(b.mode))return send(res,400,{error:'INVALID_MODE'});approvalMode=b.mode;return send(res,200,{mode:approvalMode,authority:authorityGate.status()});}
  return send(res,404,{error:'NOT_FOUND'});
 };
-const server=http.createServer(async(req,res)=>{try{const u=new URL(req.url,'http://localhost');if(u.pathname.startsWith('/api/'))return await api(req,res,u);if(staticFile(req,res))return;res.writeHead(404);res.end('Not found')}catch(e){const code=['RUN_NOT_FOUND','MISSION_NOT_FOUND'].includes(e.code)?404:e.code==='MISSION_BUSY'?409:e.code==='AMBIGUOUS_GAME_PROJECT'?409:e.code==='GAME_GOAL_REQUIRED'?400:['GAME_ROUTER_UNBOUND','GAME_ROUTER_EXECUTION_ERROR'].includes(e.code)?503:['RCL_AUTHORITY_DENIED','APPROVAL_REQUIRED'].includes(e.code)?403:e.code==='RCL_RUNTIME_UNBOUND'?503:500;send(res,code,{error:e.code||e.message||'INTERNAL_ERROR',message:e.message,authorityReceipt:e.receipt||null,projectInfo:e.projectInfo||null,decision:e.decision||null})}});
+const server=http.createServer(async(req,res)=>{try{const u=new URL(req.url,'http://localhost');if(u.pathname.startsWith('/api/'))return await api(req,res,u);if(staticFile(req,res))return;res.writeHead(404);res.end('Not found')}catch(e){const unavailable=['GAME_ROUTER_UNBOUND','GAME_ROUTER_EXECUTION_ERROR','GAME_ROUTER_INVALID_RESPONSE','GAME_ROUTER_FAILED'];const code=['RUN_NOT_FOUND','MISSION_NOT_FOUND'].includes(e.code)?404:e.code==='MISSION_BUSY'?409:e.code==='AMBIGUOUS_GAME_PROJECT'?409:e.code==='GAME_GOAL_REQUIRED'?400:unavailable.includes(e.code)?503:['RCL_AUTHORITY_DENIED','APPROVAL_REQUIRED'].includes(e.code)?403:e.code==='RCL_RUNTIME_UNBOUND'?503:500;send(res,code,{error:e.code||e.message||'INTERNAL_ERROR',message:e.message,authorityReceipt:e.receipt||null,projectInfo:e.projectInfo||null,decision:e.decision||null})}});
 const port=Number(process.env.PORT||4877);server.listen(port,'127.0.0.1',()=>console.log(`Taowind Code ${VERSION} running: http://127.0.0.1:${port}\nWorkspace: ${workspace}\nRCL Authority: ${authorityGate.status().connected?'BOUND':'UNBOUND'}\nGame Forge: ${gameGateway.status(workspace).bound?'BOUND':'UNBOUND'}`));
 for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{supervisor.stopScheduler();server.close(()=>process.exit(0))});

@@ -1,0 +1,42 @@
+import {RunStore} from './run-store.mjs';
+import {ChangesetStore} from './changesets.mjs';
+import {WorkspaceService} from './workspace.mjs';
+import {compileWithDWAC} from './dwac-adapter.mjs';
+import {requestChangeset,taoAIStatus} from './tao-ai-adapter.mjs';
+import {selectContextPaths,repositorySummary} from './repo-context.mjs';
+import {runAcceptance} from './acceptance.mjs';
+import {gitDeliveryPreview,gitLocalCommit} from './git.mjs';
+
+export class NorthStarRunner{
+ constructor({workspace,runtimeDir,taskStore}){this.workspace=workspace;this.runtimeDir=runtimeDir;this.tasks=taskStore;this.runs=new RunStore(runtimeDir);this.changesets=new ChangesetStore(runtimeDir,workspace);this.ws=new WorkspaceService(workspace)}
+ create(goal){
+   const dwac=compileWithDWAC(goal,this.workspace);const mode=dwac.mode||'WHOLE_ARTIFACT';let run=this.runs.create({goal,mode,dwac});const tasks=this.tasks.plan(goal,{mode,runId:run.id});
+   const status=dwac.connected&&dwac.status==='COMPILED'?'PLANNED':'WAITING_PROVIDER';run=this.runs.update(run.id,{status,tasks,dwac,blocker:status==='WAITING_PROVIDER'?'DWAC runtime 未绑定或编译失败':null,message:dwac.decision_reason||null},'DWAC_COMPILED',{mode,cycleId:dwac.cycle_id||null});this.tasks.syncRun(run);return run;
+ }
+ list(){return this.runs.list()}
+ get(id){return this.runs.get(id)}
+ async synthesize(id){
+   let run=this.runs.get(id);if(!run.dwac?.connected||run.dwac?.status!=='COMPILED')throw new Error('DWAC_REQUIRED');if(!taoAIStatus().connected){run=this.runs.update(id,{status:'WAITING_PROVIDER',blocker:'Tao AI 代码变更 Provider 未绑定'},'TAO_AI_BLOCKED');this.tasks.syncRun(run);return run}
+   const manifest=this.ws.manifest();const paths=selectContextPaths(manifest);const bundle=this.ws.contextBundle(paths);const proposal=await requestChangeset({goal:run.goal,dwac:run.dwac,repository:repositorySummary(manifest),files:bundle.files});
+   if(Array.isArray(proposal.needs_more_context)&&proposal.needs_more_context.length){const extra=this.ws.contextBundle(proposal.needs_more_context,{maxFiles:24,maxBytes:260_000});if(extra.files.length){const merged=[...bundle.files,...extra.files.filter(x=>!bundle.files.some(y=>y.path===x.path))];Object.assign(proposal,await requestChangeset({goal:run.goal,dwac:run.dwac,repository:repositorySummary(manifest),files:merged}))}}
+   if(!Array.isArray(proposal.changes)||!proposal.changes.length){run=this.runs.update(id,{status:'WAITING_PROVIDER',blocker:'Provider 未生成可执行 changeset',proposal},'CHANGESET_EMPTY');this.tasks.syncRun(run);return run}
+   const cs=this.changesets.stage(id,proposal.changes,{source:'tao-ai'});run=this.runs.update(id,{status:'CHANGESET_STAGED',changesets:[...run.changesets,cs.id],proposal,validation:{commands:proposal.validation_commands||[],status:'NOT_RUN'}},'CHANGESET_STAGED',{changesetId:cs.id,files:cs.changes.length});this.runs.addEvidence(id,{kind:'changeset-staged',changesetId:cs.id,files:cs.changes.map(x=>({path:x.path,op:x.op,before:x.before.sha256,after:x.after.sha256}))});run=this.runs.get(id);this.tasks.syncRun(run);return run;
+ }
+ stage(id,changes,validationCommands=[]){let run=this.runs.get(id);const cs=this.changesets.stage(id,changes,{source:'api'});run=this.runs.update(id,{status:'CHANGESET_STAGED',changesets:[...run.changesets,cs.id],validation:{commands:validationCommands,status:'NOT_RUN'}},'CHANGESET_STAGED',{changesetId:cs.id,files:cs.changes.length});this.tasks.syncRun(run);return {run,changeset:cs}}
+ apply(id,{approvalMode='workspace'}={}){if(approvalMode==='read_only')throw new Error('APPROVAL_REQUIRED');let run=this.runs.get(id);const csid=run.changesets.at(-1);if(!csid)throw new Error('CHANGESET_REQUIRED');const cs=this.changesets.apply(csid);run=this.runs.update(id,{status:'CHANGES_APPLIED',blocker:null},'CHANGESET_APPLIED',{changesetId:csid,receipt:cs.applyReceipt?.receiptSha256});this.runs.addEvidence(id,{kind:'changeset-applied',changesetId:csid,receipt:cs.applyReceipt});run=this.runs.get(id);this.tasks.syncRun(run);return {run,changeset:cs}}
+ async validate(id,{approvalMode='workspace',commands=null}={}){let run=this.runs.get(id);if(!['CHANGES_APPLIED','REPAIR_REQUIRED','READY_FOR_DELIVERY'].includes(run.status))throw new Error('CHANGES_NOT_APPLIED');run=this.runs.update(id,{status:'VALIDATING'},'VALIDATION_STARTED');this.tasks.syncRun(run);const selected=commands||run.validation?.commands||[];const result=await runAcceptance(this.workspace,selected,{mode:approvalMode});const status=result.passed?'READY_FOR_DELIVERY':'REPAIR_REQUIRED';run=this.runs.update(id,{status,validation:{...result,at:new Date().toISOString()},blocker:result.passed?null:'验收失败：需要 Repair'},'VALIDATION_FINISHED',{passed:result.passed,hardGate:result.hardGate});this.runs.addEvidence(id,{kind:'validation',status:result.status,hardGate:result.hardGate,results:result.results.map(x=>({command:x.command,code:x.code,timedOut:x.timedOut,durationMs:x.durationMs}))});run=this.runs.get(id);this.tasks.syncRun(run);return run}
+ async repair(id,{approvalMode='workspace'}={}){
+   let run=this.runs.get(id);if(run.status!=='REPAIR_REQUIRED')throw new Error('REPAIR_NOT_REQUIRED');if(approvalMode==='read_only')throw new Error('APPROVAL_REQUIRED');
+   if(!taoAIStatus().connected){run=this.runs.update(id,{status:'WAITING_PROVIDER',mode:'DEEP_DEVELOPMENT',blocker:'Repair 需要 Tao AI 代码变更 Provider'},'REPAIR_PROVIDER_BLOCKED');this.tasks.syncRun(run);return run}
+   const manifest=this.ws.manifest();const paths=selectContextPaths(manifest);const bundle=this.ws.contextBundle(paths);
+   const failure={validation:run.validation,previousProposal:run.proposal||null,changesets:run.changesets};
+   const repairGoal=`Repair the failed Taowind Code run without broadening scope. Original goal: ${run.goal}`;
+   const proposal=await requestChangeset({goal:repairGoal,dwac:{...run.dwac,mode:'DEEP_DEVELOPMENT',failure},repository:repositorySummary(manifest),files:bundle.files});
+   if(!Array.isArray(proposal.changes)||!proposal.changes.length){run=this.runs.update(id,{status:'WAITING_PROVIDER',mode:'DEEP_DEVELOPMENT',blocker:'Repair Provider 未生成可执行 changeset',proposal},'REPAIR_CHANGESET_EMPTY');this.tasks.syncRun(run);return run}
+   const cs=this.changesets.stage(id,proposal.changes,{source:'tao-ai-repair'});run=this.runs.update(id,{status:'CHANGESET_STAGED',mode:'DEEP_DEVELOPMENT',cycle:(run.cycle||1)+1,changesets:[...run.changesets,cs.id],proposal,validation:{commands:proposal.validation_commands||run.validation?.commands||[],status:'NOT_RUN'},blocker:null},'REPAIR_CHANGESET_STAGED',{changesetId:cs.id,files:cs.changes.length});
+   this.runs.addEvidence(id,{kind:'repair-changeset-staged',changesetId:cs.id,files:cs.changes.map(x=>({path:x.path,op:x.op,before:x.before.sha256,after:x.after.sha256}))});this.tasks.syncRun(this.runs.get(id));
+   this.apply(id,{approvalMode});return await this.validate(id,{approvalMode});
+ }
+ rollback(id){let run=this.runs.get(id);const csid=run.changesets.at(-1);if(!csid)throw new Error('CHANGESET_REQUIRED');const cs=this.changesets.rollback(csid);run=this.runs.update(id,{status:'ROLLED_BACK',blocker:null},'CHANGESET_ROLLED_BACK',{changesetId:csid,receipt:cs.rollbackReceipt?.receiptSha256});this.runs.addEvidence(id,{kind:'rollback',changesetId:csid,receipt:cs.rollbackReceipt});run=this.runs.get(id);this.tasks.syncRun(run);return run}
+ delivery(id,{commit=false,message='',approvalMode='workspace'}={}){let run=this.runs.get(id);if(run.status!=='READY_FOR_DELIVERY')throw new Error('VALIDATION_REQUIRED');const changedPaths=[...new Set(run.changesets.flatMap(csid=>{try{return this.changesets.get(csid).changes.map(x=>x.path)}catch{return[]}}))];let delivery={...gitDeliveryPreview(this.workspace),changedPaths};if(commit){if(approvalMode!=='full_access')throw new Error('FULL_ACCESS_REQUIRED_FOR_COMMIT');delivery={...delivery,localCommit:gitLocalCommit(this.workspace,message||`Taowind Code: ${run.goal.slice(0,72)}`,changedPaths)}}run=this.runs.update(id,{status:commit&&delivery.localCommit?.ok?'DELIVERED_LOCAL':'READY_FOR_DELIVERY',delivery},'DELIVERY_PREVIEWED',{localCommitPerformed:!!delivery.localCommit?.ok,pushPerformed:false,prPerformed:false,changedPaths});this.runs.addEvidence(id,{kind:'git-delivery',branch:delivery.branch,head:delivery.head,stat:delivery.stat,changedPaths,localCommitPerformed:!!delivery.localCommit?.ok,pushPerformed:false,prPerformed:false});run=this.runs.get(id);this.tasks.syncRun(run);return run}
+}

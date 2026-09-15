@@ -1,12 +1,14 @@
 {
   "name": "taowind-code",
-  "version": "0.1.0-alpha.1",
+  "version": "0.2.0-alpha.1",
   "private": true,
   "type": "module",
-  "description": "Taowind Code — DWAC × Tao AI coding agent workbench",
+  "description": "Taowind Code — DWAC × Tao AI north-star coding agent workbench",
   "scripts": {
     "start": "node server/main.mjs",
     "dev": "node server/main.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check server/main.mjs && node --check public/app.js && node --test tests/*.test.mjs",
     "desktop": "electron desktop/main.mjs"
   },
   "optionalDependencies": {

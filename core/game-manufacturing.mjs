@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync as nodeSpawnSync} from 'node:child_process';
 
-export const GAME_MANUFACTURING_PROTOCOL='taowind-code.game-manufacturing.v0.1';
+export const GAME_MANUFACTURING_PROTOCOL='taowind-code.game-manufacturing.v0.2';
 
 export function detectLocalGameProject(workspace,{fsImpl=fs}={}){
   const root=path.resolve(workspace);
@@ -27,17 +27,57 @@ export function buildGameRouteArgs({routerScript,goal,workspace,target,requireme
 }
 
 export function compileGameMissionGoal(goal,route){
-  const secondaries=route?.secondary_engines?.length?route.secondary_engines.join(', '):'none';
+  const primary=route?.primary_engine||'UNRESOLVED';
+  const secondaries=route?.secondary_engines?.length?route.secondary_engines.join(','):'none';
   return [
     '[TAOWIND GAME MANUFACTURING CONTRACT / 道风游戏制造契约]',
+    '[TAOWIND_GAME_MANUFACTURING=1]',
+    `[TAOWIND_GAME_PRIMARY=${primary}]`,
+    `[TAOWIND_GAME_SECONDARY=${secondaries}]`,
+    '[TAOWIND_GAME_BUILD_EVIDENCE_REQUIRED=1]',
     `用户目标：${String(goal||'').trim()}`,
-    `DWAC 主引擎：${route?.primary_engine||'UNRESOLVED'}`,
+    `DWAC 主引擎：${primary}`,
     `DWAC 次级引擎：${secondaries}`,
     `多引擎策略：${route?.hybrid?'enabled':'disabled'}`,
     '引擎角色：primary 负责正式生产构建；secondary 默认只做独立原型、基准、资产验证或目标平台专用身体，除非存在经过验证的跨引擎桥。',
     '权威边界：RCL/RNCS 保留 canonical authority；Godot/Unity/Unreal 只作为外部 runtime/build provider。',
+    '硬验收要求：validation 必须至少包含一次主引擎真实 CLI 构建/导出命令成功，以及一次对构建产物真实存在的文件系统检查成功；只有普通单元测试通过不能宣称游戏制造完成。',
     '执行要求：沿用 Taowind Code 自主北极星闭环，完成源码、资产、测试、真实构建验证、失败修复、证据账本与可回滚交付；没有真实引擎构建证据不得宣称完成。',
   ].join('\n');
+}
+
+export function parseGameManufacturingContract(goal){
+  const text=String(goal||'');
+  if(!text.includes('[TAOWIND_GAME_MANUFACTURING=1]'))return {enabled:false,buildEvidenceRequired:false,primaryEngine:null,secondaryEngines:[]};
+  const primary=text.match(/\[TAOWIND_GAME_PRIMARY=([^\]]+)\]/)?.[1]?.trim()||null;
+  const secondaryRaw=text.match(/\[TAOWIND_GAME_SECONDARY=([^\]]*)\]/)?.[1]?.trim()||'';
+  const secondaryEngines=secondaryRaw&&secondaryRaw!=='none'?secondaryRaw.split(',').map(x=>x.trim()).filter(Boolean):[];
+  return {enabled:true,buildEvidenceRequired:text.includes('[TAOWIND_GAME_BUILD_EVIDENCE_REQUIRED=1]'),primaryEngine:primary,secondaryEngines};
+}
+
+export function assessGameBuildEvidence(run,contract=parseGameManufacturingContract(run?.goal)){
+  if(!contract?.enabled||!contract.buildEvidenceRequired)return {required:false,passed:true,primaryEngine:contract?.primaryEngine||null,buildCommand:null,artifactCheck:null,reason:'GAME_BUILD_EVIDENCE_NOT_REQUIRED'};
+  const engine=contract.primaryEngine;
+  const rows=Array.isArray(run?.validation?.results)?run.validation.results:[];
+  const successful=rows.filter(x=>Number(x?.code)===0&&x?.timedOut!==true);
+  const patterns={
+    godot:/(^|[\\/\s"'])(godot4?|godot\.exe)([\s"']|$).*?(--export-release|--export-debug|--headless)|(--export-release|--export-debug).*?(godot4?|godot\.exe)/i,
+    unity:/(^|[\\/\s"'])(Unity(?:\.exe)?|unity-editor)([\s"']|$).*?(-batchmode|-executeMethod|-buildTarget)/i,
+    'unreal-engine':/(UnrealEditor-Cmd(?:\.exe)?|RunUAT(?:\.bat|\.sh)?|BuildCookRun)/i,
+  };
+  const matcher=patterns[engine]||/$a/;
+  const buildCommand=successful.find(x=>matcher.test(String(x?.command||'')))||null;
+  const artifactMatcher=/(test\s+-[ef]\s|Test-Path\s|Get-Item\s|if\s+exist\s|\bstat\s+|\bdir\s+|\bls\s+-l\s)/i;
+  const artifactCheck=successful.find(x=>artifactMatcher.test(String(x?.command||'')))||null;
+  const passed=run?.validation?.passed===true&&!!buildCommand&&!!artifactCheck;
+  return {
+    required:true,
+    passed,
+    primaryEngine:engine,
+    buildCommand:buildCommand?{command:buildCommand.command,code:buildCommand.code,durationMs:buildCommand.durationMs}:null,
+    artifactCheck:artifactCheck?{command:artifactCheck.command,code:artifactCheck.code,durationMs:artifactCheck.durationMs}:null,
+    reason:passed?'GAME_ENGINE_BUILD_EVIDENCE_VERIFIED':!buildCommand?'PRIMARY_ENGINE_BUILD_COMMAND_MISSING':!artifactCheck?'BUILD_ARTIFACT_EXISTENCE_CHECK_MISSING':'GENERIC_VALIDATION_NOT_PASSED',
+  };
 }
 
 export class GameManufacturingGateway{

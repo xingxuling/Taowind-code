@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Taowind Code Agent Task",
+  "type": "object",
+  "required": ["id","title","status"],
+  "properties": {
+    "id":{"type":"string"},
+    "title":{"type":"string"},
+    "status":{"enum":["queued","running","blocked","done","failed"]},
+    "progress":{"type":"number","minimum":0,"maximum":1},
+    "evidence":{"type":"array","items":{"type":"string"}}
+  }
+}

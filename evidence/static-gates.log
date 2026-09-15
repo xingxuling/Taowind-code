@@ -1,0 +1,16 @@
+Taowind Code targeted verification
+timestamp=2026-09-15T18:37:11+00:00
+PASS node-check core/browser-organ.mjs
+PASS node-check core/dwac-adapter.mjs
+PASS node-check core/git.mjs
+PASS node-check core/path-boundary.mjs
+PASS node-check core/providers.mjs
+PASS node-check core/tasks.mjs
+PASS node-check core/terminal.mjs
+PASS node-check core/workspace.mjs
+PASS node-check desktop/main.mjs
+PASS node-check public/app.js
+PASS node-check server/main.mjs
+PASS python-compile bridge/dwac_bridge.py
+PASS dwac-large-plan nodes= 52 subsystems= 15 shards= 3
+PASS dwac-software-production stages= 24

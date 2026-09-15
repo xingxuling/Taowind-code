@@ -1,0 +1,10 @@
+reality TaowindCodeApprovalPolicy {
+  facet workspace.boundary : Truth = true
+  facet action.external_side_effect : Truth = false
+  permit read when workspace.boundary == true
+  permit workspace_write when authority.workspace_write == granted
+  permit shell_execute when authority.shell_execute == granted
+  permit git_commit when authority.git_delivery == granted
+  require explicit_approval when action.external_side_effect == true
+  evidence request_id + workspace + action + authority + result
+}

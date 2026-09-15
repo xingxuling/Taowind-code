@@ -1,0 +1,23 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://taowind.company/schemas/taowind-code-rcl-authority-receipt-v0.1.json",
+  "title":"Taowind Code RCL Authority Receipt v0.1",
+  "type":"object",
+  "required":["id","protocol","at","action","approvalMode","allowed","reason","policyDigest"],
+  "properties":{
+    "id":{"type":"string","pattern":"^auth-"},
+    "protocol":{"const":"taowind-code.rcl-authority-receipt.v0.1"},
+    "at":{"type":"string"},
+    "requestId":{"type":"string"},
+    "action":{"enum":["workspace_write","shell_execute","changeset_apply","changeset_rollback","validation_execute","git_commit","mission_advance","external_side_effect"]},
+    "approvalMode":{"enum":["read_only","workspace","full_access"]},
+    "workspace":{"type":["string","null"]},
+    "allowed":{"type":"boolean"},
+    "reason":{"type":["string","null"]},
+    "policyDigest":{"type":["string","null"]},
+    "materializedDigest":{"type":["string","null"]},
+    "context":{"type":["object","null"]},
+    "rcl":{"type":["object","null"]},
+    "metadata":{"type":"object"}
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "protocol": "taowind-code.evidence-ledger.v0.1",
+  "north_star_cycle": {
+    "cycle_id": "NSC-8279d43aa7a2671354f1",
+    "dwac_source": "DWAC-main(6)",
+    "selected": "executable-rcl-authority-gate",
+    "mode": "WHOLE_ARTIFACT",
+    "score": 0.8526,
+    "sovereignty_gate": "AUTONOMOUS",
+    "ranked": [
+      {"id":"executable-rcl-authority-gate","score":0.8526},
+      {"id":"browser-observation-gate","score":0.7440},
+      {"id":"github-remote-provider","score":0.7306},
+      {"id":"persistent-pty-runtime","score":0.6878}
+    ]
+  },
+  "rcl_asset": {
+    "source": "RCL-main (5)",
+    "version": "0.94.0-alpha.1",
+    "integration": "TAOWIND_RCL_ROOT/src/index.mjs::runReality",
+    "reused_primitives": ["conditional warrant", "needs", "realize", "RCL_AUTHORITY_DENIED", "authority transition evidence", "witness"]
+  },
+  "verification": {
+    "taowind_authority_prototype": {
+      "passed": 8,
+      "failed": 0,
+      "cases": [
+        "read_only workspace_write DENY",
+        "workspace workspace_write ALLOW",
+        "workspace validation_execute dual-needs ALLOW",
+        "workspace git_commit DENY",
+        "full_access git_commit ALLOW",
+        "full_access external_side_effect without explicit approval DENY",
+        "full_access external_side_effect with explicit approval ALLOW",
+        "workspace boundary false workspace_write DENY"
+      ]
+    },
+    "rcl_foundation_contract": {"passed":4,"failed":0},
+    "rcl_focused_authority": {"passed":3,"failed":0,"pattern":"conditional warrants|compiler rejects a rule without|preserve clauses block"}
+  },
+  "known_environment_boundary": {
+    "attempted_broad_language_suite": true,
+    "result": "NOT_RELEASE_GATE",
+    "reason": "Uploaded RCL package lacks Linux native/rclvm and native/rclvmd binaries while Windows .exe artifacts are present; native-dependent tests therefore fail in this Linux sandbox.",
+    "actions_claimed": "reference-runtime RCL authority only",
+    "github_actions_used": false
+  },
+  "non_negotiable_boundaries": [
+    "RCL unbound => effectful actions fail closed",
+    "full_access does not imply external side-effect approval",
+    "Git preview is not a commit; local commit is not push/PR/merge",
+    "model closure audit is not reality evidence"
+  ]
+}

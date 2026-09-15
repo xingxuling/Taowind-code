@@ -17,6 +17,8 @@
   "local_validation": {
     "game_manufacturing_module_node_check": "PASS",
     "game_manufacturing_isolated_tests": "15/15 PASS",
+    "server_main_node_check": "PASS",
+    "public_app_node_check": "PASS",
     "dwac_router_isolated_compatibility_tests": "7/7 PASS",
     "dwac_provider_cli_py_compile": "PASS",
     "taowind_dwac_bridge_py_compile": "PASS",
@@ -26,6 +28,11 @@
     "real_unreal_build": "NOT_RUN_ENGINE_BINARY_ABSENT",
     "github_actions": "NOT_USED"
   },
+  "bug_audit": [
+    "PR diff review exposed missing API-handler closing braces introduced during first server integration",
+    "server handler braces were repaired before merge",
+    "server/main.mjs and public/app.js then passed local node --check"
+  ],
   "hard_gates": [
     "router/provider must be READY before manufacturing mission creation",
     "generic validation must pass",

@@ -1,0 +1,43 @@
+{
+  "protocol": "taowind-code.game-forge.evidence.v0.6",
+  "status": "SOURCE_IMPLEMENTED_LOCAL_ISOLATION_VERIFIED",
+  "north_star": "A user can state a game goal, let DWAC select Godot/Unity/Unreal as external engine bodies, and only close the mission after measured primary-engine build evidence and artifact existence evidence are present.",
+  "implemented": [
+    "DWAC three-engine autonomous router",
+    "existing-project engine sovereignty lock",
+    "primary plus secondary multi-engine manufacturing semantics",
+    "DWAC provider execute CLI",
+    "Taowind Code game manufacturing gateway",
+    "Game Forge product UI and APIs",
+    "DWAC AAA Game Factory bridge for game-tagged missions",
+    "machine-readable game manufacturing contract",
+    "non-compensatory primary-engine build evidence gate",
+    "game-aware goal closure assessor"
+  ],
+  "local_validation": {
+    "game_manufacturing_module_node_check": "PASS",
+    "game_manufacturing_isolated_tests": "15/15 PASS",
+    "dwac_router_isolated_compatibility_tests": "7/7 PASS",
+    "dwac_provider_cli_py_compile": "PASS",
+    "taowind_dwac_bridge_py_compile": "PASS",
+    "full_repository_suite": "NOT_RUN_CURRENT_SANDBOX_CANNOT_CLONE_GITHUB",
+    "real_godot_build": "NOT_RUN_ENGINE_BINARY_ABSENT",
+    "real_unity_build": "NOT_RUN_ENGINE_BINARY_ABSENT",
+    "real_unreal_build": "NOT_RUN_ENGINE_BINARY_ABSENT",
+    "github_actions": "NOT_USED"
+  },
+  "hard_gates": [
+    "router/provider must be READY before manufacturing mission creation",
+    "generic validation must pass",
+    "successful primary-engine build/export command must be observed",
+    "successful build-artifact existence check must be observed",
+    "AI goal-closure assessment cannot compensate for missing game build evidence"
+  ],
+  "truth_boundaries": [
+    "no claim that Godot, Unity and Unreal co-run inside one game runtime",
+    "secondary engines are independent prototype/benchmark/validation/platform bodies by default",
+    "no real engine build is claimed in the current sandbox",
+    "RCL/RNCS retain canonical authority; external engines are build/runtime providers",
+    "full current-repository test suite remains pending on a locally materialized current checkout"
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "name": "taowind-code",
-  "version": "0.6.0-alpha.1",
+  "version": "0.6.1-alpha.1",
   "private": true,
   "type": "module",
   "description": "Taowind Code — DWAC × Tao AI autonomous north-star agent with executable RCL authority and routed game manufacturing",

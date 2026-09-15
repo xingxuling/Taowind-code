@@ -1,0 +1,21 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://taowind.company/schemas/taowind-code-autonomous-mission-v0.1.json",
+  "title":"Taowind Code Autonomous Mission v0.1",
+  "type":"object",
+  "required":["id","rootGoal","status","cycle","config","cycles","events","evidence"],
+  "properties":{
+    "id":{"type":"string","pattern":"^mission-"},
+    "rootGoal":{"type":"string","minLength":1},
+    "nextGoal":{"type":"string"},
+    "status":{"enum":["ACTIVE","WAITING_PROVIDER","WAITING_APPROVAL","GOAL_CLOSED","BUDGET_EXHAUSTED","BLOCKED","FAILED"]},
+    "cycle":{"type":"integer","minimum":0},
+    "currentRunId":{"type":["string","null"]},
+    "config":{"type":"object","required":["maxCycles","maxRepairs","closureThreshold","autoCommit"]},
+    "cycles":{"type":"array"},
+    "events":{"type":"array"},
+    "evidence":{"type":"array"},
+    "closure":{"type":["object","null"]},
+    "blocker":{"type":["string","null"]}
+  }
+}

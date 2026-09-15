@@ -1,0 +1,27 @@
+{
+  "protocol": "taowind-code.local-test-receipt.v0.2",
+  "command": "npm run check",
+  "result": "PASS",
+  "tests": 13,
+  "passed": 13,
+  "failed": 0,
+  "static_checks": [
+    "server/main.mjs",
+    "public/app.js"
+  ],
+  "covered": [
+    "acceptance pass/fail and no duplicate npm gates",
+    "changeset apply/rollback",
+    "preimage conflict",
+    "postimage rollback conflict",
+    "path-scoped local Git delivery",
+    "DWAC-unbound honesty",
+    "manual run closure",
+    "repair gate honesty",
+    "lexical traversal",
+    "symlink escape",
+    "durable run evidence",
+    "terminal state guard"
+  ],
+  "claim_limit": "Local Node/Python validation only. No external Tao AI provider call, real GitHub push/PR, Electron UI screenshot, PTY, or production deployment was claimed."
+}

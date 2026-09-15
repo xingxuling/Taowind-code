@@ -1,0 +1,54 @@
+{
+  "protocol": "dwac.north-star-self-development.v0.1",
+  "cycle_id": "NSC-349242175237fe31e46d",
+  "selected": {
+    "candidate_id": "transactional-workspace",
+    "domain": "editing",
+    "problem": "revision-bound changesets with SHA256 preimages, atomic writes, rollback conflict detection and realpath/symlink boundary",
+    "score": 0.8496,
+    "expected_goal_gain": 0.99,
+    "reuse_gain": 0.99,
+    "autonomy_gain": 0.96,
+    "evidence_gain": 0.99,
+    "implementation_cost": 0.45,
+    "regression_risk": 0.15,
+    "externally_blocked": false,
+    "evidence": [],
+    "metadata": {}
+  },
+  "mode": "DEEP_DEVELOPMENT",
+  "reason": "one high-centrality bottleneck dominates expected North Star gain; deepen it before recompiling globally",
+  "sovereignty_gate": "AUTONOMOUS",
+  "ranked_candidates": [
+    {
+      "candidate_id": "transactional-workspace",
+      "domain": "editing",
+      "problem": "revision-bound changesets with SHA256 preimages, atomic writes, rollback conflict detection and realpath/symlink boundary",
+      "score": 0.8496,
+      "expected_goal_gain": 0.99,
+      "reuse_gain": 0.99,
+      "autonomy_gain": 0.96,
+      "evidence_gain": 0.99,
+      "implementation_cost": 0.45,
+      "regression_risk": 0.15,
+      "externally_blocked": false,
+      "evidence": [],
+      "metadata": {}
+    },
+    {
+      "candidate_id": "pty",
+      "domain": "terminal",
+      "problem": "true PTY integration",
+      "score": 0.443,
+      "expected_goal_gain": 0.52,
+      "reuse_gain": 0.62,
+      "autonomy_gain": 0.55,
+      "evidence_gain": 0.58,
+      "implementation_cost": 0.75,
+      "regression_risk": 0.3,
+      "externally_blocked": false,
+      "evidence": [],
+      "metadata": {}
+    }
+  ]
+}

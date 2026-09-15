@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {safePath} from '../core/path-boundary.mjs';
+function tmp(){return fs.mkdtempSync(path.join(os.tmpdir(),'twc-path-'))}
+test('blocks lexical traversal',()=>{const root=tmp();assert.throws(()=>safePath(root,'../escape.txt'),/WORKSPACE_BOUNDARY/)});
+test('blocks symlink escape for existing and future child',t=>{if(process.platform==='win32')return t.skip('symlink permission is environment-specific on Windows');const base=tmp(),root=path.join(base,'root'),outside=path.join(base,'outside');fs.mkdirSync(root);fs.mkdirSync(outside);fs.writeFileSync(path.join(outside,'secret.txt'),'x');fs.symlinkSync(outside,path.join(root,'link'),'dir');assert.throws(()=>safePath(root,'link/secret.txt'),/WORKSPACE_SYMLINK_ESCAPE/);assert.throws(()=>safePath(root,'link/new.txt'),/WORKSPACE_SYMLINK_ESCAPE/)});

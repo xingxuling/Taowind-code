@@ -1,0 +1,13 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://taowind.company/schemas/taowind-code-changeset-v0.2.json",
+  "title":"Taowind Code Transactional Changeset v0.2",
+  "type":"object",
+  "required":["id","runId","status","changes"],
+  "properties":{
+    "id":{"type":"string","pattern":"^cs-"},
+    "runId":{"type":"string","pattern":"^run-"},
+    "status":{"enum":["STAGED","APPLIED","ROLLED_BACK"]},
+    "changes":{"type":"array","maxItems":128,"items":{"type":"object","required":["op","path","before","after"],"properties":{"op":{"enum":["write","delete"]},"path":{"type":"string"},"before":{"type":"object"},"after":{"type":"object"}}}}
+  }
+}

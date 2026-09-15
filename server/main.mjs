@@ -10,8 +10,9 @@ import {providerStatus} from '../core/providers.mjs';
 import {BrowserKnowledgeOrgan} from '../core/browser-organ.mjs';
 import {NorthStarRunner} from '../core/north-star-runner.mjs';
 import {AutonomousGoalSupervisor} from '../core/autonomous-supervisor.mjs';
+import {requestGoalAssessment} from '../core/tao-ai-adapter.mjs';
 import {RclAuthorityGate} from '../core/rcl-authority.mjs';
-import {GameManufacturingGateway} from '../core/game-manufacturing.mjs';
+import {GameManufacturingGateway,createGameAwareGoalAssessor} from '../core/game-manufacturing.mjs';
 
 const VERSION='0.6.0-alpha.1';
 const here=path.dirname(fileURLToPath(import.meta.url));const root=path.resolve(here,'..');
@@ -19,7 +20,7 @@ const workspace=path.resolve(process.env.TAOWIND_WORKSPACE||path.join(root,'exam
 const runtimeDir=path.join(root,'runtime-data');const service=new WorkspaceService(workspace);const tasks=new TaskStore(runtimeDir);const browserOrgan=new BrowserKnowledgeOrgan(runtimeDir);const gameGateway=new GameManufacturingGateway();let approvalMode='workspace';
 const authorityGate=new RclAuthorityGate({policyPath:path.join(root,'contracts','approval-policy.rcl'),runtimeDir,rclRoot:process.env.TAOWIND_RCL_ROOT});
 const runner=new NorthStarRunner({workspace,runtimeDir,taskStore:tasks,authorityGate});
-const supervisor=new AutonomousGoalSupervisor({runner,runtimeDir,authorityGate});
+const supervisor=new AutonomousGoalSupervisor({runner,runtimeDir,authorityGate,assessGoal:createGameAwareGoalAssessor(requestGoalAssessment)});
 supervisor.startScheduler({getApprovalMode:()=>approvalMode,intervalMs:Number(process.env.TAOWIND_AUTONOMY_INTERVAL_MS||2500)});
 const mime={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.json':'application/json; charset=utf-8'};
 function send(res,code,data,headers={}){res.writeHead(code,{'content-type':'application/json; charset=utf-8',...headers});res.end(JSON.stringify(data))}
@@ -36,7 +37,7 @@ async function autoAdvance(run,maxRepairs=2){
   return run;
 }
 const api=async(req,res,u)=>{
- if(req.method==='GET'&&u.pathname==='/api/health')return send(res,200,{ok:true,product:'Taowind Code',version:VERSION,workspace,approvalMode,providers:providerStatus(),gameForge:gameGateway.status(workspace),authority:authorityGate.status(),northStar:'goal → autonomous mission → DWAC → optional game-engine routing → RCL authority → changeset → validation → repair → closure audit → next cycle → evidence'});
+ if(req.method==='GET'&&u.pathname==='/api/health')return send(res,200,{ok:true,product:'Taowind Code',version:VERSION,workspace,approvalMode,providers:providerStatus(),gameForge:gameGateway.status(workspace),authority:authorityGate.status(),northStar:'goal → autonomous mission → DWAC → optional game-engine routing → RCL authority → changeset → validation → repair → non-compensatory closure audit → next cycle → evidence'});
  if(req.method==='GET'&&u.pathname==='/api/authority')return send(res,200,{approvalMode,...authorityGate.status()});
  if(req.method==='POST'&&u.pathname==='/api/authority/check'){const b=await body(req);return send(res,200,{receipt:await authorityGate.decide(b.action,{approvalMode,workspace,workspaceBoundary:b.workspaceBoundary!==false,explicitApproval:b.explicitApproval===true,metadata:{source:'api-authority-check'}})});}
  if(req.method==='GET'&&u.pathname==='/api/tree')return send(res,200,{workspace,tree:service.tree('.')});

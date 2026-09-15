@@ -1,10 +1,89 @@
 reality TaowindCodeApprovalPolicy {
   facet workspace.boundary : Truth = true
-  facet action.external_side_effect : Truth = false
-  permit read when workspace.boundary == true
-  permit workspace_write when authority.workspace_write == granted
-  permit shell_execute when authority.shell_execute == granted
-  permit git_commit when authority.git_delivery == granted
-  require explicit_approval when action.external_side_effect == true
-  evidence request_id + workspace + action + authority + result
+  facet authority.workspace_write : Truth = false
+  facet authority.shell_execute : Truth = false
+  facet authority.changeset_apply : Truth = false
+  facet authority.validation_execute : Truth = false
+  facet authority.git_delivery : Truth = false
+  facet authority.mission_advance : Truth = true
+  facet action.explicit_approval : Truth = false
+  facet decision.last : Text = "pending"
+
+  subject operator {
+    warrant workspace.write on workspace while workspace.boundary == true and authority.workspace_write == true
+    warrant shell.execute on workspace while workspace.boundary == true and authority.shell_execute == true
+    warrant changeset.apply on workspace while workspace.boundary == true and authority.changeset_apply == true
+    warrant validation.execute on workspace while workspace.boundary == true and authority.validation_execute == true
+    warrant git.commit on workspace while workspace.boundary == true and authority.git_delivery == true
+    warrant mission.advance on workspace while workspace.boundary == true and authority.mission_advance == true
+    warrant external.perform on external while action.explicit_approval == true
+  }
+
+  emergence authorize_workspace_write {
+    cause operator
+    when decision.last == "pending"
+    needs workspace.write on workspace
+    alter decision.last <- "workspace_write"
+    witness "taowind-code:rcl-authority:workspace-write"
+  }
+
+  emergence authorize_shell_execute {
+    cause operator
+    when decision.last == "pending"
+    needs shell.execute on workspace
+    alter decision.last <- "shell_execute"
+    witness "taowind-code:rcl-authority:shell-execute"
+  }
+
+  emergence authorize_changeset_apply {
+    cause operator
+    when decision.last == "pending"
+    needs changeset.apply on workspace
+    needs workspace.write on workspace
+    alter decision.last <- "changeset_apply"
+    witness "taowind-code:rcl-authority:changeset-apply"
+  }
+
+  emergence authorize_changeset_rollback {
+    cause operator
+    when decision.last == "pending"
+    needs changeset.apply on workspace
+    needs workspace.write on workspace
+    alter decision.last <- "changeset_rollback"
+    witness "taowind-code:rcl-authority:changeset-rollback"
+  }
+
+  emergence authorize_validation_execute {
+    cause operator
+    when decision.last == "pending"
+    needs validation.execute on workspace
+    needs shell.execute on workspace
+    alter decision.last <- "validation_execute"
+    witness "taowind-code:rcl-authority:validation-execute"
+  }
+
+  emergence authorize_git_commit {
+    cause operator
+    when decision.last == "pending"
+    needs git.commit on workspace
+    needs workspace.write on workspace
+    alter decision.last <- "git_commit"
+    witness "taowind-code:rcl-authority:git-commit"
+  }
+
+  emergence authorize_mission_advance {
+    cause operator
+    when decision.last == "pending"
+    needs mission.advance on workspace
+    alter decision.last <- "mission_advance"
+    witness "taowind-code:rcl-authority:mission-advance"
+  }
+
+  emergence authorize_external_side_effect {
+    cause operator
+    when decision.last == "pending"
+    needs external.perform on external
+    alter decision.last <- "external_side_effect"
+    witness "taowind-code:rcl-authority:external-side-effect"
+  }
 }

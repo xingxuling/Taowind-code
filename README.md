@@ -1,33 +1,30 @@
-# Taowind Code v0.2.0-alpha.1
+# Taowind Code v0.3.0-alpha.1
 
 **DWAC × Tao AI · North-Star Coding Agent Workbench**
 
-Taowind Code 的目标不是“给 IDE 加一个聊天框”，而是把一个结果目标持续闭合成真实、可验证、可回滚的软件变更：
+Taowind Code 不是“IDE 里加聊天框”，而是把结果目标持续闭合为真实、可验证、可回滚的软件变更：
 
 ```text
 目标
-→ DWAC North Star 判断（Whole Artifact / Deep Development）
-→ 仓库上下文
-→ Tao AI 候选 changeset
-→ preimage / workspace gate
-→ 多文件应用
-→ Acceptance
-→ Repair
+→ DWAC North Star（Whole Artifact / Deep Development）
+→ Semantic Repo Graph
+→ 多文明 / 多 Provider 候选竞争
+→ Transactional Changeset
+→ Acceptance / Repair
 → Evidence
-→ Git delivery preview / local commit
+→ Git delivery
 ```
 
-## v0.2 新增的真实执行内核
+## v0.3：仓库语义图与联邦候选竞争
 
-- **North Star Run**：每个目标拥有持久 run、cycle、mode、event 与 evidence。
-- **DWAC 原生桥接**：调用 `NorthStarSelfDevelopmentController` + `SoftwareProductionPipelineCompiler`，不再只返回“已规划”。
-- **Transactional Changeset**：最多 128 文件；写入前绑定 SHA-256 preimage；应用前检测冲突。
-- **可证明回滚**：回滚前再次检查 postimage，避免覆盖用户在 Agent 之后的新修改。
-- **Symlink Escape 防护**：工作区边界从单纯 `path.resolve` 升级为 realpath / 最近存在祖先检查。
-- **Tao AI OpenAI-compatible Provider**：两轮上下文补取能力；输出结构化 changeset 与验证命令。
-- **自动 Acceptance / Repair**：运行真实命令；失败即进入 `REPAIR_REQUIRED`，最多执行有界修复循环。
-- **Git Evidence**：区分工作树 diff、local commit、push、PR；绝不把“准备交付”冒充“已经推送”。
-- **北极星 UI**：直接展示 mode、run status、blocker、Evidence 数与手动 Gate 操作。
+- **Semantic Repo Graph**：提取文件 symbols、imports、test 关系、入口角色和 goal relevance；上下文不再只靠文件名盲选。
+- **Goal-aware Context**：自动把相关实现文件、依赖邻居和测试邻居带入生成上下文。
+- **Federated Generation**：architecture / implementation / verifier 三种候选角色竞争，按 goal coverage、验收完整度、scope 与风险确定赢家。
+- **多 Provider**：`TAO_AI_ENDPOINTS` 可绑定多个 OpenAI-compatible 端点；单端点也可生成多角色候选。
+- **联邦 Repair**：验收失败后的 Deep Development 修复同样经过语义上下文和候选竞争。
+- **Evidence Ledger**：保存 semantic context、候选排名、winner 与 changeset lineage，不把“第一条模型输出”直接当真。
+
+v0.2 的持久 North Star Run、DWAC 原生桥接、SHA-256 preimage/postimage changeset、可证明回滚、symlink escape 防护、真实 Acceptance、Git Evidence 均继续保留。
 
 ## 运行
 
@@ -35,19 +32,19 @@ Taowind Code 的目标不是“给 IDE 加一个聊天框”，而是把一个�
 npm start
 ```
 
-默认工作区为 `examples/demo-workspace`。指定真实仓库：
+指定真实仓库：
 
 ```bash
 TAOWIND_WORKSPACE=/path/to/repo npm start
 ```
 
-绑定本地 DWAC：
+绑定 DWAC：
 
 ```bash
 TAOWIND_DWAC_ROOT=/path/to/DWAC-main npm start
 ```
 
-绑定 OpenAI-compatible Tao AI：
+绑定单一 Tao AI：
 
 ```bash
 TAO_AI_ENDPOINT=http://127.0.0.1:11434 \
@@ -56,7 +53,17 @@ TAOWIND_DWAC_ROOT=/path/to/DWAC-main \
 npm start
 ```
 
-如 Provider 需要 Key，可额外设置 `TAO_AI_API_KEY`。
+绑定多个兼容端点并扩大候选池：
+
+```bash
+TAO_AI_ENDPOINTS=http://127.0.0.1:11434,http://127.0.0.1:8000 \
+TAO_AI_CANDIDATE_COUNT=6 \
+TAO_AI_MODEL=qwen3-coder \
+TAOWIND_DWAC_ROOT=/path/to/DWAC-main \
+npm start
+```
+
+如 Provider 需要 Key，设置 `TAO_AI_API_KEY`。
 
 ## 验证
 
@@ -65,19 +72,21 @@ npm test
 npm run check
 ```
 
-v0.2 的本地 Gate 覆盖：changeset apply/rollback、preimage/postimage conflict、symlink escape、run durability、validation fail-fast、DWAC 未绑定时的诚实阻断、手工 changeset 的 apply→validate→rollback 闭环。
+本轮新增 targeted Gate 覆盖：语义 import/test 图、目标相关上下文、路径越界/构建输出拒绝、候选联邦确定性选择。上传本轮时未使用 GitHub Actions。
 
 ## 权限边界
 
 - `read_only`：禁止写文件、执行命令、应用 changeset。
 - `workspace`：允许工作区内写入、测试与 Repair；禁止危险系统命令。
-- `full_access`：额外允许本地 Git commit 等高影响操作；**push / PR 不在本地 runtime 中伪装完成**。
+- `full_access`：额外允许本地 Git commit 等高影响操作。
+- push / PR / merge 仍属于明确外部副作用；本地 runtime 不把 preview / local commit 冒充远端完成。
 
 ## 当前真实边界
 
-- Tao AI 自动代码生成依赖外部或本地模型 Provider；未绑定时 run 停在 `WAITING_PROVIDER`。
-- Terminal 仍是 bounded command execution，不是完整 PTY；TaoOS PTY/VT 仍是下一器官。
-- GitHub push / PR / merge 属于外部副作用，当前本地产品只做可审计的 delivery preview / local commit；平台连接器可在授权后承担远端交付。
-- Web 预览仍以 URL / 本地端口为主，Tao Browser DOM/Network 深层回传继续器官化。
+- Semantic Repo Graph 当前是轻量、可检查的语言无关图，不等于完整 AST/LSP。
+- Tao AI 自动代码生成依赖已绑定的本地/外部 Provider；未绑定时停在 `WAITING_PROVIDER`。
+- Terminal 仍是 bounded command execution，不是完整 PTY。
+- Tao Browser DOM/Network/screenshot 尚未成为非补偿性 acceptance。
+- 远端 GitHub branch / PR / merge 的 RCL 授权与 receipt 是下一轮器官。
 
-详见 `docs/NORTH_STAR_EXECUTION_KERNEL_v0.2.md` 与 `evidence/`。
+详见 `docs/NORTH_STAR_FEDERATED_CONTEXT_v0.3.md` 与 `evidence/dwac-north-star-v0.3.json`。

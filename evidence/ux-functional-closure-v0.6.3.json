@@ -1,6 +1,6 @@
 {
   "protocol": "taowind-code.ux-functional-closure.v0.6.3",
-  "status": "IMPLEMENTATION_IN_PROGRESS",
+  "status": "SOURCE_IMPLEMENTED_LOCAL_FOCUSED_VERIFIED",
   "dwac_manual_mode_sequence": [
     "NORTH_STAR",
     "WHOLE_ARTIFACT",
@@ -19,8 +19,23 @@
     "quality_reinvestment_units": 752,
     "candidate_iterations_per_asset": 94,
     "quantity_saturated": true,
-    "saturation_ratio": 100.0
+    "saturation_ratio": 100.0,
+    "claim_ceiling": "AAA_TECHNICAL_VISUAL_QUALITY_OPTIMIZATION_READY"
   },
+  "implemented": [
+    "goal-first command surface with one primary action",
+    "shared persistent Agent/Game goal state",
+    "explicit mission next-action state machine",
+    "real delivery action before Git navigation",
+    "editor dirty state and Ctrl/Cmd+S",
+    "Ctrl/Cmd+K and Ctrl/Cmd+Enter primary keyboard paths",
+    "Game Forge self-contained goal-route-manufacture flow",
+    "Preview open/reload/external-open flow",
+    "Git delivery preview",
+    "Required Core versus Optional Accelerator setup semantics",
+    "copyable redacted diagnostics",
+    "desktop/tablet/mobile responsive visual system"
+  ],
   "acceptance_focus": [
     "no dead controls",
     "cross-view goal continuity",
@@ -30,5 +45,20 @@
     "real API feedback",
     "failure-visible next steps"
   ],
-  "github_actions": "NOT_USED"
+  "validation": {
+    "frontend_node_check": "PASS",
+    "ui_contract_tests": "12/12 PASS",
+    "dwac_four_phase_orchestration": "PASS",
+    "server_change_scope": "VERSION_ONLY_RELATIVE_TO_PREVIOUS_VALIDATED_RUNTIME",
+    "full_repository_suite": "NOT_RUN_CURRENT_SANDBOX_CANNOT_CLONE_GITHUB",
+    "windows_portable_click_regression": "PENDING_AFTER_MERGE",
+    "github_actions": "NOT_USED"
+  },
+  "truth_boundaries": [
+    "Four phases were manually orchestrated; only WHOLE_ARTIFACT and DEEP_DEVELOPMENT are native DevelopmentMode enum values in the inspected DWAC runtime.",
+    "Focused UI contract tests do not substitute for a real Windows click-through regression.",
+    "Game Router bound does not imply Godot, Unity or Unreal binaries are installed.",
+    "External AI remains optional for core readiness, but capability-specific complex code synthesis may still require an external provider until DWAC native organs close that gap.",
+    "No GitHub Actions were used."
+  ]
 }

@@ -7,82 +7,168 @@
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/north-star.css" />
   <link rel="stylesheet" href="/game-forge.css" />
-  <link rel="stylesheet" href="/ux-v061.css" />
+  <link rel="stylesheet" href="/ux-v063.css" />
 </head>
 <body>
-<div class="app-v061">
-  <header class="top-v061">
-    <div class="brand-v061"><div class="brandmark-v061">◉</div><div><strong>Taowind Code</strong><small>v0.6.2 · DWAC Core × RCL</small></div></div>
-    <div class="project-pill"><span id="workspaceName">Workspace</span><small id="statusWorkspace">loading…</small></div>
-    <div class="top-spacer"></div>
-    <div class="health-cluster">
-      <button id="providerHealthBtn" class="health-pill"><i id="providerDot"></i><span id="statusProviders">Core</span></button>
-      <span id="statusGameForge" class="health-pill passive">Game Router · checking</span>
-    </div>
-    <button id="newTaskBtn" class="btn primary">＋ 新任务</button>
+<div class="app-v063">
+  <header class="topbar-v063">
+    <button id="brandHomeBtn" class="brand-v063" aria-label="返回 Agent">
+      <span class="brandmark-v063">◎</span>
+      <span><strong>Taowind Code</strong><small>v0.6.3 · DWAC Core × RCL</small></span>
+    </button>
+    <button id="workspaceBtn" class="workspace-pill-v063" title="查看运行器与工作区">
+      <span id="workspaceName">Workspace</span>
+      <small id="statusWorkspace">loading…</small>
+    </button>
+    <button id="commandFocusBtn" class="command-pill-v063" title="Ctrl/Cmd + K">
+      <span>⌘</span><span>告诉 Taowind 你要交付什么</span><kbd>⌘ K</kbd>
+    </button>
+    <div class="topbar-spacer"></div>
+    <button id="providerHealthBtn" class="core-pill-v063"><i id="providerDot"></i><span id="statusProviders">Core · checking</span></button>
+    <button id="newTaskBtn" class="btn-v063 primary">＋ 新目标</button>
   </header>
 
-  <aside class="nav-v061">
-    <button class="nav-v061-item active" data-view="agent"><span>◈</span><b>Agent</b></button>
-    <button class="nav-v061-item" data-view="code"><span>⌘</span><b>Code</b></button>
-    <button class="nav-v061-item" data-view="preview"><span>◎</span><b>Preview</b></button>
-    <button class="nav-v061-item" data-view="game"><span>🎮</span><b>Game</b></button>
-    <button class="nav-v061-item" data-view="git"><span>⑂</span><b>Git</b></button>
-    <button class="nav-v061-item" data-view="setup"><span>⚙</span><b>Setup</b></button>
+  <aside class="sidebar-v063" aria-label="主导航">
+    <button class="nav-v063 active" data-view="agent" title="Agent"><span>◈</span><b>Agent</b></button>
+    <button class="nav-v063" data-view="code" title="Code"><span>⌘</span><b>Code</b></button>
+    <button class="nav-v063" data-view="preview" title="Preview"><span>◎</span><b>Preview</b></button>
+    <button class="nav-v063" data-view="game" title="Game Forge"><span>🎮</span><b>Game</b></button>
+    <button class="nav-v063" data-view="git" title="Git / Delivery"><span>⑂</span><b>Git</b></button>
+    <button class="nav-v063" data-view="setup" title="Setup"><span>⚙</span><b>Setup</b></button>
   </aside>
 
-  <main class="main-v061">
-    <section id="providerBanner" class="provider-banner hidden">
-      <div><b>核心运行时还没接齐</b><span id="providerBannerText">DWAC Core 与 RCL Authority 是必需核心；外部 AI 只是可选加速器。</span></div>
-      <button class="btn" data-open-view="setup">去配置</button>
+  <main class="main-v063">
+    <section id="providerBanner" class="provider-banner-v063 hidden">
+      <div><b>核心运行时还没准备好</b><span id="providerBannerText">DWAC Core 与 RCL Authority 是必需核心。</span></div>
+      <button class="btn-v063" data-open-view="setup">查看原因</button>
     </section>
 
-    <section class="view-v061 active" data-view-panel="agent">
-      <div class="agent-layout-v061">
-        <div class="agent-main-v061">
-          <div class="view-head"><div><h1>把结果目标交给 Taowind</h1><p>DWAC 负责认知、规划与变更合成；RCL 负责真实副作用授权。外部模型只在需要时作为可选加速器。</p></div><select id="approvalMode" class="select-v061"><option value="read_only">只读</option><option value="workspace" selected>工作区</option><option value="full_access">完全访问</option></select></div>
-          <div id="conversation" class="conversation-v061"><div class="message-v061 agent"><div class="avatar-v061">DW</div><div class="bubble-v061"><b>DWAC Core 已作为主脑入口。</b><p>给我一个结果目标。我会优先走 DWAC 原生认知；外部 AI 未连接不会再被当作系统缺失。</p></div></div></div>
-          <div class="composer-v061">
-            <textarea id="prompt" rows="4" placeholder="例如：把这个产品的登录流程做成可真实使用的版本，修到测试通过并给我交付结果。"></textarea>
-            <div class="composer-bottom-v061"><div class="mode-hint"><span>Autonomous</span><span>Whole Artifact</span><span>Deep Development</span></div><div class="composer-actions-v061"><button id="singleRunBtn" class="btn">单轮</button><button id="gameForgeBtn" class="btn">游戏制造</button><button id="planBtn" class="btn primary">启动自主任务 ↑</button></div></div>
+    <section class="view-v063 active" data-view-panel="agent">
+      <div class="agent-grid-v063">
+        <section class="agent-primary-v063">
+          <div class="section-kicker">GOAL → ARTIFACT → EVIDENCE</div>
+          <div class="agent-heading-v063">
+            <div><h1>你要交付什么？</h1><p>描述结果，不用先决定怎么做。DWAC 会选择全工件/深度开发并持续闭合。</p></div>
+            <select id="approvalMode" class="select-v063" aria-label="权限模式">
+              <option value="read_only">只读</option>
+              <option value="workspace" selected>工作区</option>
+              <option value="full_access">完全访问</option>
+            </select>
           </div>
-        </div>
-        <aside class="agent-side-v061">
-          <div class="card-v061"><div class="card-title"><b>当前任务</b><span id="statusNorthStar">idle</span></div><div id="missionStrip" class="mission-v061 empty"><strong id="missionStatus">尚未启动</strong><small id="missionMeta">等待目标</small><p id="missionGoal"></p><p id="missionBlocker" class="danger-text"></p><div class="row-actions"><button id="resumeMission" class="btn small" disabled>恢复</button><button id="tickMission" class="btn small" disabled>推进一轮</button></div></div><div id="runStrip" class="run-v061 empty"><div><span class="mode-pill">IDLE</span><b id="runStatus">等待子运行</b></div><small id="runMeta"></small><p id="runBlocker"></p></div></div>
-          <div class="card-v061"><div class="card-title"><b>执行节点</b><span id="taskSummary">等待目标</span></div><div id="taskList" class="task-list-v061"><div class="empty-state">还没有任务</div></div><div class="row-actions wrap"><button id="synthesizeRun" class="btn small">生成变更</button><button id="applyRun" class="btn small">应用</button><button id="validateRun" class="btn small">验收</button><button id="repairRun" class="btn small">修复</button><button id="deliveryRun" class="btn small">交付</button><button id="rollbackRun" class="btn small danger">回滚</button></div><small id="evidenceCount">0 evidence</small></div>
+
+          <div id="conversation" class="conversation-v063">
+            <div class="message-v063 agent">
+              <div class="avatar-v063">DW</div>
+              <div class="bubble-v063"><b>可以开始。</b><p>给我一个结果目标。核心缺失、能力不足或证据不够，我都会明确告诉你卡在哪里和下一步是什么。</p></div>
+            </div>
+          </div>
+
+          <div class="goal-composer-v063" id="goalComposer">
+            <textarea id="prompt" rows="4" placeholder="例如：把这个产品的登录流程做成可真实使用的版本，修到测试通过并给我交付结果。"></textarea>
+            <div class="quick-intents-v063" aria-label="快速目标">
+              <button data-goal-template="修掉当前最影响真实使用的 Bug，并验证完整用户路径。">修 Bug</button>
+              <button data-goal-template="把当前 UI/UX 做到可以给真实用户长期使用，并验证关键交互。">干穿 UI/UX</button>
+              <button data-goal-template="把当前功能链从输入到交付完整闭合，缺口全部补齐。">闭合功能链</button>
+              <button data-goal-template="做一款可真实运行的游戏，自己选择引擎并完成构建验证。">制造游戏</button>
+            </div>
+            <div class="goal-actions-v063">
+              <div class="mode-switch-v063" role="radiogroup" aria-label="执行方式">
+                <button class="active" data-action-mode="mission">自主闭环</button>
+                <button data-action-mode="single">单轮</button>
+                <button data-action-mode="game">游戏制造</button>
+              </div>
+              <div class="shortcut-hint">⌘↵ 执行</div>
+              <button id="primaryGoalAction" class="btn-v063 primary wide">启动自主任务 ↑</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="agent-rail-v063">
+          <section class="rail-card-v063 status-card-v063">
+            <div class="rail-title"><b>当前任务</b><span id="statusNorthStar">idle</span></div>
+            <div id="missionStrip" class="mission-v063 empty">
+              <strong id="missionStatus">尚未启动</strong>
+              <small id="missionMeta">等待目标</small>
+              <p id="missionGoal"></p>
+              <p id="missionBlocker" class="danger-text"></p>
+              <div class="row-actions-v063"><button id="resumeMission" class="btn-v063 small" disabled>恢复</button><button id="tickMission" class="btn-v063 small" disabled>推进一轮</button></div>
+            </div>
+            <div id="runStrip" class="run-v063 empty">
+              <div><span class="mode-pill">IDLE</span><b id="runStatus">等待子运行</b></div>
+              <small id="runMeta"></small><p id="runBlocker"></p>
+            </div>
+          </section>
+
+          <section class="rail-card-v063">
+            <div class="rail-title"><b>下一步</b><span id="nextActionStatus">等待目标</span></div>
+            <div id="nextActionCard" class="next-action-v063"><b>先给一个结果目标</b><span>Taowind 会在每个状态只给你一个最重要的下一步。</span></div>
+            <button id="nextActionBtn" class="btn-v063 full" disabled>等待</button>
+          </section>
+
+          <section class="rail-card-v063">
+            <div class="rail-title"><b>执行节点</b><span id="taskSummary">0</span></div>
+            <div id="taskList" class="task-list-v063"><div class="empty-state-v063 compact">还没有执行节点</div></div>
+            <div class="run-tools-v063">
+              <button id="synthesizeRun" class="btn-v063 tiny">生成变更</button>
+              <button id="applyRun" class="btn-v063 tiny">应用</button>
+              <button id="validateRun" class="btn-v063 tiny">验收</button>
+              <button id="repairRun" class="btn-v063 tiny">修复</button>
+              <button id="deliveryRun" class="btn-v063 tiny">交付</button>
+              <button id="rollbackRun" class="btn-v063 tiny danger">回滚</button>
+            </div>
+            <small id="evidenceCount">0 evidence</small>
+          </section>
         </aside>
       </div>
     </section>
 
-    <section class="view-v061" data-view-panel="code">
-      <div class="view-head"><div><h1>代码工作区</h1><p>文件、编辑器和终端只在这里出现，不再挤在 Agent 首屏。</p></div><div class="row-actions"><button id="refreshBtn" class="btn">刷新</button><button id="saveBtn" class="btn primary">保存</button></div></div>
-      <div class="code-layout-v061"><aside class="file-panel-v061"><div class="panel-label">项目文件</div><div id="fileTree" class="file-tree-v061"></div></aside><section class="editor-v061"><div class="editor-tab-v061"><span id="activeTab">README.md</span></div><div class="editor-body-v061"><div id="lineNumbers" class="line-numbers-v061">1</div><textarea id="codeEditor" spellcheck="false"></textarea></div></section></div>
-      <div class="terminal-v061"><div class="terminal-head-v061"><b>终端</b><span id="terminalStatus">RCL-gated workspace shell</span></div><pre id="terminalOutput">Taowind terminal ready. 命令执行前会经过权限门。</pre><div class="terminal-input-v061"><span>$</span><input id="terminalCommand" placeholder="npm test" /><button id="terminalRun" class="btn primary">运行</button></div></div>
+    <section class="view-v063" data-view-panel="code">
+      <div class="view-head-v063"><div><span class="section-kicker">WORKSPACE</span><h1>代码</h1><p>文件、编辑器、终端放在一个连续工作面里。</p></div><div class="head-actions-v063"><span id="dirtyState" class="dirty-state">已保存</span><button id="refreshBtn" class="btn-v063">刷新</button><button id="saveBtn" class="btn-v063 primary">保存 ⌘S</button></div></div>
+      <div class="code-grid-v063">
+        <aside class="file-panel-v063"><div class="panel-bar-v063"><b>项目文件</b><span id="fileCount"></span></div><div id="fileTree" class="file-tree-v063"></div></aside>
+        <section class="editor-panel-v063"><div class="panel-bar-v063"><span id="activeTab">README.md</span><small id="editorMeta">UTF-8</small></div><div class="editor-body-v063"><div id="lineNumbers" class="line-numbers-v063">1</div><textarea id="codeEditor" spellcheck="false"></textarea></div></section>
+      </div>
+      <section class="terminal-v063"><div class="panel-bar-v063"><b>终端</b><span id="terminalStatus">RCL-gated workspace shell</span></div><pre id="terminalOutput">Taowind terminal ready. 命令执行前会经过权限门。</pre><div class="terminal-input-v063"><span>$</span><input id="terminalCommand" placeholder="npm test" /><button id="terminalRun" class="btn-v063 primary">运行 ↵</button></div></section>
     </section>
 
-    <section class="view-v061" data-view-panel="preview">
-      <div class="view-head"><div><h1>实时预览</h1><p>把真正需要观察的界面单独放大。</p></div><div class="preview-controls-v061"><input id="previewUrl" value="http://127.0.0.1:4877" /><button id="openPreview" class="btn primary">打开</button></div></div>
-      <div class="preview-v061"><iframe id="previewIframe" src="about:blank"></iframe><div id="previewPlaceholder" class="empty-state big"><b>还没有打开预览</b><span>输入本地 URL 后点击“打开”。</span></div></div>
+    <section class="view-v063" data-view-panel="preview">
+      <div class="view-head-v063"><div><span class="section-kicker">OBSERVE</span><h1>实时预览</h1><p>把真实界面放大观察，而不是用截图代替验收。</p></div><div class="head-actions-v063"><button id="reloadPreview" class="btn-v063">刷新预览</button><button id="openPreviewExternal" class="btn-v063">浏览器打开</button></div></div>
+      <div class="preview-toolbar-v063"><input id="previewUrl" value="http://127.0.0.1:4877" /><button id="openPreview" class="btn-v063 primary">打开</button><span id="previewStatus">未打开</span></div>
+      <div class="preview-v063"><iframe id="previewIframe" src="about:blank" title="实时预览"></iframe><div id="previewPlaceholder" class="empty-state-v063 big"><b>还没有打开预览</b><span>输入本地 URL，然后点击“打开”。</span></div></div>
     </section>
 
-    <section class="view-v061" data-view-panel="game">
-      <div class="view-head"><div><h1>Game Forge</h1><p>给目标即可，DWAC 决定 Godot / Unity / Unreal；已有工程不会被静默迁移。</p></div><span id="gameForgeStatus" class="status-chip">检查中</span></div>
-      <div class="game-grid-v061"><div class="card-v061"><label>目标平台<select id="gameTarget" class="select-v061"><option value="">自动判断</option><option value="android">Android</option><option value="ios">iOS</option><option value="web">Web</option><option value="win64">Windows</option><option value="linux">Linux</option><option value="xr">XR</option></select></label><label>额外要求<input id="gameRequirements" class="input-v061" placeholder="例如：跨平台、AAA、XR" /></label><div class="row-actions"><button id="gameRouteBtn" class="btn">只判断引擎</button><button id="gameManufactureFromView" class="btn primary">开始制造</button></div></div><div id="engineRouteSummary" class="card-v061"><div class="empty-state"><b>等待游戏目标</b><span>目标仍从 Agent 输入框读取。先回 Agent 写目标，再回来判断或制造。</span></div></div></div>
+    <section class="view-v063" data-view-panel="game">
+      <div class="view-head-v063"><div><span class="section-kicker">GAME FORGE</span><h1>游戏制造</h1><p>目标、路由、制造都在这一页完成；不会再要求你回 Agent 复制目标。</p></div><span id="gameForgeStatus" class="status-chip-v063">检查中</span></div>
+      <div class="game-layout-v063">
+        <section class="game-brief-v063">
+          <label>游戏目标<textarea id="gameGoal" rows="6" placeholder="例如：第三人称开放世界动作游戏，Windows 优先，写实画面，支持手柄。"></textarea></label>
+          <div class="two-col-v063"><label>目标平台<select id="gameTarget" class="select-v063"><option value="">自动判断</option><option value="android">Android</option><option value="ios">iOS</option><option value="web">Web</option><option value="win64">Windows</option><option value="linux">Linux</option><option value="xr">XR</option></select></label><label>额外要求<input id="gameRequirements" class="input-v063" placeholder="跨平台, AAA, XR" /></label></div>
+          <div class="row-actions-v063"><button id="gameRouteBtn" class="btn-v063">只判断引擎</button><button id="gameManufactureFromView" class="btn-v063 primary">开始制造</button></div>
+          <small class="truth-note">Game Router 已绑定 ≠ 引擎已安装。真正制造前仍会探测 Godot / Unity / Unreal CLI。</small>
+        </section>
+        <section id="engineRouteSummary" class="engine-route-v063"><div class="empty-state-v063 big"><b>等待游戏目标</b><span>先写目标，再让 DWAC 做真实引擎路由。</span></div></section>
+      </div>
     </section>
 
-    <section class="view-v061" data-view-panel="git">
-      <div class="view-head"><div><h1>Git / 交付</h1><p>只显示真正与版本控制和交付有关的信息。</p></div><button id="gitRefresh" class="btn">刷新</button></div>
-      <div class="git-layout-v061"><div class="card-v061"><div class="card-title"><b id="gitBranch">branch —</b><span id="gitState">Git 未读取</span></div><p>当前工作区状态</p></div><div class="card-v061 git-diff-card"><div class="card-title"><b>Diff</b></div><pre id="gitDiff">Diff 会显示在这里</pre></div></div>
+    <section class="view-v063" data-view-panel="git">
+      <div class="view-head-v063"><div><span class="section-kicker">DELIVERY</span><h1>Git / 交付</h1><p>把“代码改了”和“可以交付”分开看。</p></div><button id="gitRefresh" class="btn-v063">刷新</button></div>
+      <div class="git-grid-v063">
+        <section class="git-summary-v063"><div class="rail-title"><b id="gitBranch">branch —</b><span id="gitState">未读取</span></div><div id="gitDelivery" class="delivery-preview-v063">正在读取交付状态…</div></section>
+        <section class="git-diff-v063"><div class="panel-bar-v063"><b>当前 Diff</b><span>只显示工作区真实变化</span></div><pre id="gitDiff">Diff 会显示在这里</pre></section>
+      </div>
     </section>
 
-    <section class="view-v061" data-view-panel="setup">
-      <div class="view-head"><div><h1>运行器设置</h1><p>核心只要求 DWAC + RCL。其他 Provider 都是增强器，不应阻止基础运行。</p></div><button id="refreshSetupBtn" class="btn">重新检测</button></div>
-      <div id="setupSummary" class="setup-summary-v061"></div>
-      <div class="setup-help-v061"><div class="card-v061"><b>DWAC Core</b><p>需要设置 <code>TAOWIND_DWAC_ROOT</code>，目录内应包含 <code>structural_generation</code> 与 <code>natural_conversation_runtime.py</code>；Game Forge 还会复用 <code>scripts/dwac_game_engine_route.py</code>。</p></div><div class="card-v061"><b>RCL Authority</b><p>需要设置 <code>TAOWIND_RCL_ROOT</code>，目录内应包含 <code>src/index.mjs</code>。它负责写文件、终端、changeset、验收与提交的权威门。</p></div><div class="card-v061"><b>External AI Accelerator（可选外部 AI 加速器）</b><p>不是必需脑。需要时可在运行包 <code>config.json</code> 填写 <code>aiEndpoint</code> 和 <code>aiModel</code>；它会被 DWAC 当作可替换语言/代码 Provider 使用。</p></div></div>
+    <section class="view-v063" data-view-panel="setup">
+      <div class="view-head-v063"><div><span class="section-kicker">RUNTIME</span><h1>运行器与诊断</h1><p>Required Core 和 Optional Accelerator 分开显示，避免把可选能力误判成系统故障。</p></div><div class="head-actions-v063"><button id="copyDiagnosticsBtn" class="btn-v063">复制诊断</button><button id="refreshSetupBtn" class="btn-v063 primary">重新检测</button></div></div>
+      <div class="setup-columns-v063">
+        <section><div class="setup-heading-v063"><b>Required Core</b><span>必须 2/2</span></div><div id="setupCore" class="setup-grid-v063"></div></section>
+        <section><div class="setup-heading-v063"><b>Optional Accelerators</b><span>缺失不阻止核心运行</span></div><div id="setupOptional" class="setup-grid-v063"></div></section>
+      </div>
+      <section class="diagnostic-v063"><div class="panel-bar-v063"><b>诊断摘要</b><span>不包含 API Key</span></div><pre id="diagnosticOutput">等待检测…</pre></section>
     </section>
   </main>
 
-  <div id="toast" class="toast-v061"></div>
+  <div id="toast" class="toast-v063"></div>
 </div>
 <script type="module" src="/app.js"></script>
 </body>

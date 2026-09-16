@@ -1,9 +1,9 @@
 {
   "name": "taowind-code",
-  "version": "0.6.1-alpha.1",
+  "version": "0.6.2-alpha.1",
   "private": true,
   "type": "module",
-  "description": "Taowind Code — DWAC × Tao AI autonomous north-star agent with executable RCL authority and routed game manufacturing",
+  "description": "Taowind Code — DWAC-core autonomous north-star agent with executable RCL authority, optional external AI acceleration and routed game manufacturing",
   "scripts": {
     "start": "node server/main.mjs",
     "dev": "node server/main.mjs",
@@ -11,6 +11,7 @@
     "check": "node --check server/main.mjs && node --check public/app.js && node --test tests/*.test.mjs",
     "test:rcl-authority": "node --test tests/rcl-authority-gate.test.mjs",
     "test:game-forge": "node --test tests/game-manufacturing.test.mjs",
+    "test:dwac-cognition": "node --test tests/dwac-cognition.test.mjs",
     "desktop": "electron desktop/main.mjs"
   },
   "optionalDependencies": {

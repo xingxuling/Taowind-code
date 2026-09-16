@@ -12,12 +12,12 @@
 <body>
 <div class="app-v061">
   <header class="top-v061">
-    <div class="brand-v061"><div class="brandmark-v061">◉</div><div><strong>Taowind Code</strong><small>v0.6.1 · DWAC × Tao AI × RCL</small></div></div>
+    <div class="brand-v061"><div class="brandmark-v061">◉</div><div><strong>Taowind Code</strong><small>v0.6.2 · DWAC Core × RCL</small></div></div>
     <div class="project-pill"><span id="workspaceName">Workspace</span><small id="statusWorkspace">loading…</small></div>
     <div class="top-spacer"></div>
     <div class="health-cluster">
-      <button id="providerHealthBtn" class="health-pill"><i id="providerDot"></i><span id="statusProviders">Providers</span></button>
-      <span id="statusGameForge" class="health-pill passive">Game Forge · checking</span>
+      <button id="providerHealthBtn" class="health-pill"><i id="providerDot"></i><span id="statusProviders">Core</span></button>
+      <span id="statusGameForge" class="health-pill passive">Game Router · checking</span>
     </div>
     <button id="newTaskBtn" class="btn primary">＋ 新任务</button>
   </header>
@@ -33,15 +33,15 @@
 
   <main class="main-v061">
     <section id="providerBanner" class="provider-banner hidden">
-      <div><b>运行器还没接齐</b><span id="providerBannerText">DWAC / RCL / Tao AI 未绑定时，写入、终端和自主任务会按失败关闭原则阻断。</span></div>
+      <div><b>核心运行时还没接齐</b><span id="providerBannerText">DWAC Core 与 RCL Authority 是必需核心；外部 AI 只是可选加速器。</span></div>
       <button class="btn" data-open-view="setup">去配置</button>
     </section>
 
     <section class="view-v061 active" data-view-panel="agent">
       <div class="agent-layout-v061">
         <div class="agent-main-v061">
-          <div class="view-head"><div><h1>把结果目标交给 Taowind</h1><p>它会规划、改代码、验证、修复，并在证据不足时明确告诉你缺什么。</p></div><select id="approvalMode" class="select-v061"><option value="read_only">只读</option><option value="workspace" selected>工作区</option><option value="full_access">完全访问</option></select></div>
-          <div id="conversation" class="conversation-v061"><div class="message-v061 agent"><div class="avatar-v061">DW</div><div class="bubble-v061"><b>可以开始。</b><p>先给我一个结果目标。如果运行器还没绑定，我会直接告诉你需要配置什么，而不是让按钮“没反应”。</p></div></div></div>
+          <div class="view-head"><div><h1>把结果目标交给 Taowind</h1><p>DWAC 负责认知、规划与变更合成；RCL 负责真实副作用授权。外部模型只在需要时作为可选加速器。</p></div><select id="approvalMode" class="select-v061"><option value="read_only">只读</option><option value="workspace" selected>工作区</option><option value="full_access">完全访问</option></select></div>
+          <div id="conversation" class="conversation-v061"><div class="message-v061 agent"><div class="avatar-v061">DW</div><div class="bubble-v061"><b>DWAC Core 已作为主脑入口。</b><p>给我一个结果目标。我会优先走 DWAC 原生认知；外部 AI 未连接不会再被当作系统缺失。</p></div></div></div>
           <div class="composer-v061">
             <textarea id="prompt" rows="4" placeholder="例如：把这个产品的登录流程做成可真实使用的版本，修到测试通过并给我交付结果。"></textarea>
             <div class="composer-bottom-v061"><div class="mode-hint"><span>Autonomous</span><span>Whole Artifact</span><span>Deep Development</span></div><div class="composer-actions-v061"><button id="singleRunBtn" class="btn">单轮</button><button id="gameForgeBtn" class="btn">游戏制造</button><button id="planBtn" class="btn primary">启动自主任务 ↑</button></div></div>
@@ -76,9 +76,9 @@
     </section>
 
     <section class="view-v061" data-view-panel="setup">
-      <div class="view-head"><div><h1>运行器设置</h1><p>先把缺的运行器接上。这里会明确显示为什么某个功能不可用。</p></div><button id="refreshSetupBtn" class="btn">重新检测</button></div>
+      <div class="view-head"><div><h1>运行器设置</h1><p>核心只要求 DWAC + RCL。其他 Provider 都是增强器，不应阻止基础运行。</p></div><button id="refreshSetupBtn" class="btn">重新检测</button></div>
       <div id="setupSummary" class="setup-summary-v061"></div>
-      <div class="setup-help-v061"><div class="card-v061"><b>DWAC</b><p>需要设置 <code>TAOWIND_DWAC_ROOT</code>，目录内应包含 <code>structural_generation</code>；Game Forge 还需要 <code>scripts/dwac_game_engine_route.py</code>。</p></div><div class="card-v061"><b>RCL</b><p>需要设置 <code>TAOWIND_RCL_ROOT</code>，目录内应包含 <code>src/index.mjs</code>。未绑定时写文件、终端和提交会失败关闭。</p></div><div class="card-v061"><b>Tao AI</b><p>在运行包 <code>config.json</code> 中填写 <code>aiEndpoint</code> 和 <code>aiModel</code>。它可以接 OpenAI 兼容接口。</p></div></div>
+      <div class="setup-help-v061"><div class="card-v061"><b>DWAC Core</b><p>需要设置 <code>TAOWIND_DWAC_ROOT</code>，目录内应包含 <code>structural_generation</code> 与 <code>natural_conversation_runtime.py</code>；Game Forge 还会复用 <code>scripts/dwac_game_engine_route.py</code>。</p></div><div class="card-v061"><b>RCL Authority</b><p>需要设置 <code>TAOWIND_RCL_ROOT</code>，目录内应包含 <code>src/index.mjs</code>。它负责写文件、终端、changeset、验收与提交的权威门。</p></div><div class="card-v061"><b>External AI Accelerator（可选外部 AI 加速器）</b><p>不是必需脑。需要时可在运行包 <code>config.json</code> 填写 <code>aiEndpoint</code> 和 <code>aiModel</code>；它会被 DWAC 当作可替换语言/代码 Provider 使用。</p></div></div>
     </section>
   </main>
 

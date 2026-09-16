@@ -1,0 +1,37 @@
+{
+  "protocol": "taowind-code.dwac-core-cognition.evidence.v0.6.2",
+  "status": "SOURCE_IMPLEMENTED_VALIDATION_PENDING",
+  "north_star": "Taowind Code core readiness depends on DWAC Core plus RCL Authority; external language models are optional accelerators and cannot compensate for missing execution evidence.",
+  "implemented": [
+    "DWAC NaturalConversationRuntime cognition bridge",
+    "DWAC-first changeset candidate path",
+    "optional external AI accelerator federation",
+    "DWAC-native deterministic closure gate",
+    "core readiness changed from 3 providers to DWAC plus RCL",
+    "UI setup separates required core from optional accelerators",
+    "Tao AI environment variables retained only as compatibility aliases",
+    "Game Router bound state separated from real engine readiness"
+  ],
+  "hard_gates": [
+    "RCL remains required for effectful actions",
+    "validation evidence cannot be replaced by generated text",
+    "browser-required goals need real browser observation evidence",
+    "closure requires delivery evidence",
+    "unresolved native synthesis emits no fake changeset"
+  ],
+  "truth_boundaries": [
+    "No claim that DWAC native cognition can reliably generate arbitrary complex repository code without an external provider.",
+    "External AI is optional for system core readiness but may still be useful or necessary for capability-specific complex synthesis until native organs close those gaps.",
+    "DWAC native changeset generation fails closed when it cannot produce machine-parseable validated changes.",
+    "Game router availability is not equivalent to a ready installed Godot, Unity or Unreal executable.",
+    "GitHub Actions are not used for this change set."
+  ],
+  "validation": {
+    "node_syntax": "PENDING_LOCAL",
+    "python_bridge_compile": "PENDING_LOCAL",
+    "dwac_cognition_tests": "PENDING_LOCAL",
+    "ui_contract_tests": "PENDING_LOCAL",
+    "native_bridge_truthful_unresolved_without_code_provider": "PENDING_LOCAL",
+    "github_actions": "NOT_USED"
+  }
+}

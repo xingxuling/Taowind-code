@@ -14,7 +14,7 @@ import {requestGoalAssessment} from '../core/tao-ai-adapter.mjs';
 import {RclAuthorityGate} from '../core/rcl-authority.mjs';
 import {GameManufacturingGateway,createGameAwareGoalAssessor} from '../core/game-manufacturing.mjs';
 
-const VERSION='0.6.3-alpha.1';
+const VERSION='0.6.2-alpha.1';
 const here=path.dirname(fileURLToPath(import.meta.url));const root=path.resolve(here,'..');
 const workspace=path.resolve(process.env.TAOWIND_WORKSPACE||path.join(root,'examples/demo-workspace'));
 const runtimeDir=path.join(root,'runtime-data');const service=new WorkspaceService(workspace);const tasks=new TaskStore(runtimeDir);const browserOrgan=new BrowserKnowledgeOrgan(runtimeDir);const gameGateway=new GameManufacturingGateway();let approvalMode='workspace';
@@ -64,7 +64,7 @@ const api=async(req,res,u)=>{
  const mr=missionRoute(u.pathname);if(mr){
    if(req.method==='GET'&&!mr.action)return send(res,200,{mission:supervisor.get(mr.id)});
    if(req.method==='POST'&&mr.action==='tick')return send(res,200,{mission:await supervisor.tick(mr.id,{approvalMode})});
-   if(req.method==='POST'&&mr.action==='run'){const b=await body(req);return send(res,200,{mission:await supervisor.run(mr.id,{approvalMode,maxTicks:b.maxTicks||8})});
+   if(req.method==='POST'&&mr.action==='run'){const b=await body(req);return send(res,200,{mission:await supervisor.run(mr.id,{approvalMode,maxTicks:b.maxTicks||8})});}
    if(req.method==='POST'&&mr.action==='resume')return send(res,200,{mission:supervisor.resume(mr.id)});
  }
  const rr=runRoute(u.pathname);if(rr){

@@ -1,0 +1,8 @@
+{
+  "protocol": "taowind-code.server-syntax-hotfix.v0.6.3.1",
+  "trigger": "Windows portable r6 failed to boot with SyntaxError: Unexpected end of input in server/main.mjs",
+  "root_cause": "PR #11 accidentally removed the closing brace from the mission run route branch",
+  "hotfix_strategy": "Restore server/main.mjs to the previously validated v0.6.2 runtime blob, then let the portable launcher patch only the display VERSION constant to v0.6.3-alpha.1 after download.",
+  "truth_boundary": "The runtime behavior is restored to the previously validated server implementation; this hotfix does not claim new server behavior beyond the v0.6.3 UI/product changes already merged.",
+  "github_actions": "NOT_USED"
+}

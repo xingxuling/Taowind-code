@@ -1,6 +1,6 @@
 {
   "protocol": "taowind-code.ux-functional-closure.v0.6.3",
-  "status": "SOURCE_IMPLEMENTED_LOCAL_FOCUSED_VERIFIED",
+  "status": "SOURCE_IMPLEMENTED_LOCAL_FOCUSED_VERIFIED_PORTABLE_PACKAGED",
   "dwac_manual_mode_sequence": [
     "NORTH_STAR",
     "WHOLE_ARTIFACT",
@@ -51,12 +51,22 @@
     "dwac_four_phase_orchestration": "PASS",
     "server_change_scope": "VERSION_ONLY_RELATIVE_TO_PREVIOUS_VALIDATED_RUNTIME",
     "full_repository_suite": "NOT_RUN_CURRENT_SANDBOX_CANNOT_CLONE_GITHUB",
-    "windows_portable_click_regression": "PENDING_AFTER_MERGE",
+    "windows_portable_click_regression": "PENDING_USER_MACHINE",
     "github_actions": "NOT_USED"
+  },
+  "portable_handoff": {
+    "version": "0.6.3-alpha.1-r6",
+    "filename": "Taowind_Code_v0.6.3-alpha.1-r6_Windows_Portable.zip",
+    "sha256": "3e9917e389986cc07582ce36623d866624bdfdcda1b9fd46d23b617044669f8b",
+    "ascii_archive_paths": true,
+    "bundled_dwac_present": true,
+    "bundled_rcl_present": true,
+    "dwac_four_phase_evidence_embedded": true
   },
   "truth_boundaries": [
     "Four phases were manually orchestrated; only WHOLE_ARTIFACT and DEEP_DEVELOPMENT are native DevelopmentMode enum values in the inspected DWAC runtime.",
     "Focused UI contract tests do not substitute for a real Windows click-through regression.",
+    "The portable package was structurally verified in the build sandbox, but real Windows click-through remains pending on the user machine.",
     "Game Router bound does not imply Godot, Unity or Unreal binaries are installed.",
     "External AI remains optional for core readiness, but capability-specific complex code synthesis may still require an external provider until DWAC native organs close that gap.",
     "No GitHub Actions were used."

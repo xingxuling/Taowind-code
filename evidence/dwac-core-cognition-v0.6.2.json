@@ -1,6 +1,6 @@
 {
   "protocol": "taowind-code.dwac-core-cognition.evidence.v0.6.2",
-  "status": "SOURCE_IMPLEMENTED_VALIDATION_PENDING",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
   "north_star": "Taowind Code core readiness depends on DWAC Core plus RCL Authority; external language models are optional accelerators and cannot compensate for missing execution evidence.",
   "implemented": [
     "DWAC NaturalConversationRuntime cognition bridge",
@@ -10,7 +10,8 @@
     "core readiness changed from 3 providers to DWAC plus RCL",
     "UI setup separates required core from optional accelerators",
     "Tao AI environment variables retained only as compatibility aliases",
-    "Game Router bound state separated from real engine readiness"
+    "Game Router bound state separated from real engine readiness",
+    "NorthStarRunner blockers renamed from Tao AI dependency to DWAC cognition capability state"
   ],
   "hard_gates": [
     "RCL remains required for effectful actions",
@@ -24,14 +25,18 @@
     "External AI is optional for system core readiness but may still be useful or necessary for capability-specific complex synthesis until native organs close those gaps.",
     "DWAC native changeset generation fails closed when it cannot produce machine-parseable validated changes.",
     "Game router availability is not equivalent to a ready installed Godot, Unity or Unreal executable.",
+    "Focused local validation does not claim the entire repository suite was executed in the current sandbox.",
     "GitHub Actions are not used for this change set."
   ],
   "validation": {
-    "node_syntax": "PENDING_LOCAL",
-    "python_bridge_compile": "PENDING_LOCAL",
-    "dwac_cognition_tests": "PENDING_LOCAL",
-    "ui_contract_tests": "PENDING_LOCAL",
-    "native_bridge_truthful_unresolved_without_code_provider": "PENDING_LOCAL",
+    "tao_ai_adapter_node_check": "PASS",
+    "providers_node_check": "PASS",
+    "python_bridge_compile": "PASS",
+    "dwac_cognition_tests": "3/3 PASS",
+    "native_bridge_truthful_unresolved_without_code_provider": "PASS: UNRESOLVED with zero changes and DWAC_NATIVE_CHANGESET_UNRESOLVED",
+    "native_closure_hard_evidence_case": "PASS: closed=true only after validation plus delivery evidence",
+    "full_repository_suite": "NOT_RUN_CURRENT_SANDBOX_HAS_NO_GITHUB_CHECKOUT",
+    "server_and_browser_bundle_end_to_end": "PENDING_WINDOWS_PORTABLE_REGRESSION",
     "github_actions": "NOT_USED"
   }
 }

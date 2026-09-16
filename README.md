@@ -1,4 +1,4 @@
-# Taowind Code v0.6.2-alpha.1
+# Taowind Code v0.6.3-alpha.1
 
 **DWAC Core × RCL · 自主北极星代码与游戏制造 Agent**
 
@@ -18,6 +18,51 @@ Taowind Code 的目标不是“给 IDE 加一个 AI 聊天框”，而是把结�
 → Non-compensatory Closure Audit（非补偿性闭合审计）
 → 未闭合则重新观察并进入下一周期
 ```
+
+## v0.6.3：Goal-first UX 与功能闭环重编译
+
+v0.6.3 不再把 Agent、Code、Preview、Game、Git、Setup 当成六块互不相干的面板，而是统一成一条 **Goal → Artifact → Evidence（目标 → 工件 → 证据）** 的用户路径。
+
+本轮按四段人工编排推进：
+
+```text
+NORTH_STAR（北极星裁决）
+→ WHOLE_ARTIFACT（全工件）
+→ DEEP_DEVELOPMENT（深度开发）
+→ EXTREME_FULL_ARTIFACT（极端全工件质量闭合）
+```
+
+真实性边界：检查到的 DWAC 原生 `DevelopmentMode` 枚举仍只有 `WHOLE_ARTIFACT` 与 `DEEP_DEVELOPMENT`；North Star 与 Extreme Full Artifact 在本轮属于外层人工编排 / 验收阶段，没有伪装成新的原生枚举。
+
+### 用户体验闭环
+
+- Agent 改为 **Goal-first（目标优先）**：共享目标、一个执行方式、一个主动作。
+- Agent 与 Game Forge 共用持久 Goal Store（目标存储），不再要求来回复制目标。
+- 每个 Run / Mission（运行 / 任务）状态都会给出一个明确“下一步”。
+- `READY_FOR_DELIVERY` 不再只跳转 Git 页面，而是先真实调用 delivery API 生成交付证据。
+- Code（代码）加入未保存状态、`Ctrl/Cmd+S` 保存、文件树 / 编辑器 / 终端连续工作面。
+- Preview（预览）支持打开、刷新和外部浏览器打开。
+- Game Forge（游戏工厂）在同一页完成目标 → 平台 / 要求 → 路由 → 制造。
+- Git（版本控制）独立显示状态、Diff（差异）与 Delivery Preview（交付预览）。
+- Setup（运行器设置）明确区分 Required Core（必需核心）与 Optional Accelerators（可选加速器）。
+- 支持 `Ctrl/Cmd+K` 聚焦目标、`Ctrl/Cmd+Enter` 执行当前主要动作。
+- 新增桌面 / 平板 / 移动端响应式视觉系统。
+
+### UX 非补偿性 Gate（门）
+
+以下任何一项失败，都不能用“看起来更漂亮”补偿：
+
+- 主导航存在死入口；
+- Agent / Game 目标不同步；
+- Core / Optional / Game Router 状态语义混淆；
+- 主要动作无反馈；
+- 阻断后无下一步；
+- 编辑器修改无未保存提示；
+- Git 交付状态不可见；
+- 键盘主路径缺失；
+- 移动端核心操作不可达。
+
+聚焦验证包括：前端 JavaScript 语法检查 PASS、v0.6.3 UI contract tests（UI 合同测试）12/12 PASS、DWAC 四段人工编排 harness（验证夹具）PASS。GitHub Actions 未使用。
 
 ## v0.6.2：DWAC 正式成为 AI Core（核心智能）
 
@@ -176,6 +221,7 @@ structural_generation/dwac_structural/game_engine_router.py
 ```bash
 npm test
 npm run check
+npm run test:ui-v063
 npm run test:dwac-cognition
 npm run test:game-forge
 TAOWIND_RCL_ROOT=/path/to/RCL-main npm run test:rcl-authority
@@ -194,10 +240,12 @@ TAOWIND_RCL_ROOT=/path/to/RCL-main npm run test:rcl-authority
 
 详见：
 
+- `docs/UX_FUNCTIONAL_CLOSURE_v0.6.3.md`
 - `docs/DWAC_CORE_COGNITION_v0.6.2.md`
 - `docs/AUTONOMOUS_GOAL_CLOSURE_v0.4.md`
 - `docs/EXECUTABLE_RCL_AUTHORITY_v0.5.md`
 - `docs/GAME_FORGE_v0.6.md`
+- `evidence/ux-functional-closure-v0.6.3.json`
 - `evidence/dwac-core-cognition-v0.6.2.json`
 - `evidence/dwac-autonomous-goal-closure-v0.4.json`
 - `evidence/dwac-rcl-authority-v0.5.json`

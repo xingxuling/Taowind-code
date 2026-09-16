@@ -1,0 +1,34 @@
+{
+  "protocol": "taowind-code.ux-functional-closure.v0.6.3",
+  "status": "IMPLEMENTATION_IN_PROGRESS",
+  "dwac_manual_mode_sequence": [
+    "NORTH_STAR",
+    "WHOLE_ARTIFACT",
+    "DEEP_DEVELOPMENT",
+    "EXTREME_FULL_ARTIFACT"
+  ],
+  "dwac_native_mode_note": "The native DevelopmentMode enum currently contains WHOLE_ARTIFACT and DEEP_DEVELOPMENT. NORTH_STAR and EXTREME_FULL_ARTIFACT are outer orchestration / acceptance phases in this sprint.",
+  "north_star_selected": "workflow-state-machine",
+  "north_star_native_mode": "WHOLE_ARTIFACT",
+  "deep_development_selected": "workflow-state-machine",
+  "deep_development_native_mode": "DEEP_DEVELOPMENT",
+  "whole_artifact_stage_count": 24,
+  "extreme_quality_reinvestment": {
+    "required_asset_count": 8,
+    "compile_capacity_units": 800,
+    "quality_reinvestment_units": 752,
+    "candidate_iterations_per_asset": 94,
+    "quantity_saturated": true,
+    "saturation_ratio": 100.0
+  },
+  "acceptance_focus": [
+    "no dead controls",
+    "cross-view goal continuity",
+    "truthful readiness semantics",
+    "keyboard accessibility",
+    "responsive desktop/mobile",
+    "real API feedback",
+    "failure-visible next steps"
+  ],
+  "github_actions": "NOT_USED"
+}

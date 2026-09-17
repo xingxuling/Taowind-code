@@ -7,6 +7,10 @@ try:
  from dwac_structural.software_production_pipeline import SoftwareProductionPipelineCompiler
  from dwac_structural.aaa_game_factory import AAAGameFactoryCompiler
  from dwac_structural.north_star_self_development import NorthStarSpec,NorthStarSelfDevelopmentController,Observation,BottleneckCandidate
+ try:
+  from dwac_structural.four_mode_router import FourDevelopmentModeRouter,FourModeSignal
+ except Exception:
+  FourDevelopmentModeRouter=None;FourModeSignal=None
  workspace=Path(a.workspace)
  is_game='[TAOWIND_GAME_MANUFACTURING=1]' in a.prompt
  primary_match=re.search(r'\[TAOWIND_GAME_PRIMARY=([^\]]+)\]',a.prompt)
@@ -42,7 +46,36 @@ try:
   candidates.append(BottleneckCandidate('measured-game-build-closure','validation','close the selected engine path with a real provider execution receipt and observed build artifact',.99,.97,.98,.995,.52,.18))
  goal='Taowind Code closes user coding goals into verified, rollbackable repository changes with minimal human intervention and no false completion.' if not is_game else 'Taowind Code closes game-manufacturing goals into playable, engine-built, measured artifacts while DWAC/RCL/RNCS retain orchestration, authority and evidence truth.'
  decision=NorthStarSelfDevelopmentController(NorthStarSpec(goal)).diagnose(signals,candidates)
- result={'connected':True,'status':'COMPILED','plan_id':plan_id,'stage_count':stage_count,'topological_order':topological_order,'workspace':a.workspace,'artifact_family':artifact_family,'mode':decision.mode.value,'cycle_id':decision.cycle_id,'selected_bottleneck':decision.selected.candidate_id,'decision_reason':decision.reason,'sovereignty_gate':decision.sovereignty_gate.value,'north_star':goal,'candidate_scores':[{'id':x.candidate_id,'score':x.score} for x in decision.ranked_candidates]}
+ native_mode=decision.mode.value
+ mode=native_mode
+ route_reason=decision.reason
+ route_scores={native_mode:1.0}
+ route_signal=None
+ routing_source='NORTH_STAR_NATIVE_FALLBACK'
+ if FourDevelopmentModeRouter is not None and FourModeSignal is not None:
+  ranked=list(decision.ranked_candidates)
+  portfolio=list(decision.portfolio or (decision.selected,))
+  domain_universe={item.domain for item in candidates} or {'unknown'}
+  pressure_domains={item.domain for item in signals if item.pressure>=.45}
+  top_score=float(ranked[0].score) if ranked else 0.0
+  second_score=float(ranked[1].score) if len(ranked)>1 else 0.0
+  dominance=max(0.0,top_score-second_score)
+  clamp=lambda value:max(0.0,min(1.0,float(value)))
+  route_signal=FourModeSignal(
+   breadth=clamp(len(pressure_domains)/max(1,len(domain_universe))),
+   bottleneck_centrality=clamp(dominance/0.18),
+   evidence_density=clamp(decision.selected.evidence_gain),
+   adjacent_work_count=len(portfolio),
+   direction_stability=clamp(top_score),
+   urgency=clamp(max((item.pressure for item in signals),default=0.0)),
+   artifact_pressure=clamp(len(portfolio)/8.0),
+  )
+  routed=FourDevelopmentModeRouter().route(route_signal)
+  mode=routed.mode.value
+  route_reason=routed.reason
+  route_scores=dict(routed.scores)
+  routing_source='DWAC_FOUR_MODE_ROUTER'
+ result={'connected':True,'status':'COMPILED','plan_id':plan_id,'stage_count':stage_count,'topological_order':topological_order,'workspace':a.workspace,'artifact_family':artifact_family,'mode':mode,'native_mode':native_mode,'routing_source':routing_source,'route_reason':route_reason,'route_scores':route_scores,'route_signal':({'breadth':route_signal.breadth,'bottleneck_centrality':route_signal.bottleneck_centrality,'evidence_density':route_signal.evidence_density,'adjacent_work_count':route_signal.adjacent_work_count,'direction_stability':route_signal.direction_stability,'urgency':route_signal.urgency,'artifact_pressure':route_signal.artifact_pressure} if route_signal is not None else None),'cycle_id':decision.cycle_id,'selected_bottleneck':decision.selected.candidate_id,'decision_reason':decision.reason,'sovereignty_gate':decision.sovereignty_gate.value,'north_star':goal,'candidate_scores':[{'id':x.candidate_id,'score':x.score} for x in decision.ranked_candidates]}
  result.update(plan_meta)
  print(json.dumps(result,ensure_ascii=False))
 except Exception as e:

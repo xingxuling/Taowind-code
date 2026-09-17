@@ -16,6 +16,7 @@
     "desktop": "electron desktop/main.mjs"
   },
   "optionalDependencies": {
+    "@lydell/node-pty": "1.2.0-beta.15",
     "electron": "^44.3.0"
   }
 }

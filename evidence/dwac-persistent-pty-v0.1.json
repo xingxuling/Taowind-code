@@ -1,0 +1,73 @@
+{
+  "protocol": "taowind-code.evidence-ledger.v0.1",
+  "status": "SOURCE_IMPLEMENTED_REAL_POSIX_VERIFIED_WINDOWS_PROVIDER_CONTRACT_TESTED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "base_main": "14fc0169af3972801bebae38341931c4ab70d020",
+  "upstream_dwac": {
+    "repository": "xingxuling/TaoX",
+    "commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "controller": "structural_generation/dwac_structural/north_star_self_development.py",
+    "router": "structural_generation/dwac_structural/four_mode_router.py"
+  },
+  "selected_bottleneck": "persistent-pty-runtime",
+  "development_mode": "DEEP_DEVELOPMENT",
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_evidence": {
+    "candidate_scores": {
+      "persistent-pty-runtime": 0.539,
+      "github-remote-provider": 0.6676
+    },
+    "note": "github-remote-provider scores higher but is sovereignty-gated as an external side effect; the DWAC North Star controller therefore selects the highest-value autonomous work instead of letting gated work starve it.",
+    "route_signal": {
+      "breadth": 1.0,
+      "bottleneck_centrality": 0.714444,
+      "evidence_density": 0.74,
+      "adjacent_work_count": 1,
+      "direction_stability": 0.6676,
+      "urgency": 0.692,
+      "artifact_pressure": 0.125
+    },
+    "route_scores": {
+      "WHOLE_ARTIFACT": 0.550861,
+      "DEEP_DEVELOPMENT": 0.614944,
+      "NORTH_STAR": 0.61378,
+      "NORTH_STAR_BURST": 0.58206
+    }
+  },
+  "rcl_authority_reuse": {
+    "policy": "contracts/approval-policy.rcl",
+    "existing_capability": "shell.execute on workspace",
+    "decision": "REUSE_NO_POLICY_CHANGE",
+    "reason": "persistent terminal open and input remain shell execution inside the existing workspace authority boundary; no new external authority is introduced"
+  },
+  "implementation": [
+    "Preserve the existing bounded one-shot runCommand API for compatibility.",
+    "Add a persistent terminal runtime with session create/list/read/input/resize/close lifecycle and cursor-addressed output evidence.",
+    "Prefer a node-pty-compatible provider, using Windows ConPTY when available; fall back to a real POSIX pseudo-terminal through script on non-Windows hosts.",
+    "Keep every server-side terminal open/input action behind the existing RCL shell_execute authority gate.",
+    "Keep custom shell selection restricted to full_access at the HTTP boundary.",
+    "Fix the existing destructive-command guard so the literal rm -rf / case is actually rejected in workspace mode.",
+    "Add the prebuilt @lydell/node-pty provider as an optional dependency so unsupported native packaging does not make the entire product uninstallable."
+  ],
+  "validation": [
+    {"gate": "node --check core/terminal.mjs", "status": "PASS"},
+    {"gate": "node --check server/main.mjs", "status": "PASS"},
+    {"gate": "node --test tests/terminal-pty.test.mjs", "status": "PASS", "tests": 4, "passed": 4, "failed": 0},
+    {"gate": "real POSIX PTY state persistence", "status": "PASS", "evidence": "util-linux script PTY retained cd /tmp across separate writes"},
+    {"gate": "local HTTP persistent-terminal API", "status": "PASS", "evidence": "create -> input -> read -> close returned posix-script-pty and observed __HTTP_PTY__/tmp"},
+    {"gate": "destructive-command regression", "status": "PASS", "evidence": "rm -rf / is now rejected with DESTRUCTIVE_COMMAND_BLOCKED in workspace mode"},
+    {"gate": "Windows ConPTY-compatible provider contract", "status": "PASS_STRUCTURAL", "evidence": "injected node-pty-compatible provider verified useConpty=true, write, resize and kill lifecycle"}
+  ],
+  "truth_boundaries": [
+    "Windows ConPTY was not reality-executed on a Windows host in this cycle; only the provider contract path was tested with an injected node-pty-compatible provider.",
+    "The optional @lydell/node-pty package installation/native binary was not downloaded or executed in the isolated validation container.",
+    "The local HTTP integration harness used an allow-all RCL gate stub; the canonical RCL policy was independently inspected and already contains shell_execute authority, but the full native RCL runtime was not exercised by that harness.",
+    "The destructive input filter is a policy guard, not an operating-system sandbox; sovereignty remains enforced by the RCL shell_execute authority boundary.",
+    "This cycle closes the persistent terminal runtime/API bottleneck; it does not claim a browser UI conversion to a live terminal emulator."
+  ],
+  "github_actions": {
+    "workflow_directory_on_base_main": "ABSENT",
+    "triggered_by_validation": false
+  }
+}

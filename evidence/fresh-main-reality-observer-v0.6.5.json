@@ -1,0 +1,34 @@
+{
+  "protocol": "taowind-code.evidence-ledger.v0.1",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "selected_bottleneck": "fresh-main-reality-observer",
+  "development_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "upstream_dwac": {
+    "repository": "xingxuling/TaoX",
+    "commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "router_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py"
+  },
+  "observed_gap": [
+    "The canonical bridge re-ranked a fixed catalog of repository-context, editing, validation and delivery candidates on every run even after those capabilities were already materialized in main.",
+    "That stale catalog could make North Star selection insensitive to the latest main state, contradicting the requirement to re-observe real code and evidence before each cycle."
+  ],
+  "changes": [
+    "bridge/dwac_bridge.py now probes the workspace HEAD, materialized capability evidence and structured truth-boundary records before constructing North Star observations and candidates.",
+    "Already-materialized capabilities are suppressed from the current candidate set instead of being repeatedly treated as open work.",
+    "The bridge exposes workspace_observation with head, closed_capabilities and truth_boundaries for auditable routing provenance.",
+    "The observer closes itself after materialization, allowing the next cycle to move on instead of self-selecting indefinitely.",
+    "Unresolved persistent PTY remains an internal candidate while GitHub remote delivery is explicitly marked as an external side-effect candidate so DWAC sovereignty rules can gate it."
+  ],
+  "verification": [
+    {"command": "python -m py_compile bridge/dwac_bridge.py", "status": "PASS"},
+    {"command": "node --test tests/fresh-main-observation.test.mjs", "status": "PASS", "tests": 2, "passed": 2, "failed": 0}
+  ],
+  "truth_boundaries": [
+    "Focused verification uses a synthetic DWAC root implementing the current TaoX North Star and four-mode contracts; it does not claim a full local materialization of the private TaoX repository in the validation container.",
+    "The observer uses conservative source/evidence probes, not a claim of full semantic proof that every materialized capability is complete.",
+    "No GitHub Actions were triggered or rerun for this verification."
+  ]
+}

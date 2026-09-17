@@ -1,0 +1,33 @@
+{
+  "protocol": "taowind-code.evidence-ledger.v0.1",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "selected_bottleneck": "four-mode-runtime-routing-contract",
+  "development_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "upstream_dwac": {
+    "repository": "xingxuling/TaoX",
+    "commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "modes": ["NORTH_STAR", "NORTH_STAR_BURST", "WHOLE_ARTIFACT", "DEEP_DEVELOPMENT"]
+  },
+  "observed_gap": [
+    "Taowind Code bridge still surfaced only the NorthStar controller native execution mode even though the latest DWAC/TaoX exposes a four-mode user-level router.",
+    "TaskStore encoded WHOLE_ARTIFACT and DEEP_DEVELOPMENT as a fixed sequential phase list, which contradicted autonomous mode routing."
+  ],
+  "changes": [
+    "bridge/dwac_bridge.py consumes FourDevelopmentModeRouter when available, preserves native_mode separately, and exposes routing source, signal, reason and scores.",
+    "core/tasks.mjs replaces the fixed WHOLE_ARTIFACT -> DEEP_DEVELOPMENT task sequence with one routed develop phase whose mode follows the run.",
+    "tests/four-mode-routing.test.mjs verifies four-mode routing, native-mode provenance and honest fallback."
+  ],
+  "verification": [
+    {"command": "python -m py_compile bridge/dwac_bridge.py", "status": "PASS"},
+    {"command": "node --check core/tasks.mjs", "status": "PASS"},
+    {"command": "node --test tests/four-mode-routing.test.mjs", "status": "PASS", "tests": 3, "passed": 3, "failed": 0}
+  ],
+  "truth_boundaries": [
+    "The focused bridge tests use a synthetic DWAC root implementing the upstream contract; this evidence does not claim a full real latest TaoX runtime bind inside the isolated validation sandbox.",
+    "If four_mode_router is unavailable in a bound DWAC package, Taowind Code fails back to the native NorthStar mode and exposes NORTH_STAR_NATIVE_FALLBACK instead of pretending four-mode routing occurred.",
+    "No GitHub Actions were triggered or rerun for this verification."
+  ]
+}

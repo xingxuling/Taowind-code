@@ -4,7 +4,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {WorkspaceService} from '../core/workspace.mjs';
 import {gitStatus,gitDiff,gitDeliveryPreview} from '../core/git.mjs';
-import {runCommand} from '../core/terminal.mjs';
+import {PersistentTerminalRuntime,runCommand} from '../core/terminal.mjs';
 import {TaskStore} from '../core/tasks.mjs';
 import {providerStatus} from '../core/providers.mjs';
 import {BrowserKnowledgeOrgan} from '../core/browser-organ.mjs';
@@ -17,7 +17,7 @@ import {GameManufacturingGateway,createGameAwareGoalAssessor} from '../core/game
 const VERSION='0.6.2-alpha.1';
 const here=path.dirname(fileURLToPath(import.meta.url));const root=path.resolve(here,'..');
 const workspace=path.resolve(process.env.TAOWIND_WORKSPACE||path.join(root,'examples/demo-workspace'));
-const runtimeDir=path.join(root,'runtime-data');const service=new WorkspaceService(workspace);const tasks=new TaskStore(runtimeDir);const browserOrgan=new BrowserKnowledgeOrgan(runtimeDir);const gameGateway=new GameManufacturingGateway();let approvalMode='workspace';
+const runtimeDir=path.join(root,'runtime-data');const service=new WorkspaceService(workspace);const tasks=new TaskStore(runtimeDir);const browserOrgan=new BrowserKnowledgeOrgan(runtimeDir);const gameGateway=new GameManufacturingGateway();const terminalRuntime=new PersistentTerminalRuntime();let approvalMode='workspace';
 const authorityGate=new RclAuthorityGate({policyPath:path.join(root,'contracts','approval-policy.rcl'),runtimeDir,rclRoot:process.env.TAOWIND_RCL_ROOT});
 const runner=new NorthStarRunner({workspace,runtimeDir,taskStore:tasks,authorityGate});
 const supervisor=new AutonomousGoalSupervisor({runner,runtimeDir,authorityGate,assessGoal:createGameAwareGoalAssessor(requestGoalAssessment)});
@@ -28,6 +28,7 @@ async function body(req){let s='';for await(const c of req){s+=c;if(s.length>12_
 function staticFile(req,res){let p=decodeURIComponent(new URL(req.url,'http://x').pathname);if(p==='/')p='/index.html';const publicRoot=path.join(root,'public');const f=path.resolve(publicRoot,'.'+p);if(f!==publicRoot&&!f.startsWith(publicRoot+path.sep))return false;if(!fs.existsSync(f)||fs.statSync(f).isDirectory())return false;res.writeHead(200,{'content-type':mime[path.extname(f)]||'application/octet-stream','cache-control':'no-store'});fs.createReadStream(f).pipe(res);return true}
 function runRoute(pathname){const m=pathname.match(/^\/api\/agent\/runs\/([^/]+)(?:\/(synthesize|changeset|apply|validate|repair|rollback|delivery))?$/);return m?{id:m[1],action:m[2]||null}:null}
 function missionRoute(pathname){const m=pathname.match(/^\/api\/agent\/missions\/([^/]+)(?:\/(tick|run|resume))?$/);return m?{id:m[1],action:m[2]||null}:null}
+function terminalRoute(pathname){const m=pathname.match(/^\/api\/terminal\/sessions\/([^/]+)(?:\/(input|resize))?$/);return m?{id:m[1],action:m[2]||null}:null}
 function cognitionReady(){const p=providerStatus();return p.cognition?.connected===true||p.externalAI?.connected===true}
 async function autoAdvance(run,maxRepairs=2){
   if(run.status==='PLANNED'&&cognitionReady())run=await runner.synthesize(run.id);
@@ -38,7 +39,7 @@ async function autoAdvance(run,maxRepairs=2){
   return run;
 }
 const api=async(req,res,u)=>{
- if(req.method==='GET'&&u.pathname==='/api/health')return send(res,200,{ok:true,product:'Taowind Code',version:VERSION,workspace,approvalMode,providers:providerStatus(),gameForge:gameGateway.status(workspace),authority:authorityGate.status(),northStar:'goal → DWAC core cognition → autonomous mission → RCL authority → changeset → validation → repair → non-compensatory closure audit → evidence; external AI is optional'});
+ if(req.method==='GET'&&u.pathname==='/api/health')return send(res,200,{ok:true,product:'Taowind Code',version:VERSION,workspace,approvalMode,providers:providerStatus(),gameForge:gameGateway.status(workspace),terminal:{persistent:true,sessions:terminalRuntime.list().length},authority:authorityGate.status(),northStar:'goal → DWAC core cognition → autonomous mission → RCL authority → changeset → validation → repair → non-compensatory closure audit → evidence; external AI is optional'});
  if(req.method==='GET'&&u.pathname==='/api/authority')return send(res,200,{approvalMode,...authorityGate.status()});
  if(req.method==='POST'&&u.pathname==='/api/authority/check'){const b=await body(req);return send(res,200,{receipt:await authorityGate.decide(b.action,{approvalMode,workspace,workspaceBoundary:b.workspaceBoundary!==false,explicitApproval:b.explicitApproval===true,metadata:{source:'api-authority-check'}})});}
  if(req.method==='GET'&&u.pathname==='/api/tree')return send(res,200,{workspace,tree:service.tree('.')});
@@ -79,7 +80,15 @@ const api=async(req,res,u)=>{
  }
  if(req.method==='POST'&&u.pathname==='/api/tasks'){const b=await body(req);return send(res,200,{tasks:tasks.replace(b.tasks||[])});}
  if(req.method==='POST'&&u.pathname==='/api/terminal/run'){const b=await body(req);const receipt=await authorityGate.assert('shell_execute',{approvalMode,workspace,requestId:`api:shell:${Date.now()}`,metadata:{command:String(b.command||'').slice(0,500)}});return send(res,200,{...await runCommand(workspace,b.command,{mode:approvalMode}),authorityReceipt:receipt});}
- if(req.method==='GET'&&u.pathname==='/api/providers')return send(res,200,{...providerStatus(),authority:authorityGate.status(),browserOrgan:browserOrgan.status(),gameForge:gameGateway.status(workspace)});
+ if(req.method==='GET'&&u.pathname==='/api/terminal/sessions')return send(res,200,{sessions:terminalRuntime.list()});
+ if(req.method==='POST'&&u.pathname==='/api/terminal/sessions'){const b=await body(req);const receipt=await authorityGate.assert('shell_execute',{approvalMode,workspace,requestId:`api:pty-open:${Date.now()}`,metadata:{kind:'persistent-pty',shell:b.shell||null}});return send(res,201,{session:await terminalRuntime.create(workspace,{mode:approvalMode,env:b.env||{},cols:b.cols,rows:b.rows,shell:approvalMode==='full_access'?b.shell:undefined}),authorityReceipt:receipt});}
+ const tr=terminalRoute(u.pathname);if(tr){
+   if(req.method==='GET'&&!tr.action)return send(res,200,{session:terminalRuntime.read(tr.id,{cursor:u.searchParams.get('cursor')||0,limit:u.searchParams.get('limit')||120000})});
+   if(req.method==='POST'&&tr.action==='input'){const b=await body(req);const receipt=await authorityGate.assert('shell_execute',{approvalMode,workspace,requestId:`api:pty-input:${Date.now()}`,metadata:{sessionId:tr.id,input:String(b.input||'').slice(0,500)}});return send(res,200,{write:terminalRuntime.write(tr.id,b.input,{mode:approvalMode}),authorityReceipt:receipt});}
+   if(req.method==='POST'&&tr.action==='resize'){const b=await body(req);return send(res,200,{session:terminalRuntime.resize(tr.id,b.cols,b.rows)});}
+   if(req.method==='DELETE'&&!tr.action)return send(res,200,{session:terminalRuntime.close(tr.id)});
+ }
+ if(req.method==='GET'&&u.pathname==='/api/providers')return send(res,200,{...providerStatus(),authority:authorityGate.status(),browserOrgan:browserOrgan.status(),gameForge:gameGateway.status(workspace),terminal:{persistent:true,sessions:terminalRuntime.list().length}});
  if(req.method==='GET'&&u.pathname==='/api/research/search')return send(res,200,{query:u.searchParams.get('q')||'',results:browserOrgan.search(u.searchParams.get('q')||'',Number(u.searchParams.get('limit')||12))});
  if(req.method==='POST'&&u.pathname==='/api/research/index'){const b=await body(req);return send(res,200,browserOrgan.indexDocument(b));}
  if(req.method==='POST'&&u.pathname==='/api/research/frontier'){const b=await body(req);return send(res,200,browserOrgan.enqueue(b.url,{priority:b.priority,source:b.source}));}
@@ -87,6 +96,6 @@ const api=async(req,res,u)=>{
  if(req.method==='POST'&&u.pathname==='/api/approval'){const b=await body(req);if(!['read_only','workspace','full_access'].includes(b.mode))return send(res,400,{error:'INVALID_MODE'});approvalMode=b.mode;return send(res,200,{mode:approvalMode,authority:authorityGate.status()});}
  return send(res,404,{error:'NOT_FOUND'});
 };
-const server=http.createServer(async(req,res)=>{try{const u=new URL(req.url,'http://localhost');if(u.pathname.startsWith('/api/'))return await api(req,res,u);if(staticFile(req,res))return;res.writeHead(404);res.end('Not found')}catch(e){const unavailable=['GAME_ROUTER_UNBOUND','GAME_ROUTER_EXECUTION_ERROR','GAME_ROUTER_INVALID_RESPONSE','GAME_ROUTER_FAILED','DWAC_COGNITION_UNBOUND','DWAC_COGNITION_EXECUTION_ERROR','DWAC_COGNITION_INVALID_RESPONSE','DWAC_COGNITION_FAILED'];const code=['RUN_NOT_FOUND','MISSION_NOT_FOUND'].includes(e.code)?404:e.code==='MISSION_BUSY'?409:e.code==='AMBIGUOUS_GAME_PROJECT'?409:e.code==='GAME_GOAL_REQUIRED'?400:unavailable.includes(e.code)?503:['RCL_AUTHORITY_DENIED','APPROVAL_REQUIRED'].includes(e.code)?403:e.code==='RCL_RUNTIME_UNBOUND'?503:500;send(res,code,{error:e.code||e.message||'INTERNAL_ERROR',message:e.message,authorityReceipt:e.receipt||null,projectInfo:e.projectInfo||null,decision:e.decision||null})}});
+const server=http.createServer(async(req,res)=>{try{const u=new URL(req.url,'http://localhost');if(u.pathname.startsWith('/api/'))return await api(req,res,u);if(staticFile(req,res))return;res.writeHead(404);res.end('Not found')}catch(e){const unavailable=['GAME_ROUTER_UNBOUND','GAME_ROUTER_EXECUTION_ERROR','GAME_ROUTER_INVALID_RESPONSE','GAME_ROUTER_FAILED','DWAC_COGNITION_UNBOUND','DWAC_COGNITION_EXECUTION_ERROR','DWAC_COGNITION_INVALID_RESPONSE','DWAC_COGNITION_FAILED','PTY_PROVIDER_UNAVAILABLE','PTY_PROVIDER_START_FAILED'];const code=['RUN_NOT_FOUND','MISSION_NOT_FOUND','TERMINAL_SESSION_NOT_FOUND'].includes(e.code)?404:['MISSION_BUSY','TERMINAL_SESSION_LIMIT','TERMINAL_SESSION_CLOSED'].includes(e.code)?409:['AMBIGUOUS_GAME_PROJECT'].includes(e.code)?409:['GAME_GOAL_REQUIRED','TERMINAL_CWD_NOT_FOUND','TERMINAL_INPUT_REQUIRED','COMMAND_REQUIRED'].includes(e.code)?400:unavailable.includes(e.code)?503:['RCL_AUTHORITY_DENIED','APPROVAL_REQUIRED','DESTRUCTIVE_COMMAND_BLOCKED'].includes(e.code)?403:e.code==='RCL_RUNTIME_UNBOUND'?503:500;send(res,code,{error:e.code||e.message||'INTERNAL_ERROR',message:e.message,authorityReceipt:e.receipt||null,projectInfo:e.projectInfo||null,decision:e.decision||null})}});
 const port=Number(process.env.PORT||4877);server.listen(port,'127.0.0.1',()=>{const p=providerStatus();console.log(`Taowind Code ${VERSION} running: http://127.0.0.1:${port}\nWorkspace: ${workspace}\nDWAC Core: ${p.dwac.connected?'BOUND':'UNBOUND'}\nDWAC Cognition: ${p.cognition.connected?'BOUND':'UNBOUND'}\nRCL Authority: ${authorityGate.status().connected?'BOUND':'UNBOUND'}\nExternal AI: ${p.externalAI.connected?'OPTIONAL_BOUND':'OPTIONAL_UNBOUND'}\nGame Forge: ${gameGateway.status(workspace).bound?'BOUND':'UNBOUND'}`)});
-for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{supervisor.stopScheduler();server.close(()=>process.exit(0))});
+for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{supervisor.stopScheduler();terminalRuntime.dispose();server.close(()=>process.exit(0))});

@@ -1,0 +1,52 @@
+{
+  "protocol": "taowind-code.dwac-bottleneck-closure-evidence.v0.1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "372a38d3c5627cef616ae00ac9e204ea71ea4fff",
+  "candidate_branch": "dwac/github-remote-provider-v01",
+  "selected_bottleneck": "github-remote-provider",
+  "development_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "EXPLICIT_APPROVAL",
+  "approval_scope": {
+    "approved": true,
+    "covers": [
+      "development and validation of the GitHub remote delivery provider",
+      "non-force branch push required for delivery",
+      "pull request creation",
+      "pull request merge when repository rules and review state permit"
+    ],
+    "does_not_cover": [
+      "credential exposure",
+      "payment",
+      "formal public Release",
+      "repository-rule bypass",
+      "force push",
+      "destructive or irreversible external actions"
+    ]
+  },
+  "implementation_boundaries": [
+    "Remote delivery remains separately gated by RCL external_side_effect authority with explicitApproval=true.",
+    "Git push is non-force; no force-push path is implemented.",
+    "GitHub API credentials are read from GH_TOKEN or GITHUB_TOKEN environment variables and are not accepted in the HTTP delivery payload.",
+    "Remote URL credentials and authorization-like output are redacted from delivery receipts.",
+    "Provider scope is push, pull-request creation and pull-request merge only; Release, payment and destructive repository operations are absent.",
+    "Existing GET /api/git/delivery stays a non-effectful preview; POST /api/git/delivery is authority-gated."
+  ],
+  "validation": {
+    "core_git_node_check": "PASS",
+    "focused_local_suite": "3/3 PASS",
+    "legacy_local_commit_path_isolation": "PASS",
+    "real_local_bare_git_non_force_push": "PASS",
+    "explicit_approval_denial_before_push": "PASS",
+    "mocked_github_rest_pr_create_contract": "PASS",
+    "mocked_github_rest_pr_merge_contract": "PASS",
+    "credential_non_leak_receipt_assertion": "PASS",
+    "server_route_review": "PASS_BY_CODE_REVIEW",
+    "server_main_independent_node_check": "NOT_RUN_IN_THIS_EXECUTION_ENVIRONMENT"
+  },
+  "truth_boundaries": [
+    "The Developer Execution Runtime provider returned transient HTTP 502 during this cycle, so the already-observed DWAC bottleneck and mode were reused from the latest canonical code plus upstream TaoX routing logic rather than claiming a fresh provider execution receipt.",
+    "The execution container could not resolve github.com for a fresh clone, so server/main.mjs was reviewed against the branch diff but was not independently node --check executed in that container.",
+    "GitHub pull-request create/merge behavior was validated against a deterministic mocked REST contract; the actual canonical PR/merge is performed only after repository review and mergeability checks.",
+    "No GitHub Actions run is intentionally triggered by this work; commits use [skip ci] [skip actions]."
+  ]
+}

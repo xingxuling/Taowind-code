@@ -5,7 +5,8 @@ function run(cwd,args,timeout=15_000){
   const r=spawnSync('git',args,{cwd,encoding:'utf8',timeout});
   return {ok:r.status===0,stdout:r.stdout||'',stderr:r.stderr||'',code:r.status??-1};
 }
-function clip(value,limit=12_000){return String(value||'').slice(-limit)}
+function redactSecrets(value){return String(value||'').replace(/(https?:\/\/)([^@\s/]+)@/gi,'$1***@').replace(/(authorization:\s*bearer\s+)[^\s]+/gi,'$1***')}
+function clip(value,limit=12_000){return redactSecrets(value).slice(-limit)}
 function currentBranch(cwd){const r=run(cwd,['branch','--show-current']);return r.ok?r.stdout.trim()||null:null}
 function githubToken(env=process.env){return String(env.GH_TOKEN||env.GITHUB_TOKEN||'').trim()||null}
 function sanitizedRemoteUrl(value){

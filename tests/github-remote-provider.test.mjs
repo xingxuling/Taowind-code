@@ -1,0 +1,38 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+import {gitRemoteDelivery,gitRemoteInfo,githubCreatePullRequest,githubMergePullRequest} from '../core/git.mjs';
+
+function git(cwd,args){const r=spawnSync('git',args,{cwd,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim()}
+function initRepo(dir){git(dir,['init']);git(dir,['config','user.name','Taowind Test']);git(dir,['config','user.email','taowind-test@example.invalid']);fs.writeFileSync(path.join(dir,'a.txt'),'a0\n');git(dir,['add','.']);git(dir,['commit','-m','base'])}
+
+test('remote delivery requires explicit approval and performs a non-force push when approved',async()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-remote-'));const repo=path.join(root,'repo');const bare=path.join(root,'remote.git');fs.mkdirSync(repo);
+  try{
+    initRepo(repo);git(root,['init','--bare',bare]);git(repo,['remote','add','origin',bare]);git(repo,['checkout','-b','feature/provider']);
+    fs.writeFileSync(path.join(repo,'a.txt'),'a1\n');git(repo,['add','a.txt']);git(repo,['commit','-m','feature']);
+    const denied=await gitRemoteDelivery(repo,{explicitApproval:false,push:true});
+    assert.equal(denied.error,'EXPLICIT_APPROVAL_REQUIRED');
+    assert.equal(spawnSync('git',['--git-dir',bare,'show-ref','--verify','refs/heads/feature/provider']).status,128);
+    const approved=await gitRemoteDelivery(repo,{explicitApproval:true,push:true});
+    assert.equal(approved.ok,true);assert.equal(approved.pushPerformed,true);
+    assert.equal(spawnSync('git',['--git-dir',bare,'show-ref','--verify','refs/heads/feature/provider']).status,0);
+  }finally{fs.rmSync(root,{recursive:true,force:true})}
+});
+
+test('GitHub pull request and merge calls use an environment token without exposing it in receipts',async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-pr-'));
+  try{
+    initRepo(dir);git(dir,['checkout','-b','feature/api']);git(dir,['remote','add','origin','https://secret-user:secret-pass@github.com/acme/demo.git']);
+    const info=gitRemoteInfo(dir,{env:{GITHUB_TOKEN:'top-secret-token'}});
+    assert.equal(info.repository,'acme/demo');assert.doesNotMatch(info.remoteUrl,/secret-user|secret-pass/);assert.equal(info.githubApiReady,true);
+    const calls=[];const fetchImpl=async(url,init)=>{calls.push({url,init});const isMerge=/\/merge$/.test(url);return {ok:true,status:isMerge?200:201,text:async()=>JSON.stringify(isMerge?{merged:true,sha:'deadbeef',message:'merged'}:{number:42,html_url:'https://github.com/acme/demo/pull/42',state:'open'})}};
+    const env={GITHUB_TOKEN:'top-secret-token'};
+    const pr=await githubCreatePullRequest(dir,{title:'feat: remote delivery',env,fetchImpl});assert.equal(pr.ok,true);assert.equal(pr.number,42);
+    const merged=await githubMergePullRequest(dir,{number:42,env,fetchImpl});assert.equal(merged.ok,true);assert.equal(merged.sha,'deadbeef');
+    assert.equal(calls.length,2);assert.match(calls[0].init.headers.authorization,/top-secret-token/);assert.doesNotMatch(JSON.stringify({pr,merged,info}),/top-secret-token|secret-pass/);
+  }finally{fs.rmSync(dir,{recursive:true,force:true})}
+});

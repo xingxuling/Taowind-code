@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {WorkspaceService} from '../core/workspace.mjs';
-import {gitStatus,gitDiff,gitDeliveryPreview} from '../core/git.mjs';
+import {gitStatus,gitDiff,gitDeliveryPreview,gitRemoteDelivery} from '../core/git.mjs';
 import {PersistentTerminalRuntime,runCommand} from '../core/terminal.mjs';
 import {TaskStore} from '../core/tasks.mjs';
 import {providerStatus} from '../core/providers.mjs';
@@ -48,6 +48,12 @@ const api=async(req,res,u)=>{
  if(req.method==='GET'&&u.pathname==='/api/git/status')return send(res,200,gitStatus(workspace));
  if(req.method==='GET'&&u.pathname==='/api/git/diff')return send(res,200,gitDiff(workspace));
  if(req.method==='GET'&&u.pathname==='/api/git/delivery')return send(res,200,gitDeliveryPreview(workspace));
+ if(req.method==='POST'&&u.pathname==='/api/git/delivery'){
+   const b=await body(req);const explicitApproval=b.explicitApproval===true;
+   const requested={push:b.push!==false,createPullRequest:b.createPullRequest===true,merge:b.merge===true,remote:b.remote||'origin',branch:b.branch||null,base:b.base||'main',title:b.title||'',body:b.body||'',draft:b.draft===true,prNumber:b.prNumber||null,mergeMethod:b.mergeMethod||'squash',expectedHeadSha:b.expectedHeadSha||null};
+   const authorityReceipt=await authorityGate.assert('external_side_effect',{approvalMode,workspace,explicitApproval,requestId:`api:git-delivery:${Date.now()}`,metadata:{requested:{push:requested.push,createPullRequest:requested.createPullRequest,merge:requested.merge,remote:requested.remote,branch:requested.branch,base:requested.base,draft:requested.draft,prNumber:requested.prNumber,mergeMethod:requested.mergeMethod}}});
+   const delivery=await gitRemoteDelivery(workspace,{...requested,explicitApproval});return send(res,delivery.ok?200:409,{delivery,authorityReceipt});
+ }
  if(req.method==='GET'&&u.pathname==='/api/tasks')return send(res,200,{tasks:tasks.list()});
  if(req.method==='GET'&&u.pathname==='/api/game/status')return send(res,200,gameGateway.status(workspace));
  if(req.method==='POST'&&u.pathname==='/api/game/route'){const b=await body(req);return send(res,200,{route:gameGateway.route(b.goal||b.prompt,{workspace,target:b.target,requirements:b.requirements||[]})});}

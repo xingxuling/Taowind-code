@@ -1,0 +1,53 @@
+{
+  "protocol": "taowind-code.dwac-consensus-path-identity.evidence.v0.7.5",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "6188e103d6f2b85f45876444303494a4fd457ec9",
+  "selected_bottleneck": "native-complex-changeset-synthesis",
+  "selected_problem": "Arbitrary complex repository synthesis remains UNRESOLVED. Fresh code reality exposed a path-identity defect in federated proposal normalization: safety checks canonicalized candidate paths for validation, but the normalized proposal retained the original path spelling. Equivalent paths such as src/../src/target.mjs and src/target.mjs could therefore evade exact-consensus and same-path conflict accounting even though downstream workspace semantics resolve them to the same file.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "6188e103d6f2b85f45876444303494a4fd457ec9",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "rcl_status": "TRANSIENT_HTTP_502",
+    "rncs_status": "TRANSIENT_HTTP_502",
+    "claim_limit": "No hosted DWAC/RCL/RNCS success receipt is claimed. The latest canonical evidence still identifies native-complex-changeset-synthesis as unresolved; focused inspection found one narrow, central, evidence-rich semantic-identity defect, so the checked-in DWAC routing contract resolves to DEEP_DEVELOPMENT rather than a forced mode rotation."
+  },
+  "code_reality": [
+    "core/federated-generation.mjs previously used path.posix.normalize only inside a boolean safeRel check, then emitted the original slash-normalized path string.",
+    "Consensus fingerprints and same-path conflict maps use the emitted path string as identity.",
+    "Workspace path resolution canonicalizes path traversal segments inside the repository, so aliases such as src/../src/target.mjs and src/target.mjs refer to the same file while the federation layer previously treated them as different identities.",
+    "Manifest existing-file matching had the same alias mismatch, and needs_more_context retained non-canonical spellings."
+  ],
+  "asset_reuse": [
+    "Reused the existing federated selector, ChangeSetIR/preimage semantics, workspace path boundary and DWAC implementation/architecture/verifier candidate federation.",
+    "No new model, provider, product form, interface shape or synthesis architecture was introduced.",
+    "RCL authority, transactional changesets, validation, rollback and GitHub delivery boundaries remain unchanged."
+  ],
+  "changes": [
+    "Proposal change paths are now canonicalized to one repository-relative POSIX identity before fingerprinting, scoring or staging.",
+    "Manifest paths are canonicalized through the same identity function before existing-edit scoring.",
+    "needs_more_context paths are canonicalized and deduplicated before context recovery.",
+    "Equivalent path aliases now contribute exact agreement when their executable semantics match and surface same-file conflicts when their contents or preimage gates differ.",
+    "Federated selection receipt protocol advances to taowind.federated-changeset-selection.v0.5."
+  ],
+  "verification": [
+    {"command": "node --check core/federated-generation.mjs", "status": "PASS"},
+    {"command": "node --test tests/federated-generation.test.mjs tests/federated-consensus.test.mjs", "status": "PASS", "tests": 12, "passed": 12, "failed": 0},
+    {"check": "validated-local-content-matches-github-branch-blobs", "status": "PASS", "selector_blob_sha1": "8172a1529e12a5512d959d04b1ada535fd4c3362", "test_blob_sha1": "02e8984d8ba4d62e2d611ecce0d21b9e5688ae0e"},
+    {"check": "github-actions-intent", "status": "NOT_TRIGGERED_BY_DESIGN", "commit_messages": "[skip ci] [skip actions]"}
+  ],
+  "truth_boundaries": [
+    "Arbitrary complex repository synthesis remains UNRESOLVED. Canonical path identity removes one false-consensus/conflict-blindness class; it does not create missing semantic code-generation capability.",
+    "Consensus remains ranking evidence rather than proof of correctness. Real validation, rollback and delivery gates remain non-compensatory.",
+    "Hosted Developer Execution Runtime, RCL and RNCS adapter surfaces returned transient HTTP 502 in this cycle; no hosted success receipt is fabricated.",
+    "No GitHub Actions were intentionally triggered or rerun, no force push was used, and no credential, payment, formal Release or destructive external action was performed."
+  ]
+}

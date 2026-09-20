@@ -1,0 +1,49 @@
+{
+  "protocol": "taowind-code.dwac-native-context-recovery.evidence.v0.7.0",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "05f2bc454b102263cfc9950f8c215dfa1100eebb",
+  "selected_bottleneck": "native-complex-changeset-synthesis",
+  "selected_problem": "NaturalConversationRuntime must still produce a semantically correct repository change candidate; the existing second-pass needs_more_context path cannot reliably recover unseen files unless the native cognition surface can discover their exact repository paths.",
+  "development_mode": "WHOLE_ARTIFACT",
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "claim_limit": "The hosted Developer Execution Runtime and UPDIA bridge returned transient HTTP 502, so the residual bottleneck family and route are carried by the checked-in DWAC controller/router contract plus fresh canonical evidence; no hosted execution receipt is fabricated."
+  },
+  "code_reality": [
+    "NorthStarRunner already supports a bounded second synthesis pass: proposal.needs_more_context paths are materialized through WorkspaceService.contextBundle and resubmitted to DWAC cognition.",
+    "Before this change repositorySummary exposed only file counts, extensions and top-level names; graphSummary exposed only the top semantic nodes. A native synthesizer could therefore know that more context was needed without knowing the exact unseen path to request.",
+    "WorkspaceService.contextBundle already enforces workspace path boundaries, text-file filtering, per-file size limits, file-count limits and aggregate byte limits, so the existing recovery path can be reused instead of creating a second read mechanism."
+  ],
+  "changes": [
+    "core/repo-context.mjs now emits a deterministic bounded repository path index without reading additional file contents.",
+    "repositorySummary now exposes a contextRecovery contract with exactPathHints, truncation/size provenance and an explicit rule to request absent file contents through the existing needs_more_context field rather than guessing unseen code.",
+    "The index is capped at 800 paths and approximately 48 KiB of JSON path data, normalizes separators, deduplicates paths and prioritizes existing code/config/test path classes before lexical ordering.",
+    "Credential-like path names (.env variants, credentials/secrets files, common private-key names and PEM/key/P12/PFX files) are excluded from the expanded path-hint surface so context recovery does not widen credential exposure.",
+    "No new code-generation provider, product shape, model dependency or development-mode mapping is introduced."
+  ],
+  "verification": [
+    {"command": "node --check core/repo-context.mjs", "status": "PASS"},
+    {"command": "node --test tests/repo-context-path-index.test.mjs", "status": "PASS", "tests": 3, "passed": 3, "failed": 0},
+    {"case": "determinism + separator normalization + code-path priority", "status": "PASS"},
+    {"case": "bounded exact-path recovery contract + credential-like hint exclusion", "status": "PASS", "safe_paths": 60, "excluded_credential_like_paths": 4},
+    {"case": "byte-budget truncation", "status": "PASS_FAIL_CLOSED", "evidence": "path list stops before exceeding configured byte budget and reports truncated=true"},
+    {"check": "RCL/RNCS provider status", "status": "PASS", "rcl_version": "0.94.0-alpha.1", "rncs_fusion_all_ready": true, "rncs_fusion_reference_parity": true}
+  ],
+  "truth_boundaries": [
+    "This cycle improves context recovery for DWAC native synthesis; it does not claim that path discovery by itself makes NaturalConversationRuntime a universal repository code synthesizer.",
+    "The path index carries names only, not unseen file contents; actual content is supplied only if DWAC requests an exact path through the existing bounded needs_more_context second pass.",
+    "Credential-like paths are intentionally omitted from the expanded hint index; this is a defensive reduction of exposure, not proof that every possible sensitive filename can be recognized.",
+    "The bounded path index can be truncated on very large repositories; truncation is explicit and is not treated as full repository visibility.",
+    "Arbitrary complex repository synthesis remains UNRESOLVED; this change narrows one concrete context-recovery failure mode without fabricating semantic synthesis capability.",
+    "The hosted Developer Execution Runtime and UPDIA provider were transiently unavailable with HTTP 502 in this cycle; focused local validation is reported instead and no hosted receipt is claimed.",
+    "No GitHub Actions are used for this change set."
+  ]
+}

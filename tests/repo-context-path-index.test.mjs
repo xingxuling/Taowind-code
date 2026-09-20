@@ -18,14 +18,22 @@ test('repository path index is deterministic, bounded, normalized and code-prior
  assert.equal(a.truncated,true);
 });
 
-test('repository summary exposes bounded exact-path recovery contract',()=>{
- const manifest=Array.from({length:60},(_,i)=>({path:`src/mod-${String(i).padStart(2,'0')}.js`,size:10,ext:'.js'}));
+test('repository summary exposes bounded exact-path recovery contract without credential-like path hints',()=>{
+ const manifest=[
+  ...Array.from({length:60},(_,i)=>({path:`src/mod-${String(i).padStart(2,'0')}.js`,size:10,ext:'.js'})),
+  {path:'.env.local',size:10,ext:'.local'},
+  {path:'config/credentials.json',size:10,ext:'.json'},
+  {path:'keys/service.pem',size:10,ext:'.pem'},
+  {path:'.ssh/id_rsa',size:10,ext:''},
+ ];
  const out=repositorySummary(manifest);
- assert.equal(out.fileCount,60);
+ assert.equal(out.fileCount,64);
  assert.equal(out.contextRecovery.protocol,'taowind.repo-context-recovery.v0.1');
- assert.equal(out.contextRecovery.totalPaths,60);
+ assert.equal(out.contextRecovery.indexedPaths,60);
+ assert.equal(out.contextRecovery.totalManifestPaths,64);
  assert.equal(out.contextRecovery.truncated,false);
  assert.equal(out.contextRecovery.exactPathHints.length,60);
+ assert.ok(out.contextRecovery.exactPathHints.every(x=>!/env|credential|\.pem|id_rsa/i.test(x)));
  assert.match(out.contextRecovery.rule,/needs_more_context/);
 });
 

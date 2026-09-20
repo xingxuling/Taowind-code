@@ -1,21 +1,25 @@
 import path from 'node:path';
 
 const BLOCKED_SEGMENTS=new Set(['.git','node_modules','.next','dist','build','runtime-data','.venv']);
-function safeRel(p){
-  if(typeof p!=='string'||!p.trim())return false;
+function normalizeRel(p){
+  if(typeof p!=='string'||!p.trim())return null;
   const norm=path.posix.normalize(p.replaceAll('\\','/'));
-  if(norm.startsWith('../')||norm==='..'||norm.startsWith('/')||/^[A-Za-z]:/.test(norm))return false;
-  return !norm.split('/').some(x=>BLOCKED_SEGMENTS.has(x));
+  if(norm==='.'||norm.startsWith('../')||norm==='..'||norm.startsWith('/')||/^[A-Za-z]:/.test(norm))return null;
+  if(norm.split('/').some(x=>BLOCKED_SEGMENTS.has(x)))return null;
+  return norm;
 }
+function safeRel(p){return normalizeRel(p)!==null}
 function normalizeChange(c){
-  if(!c||!['write','delete'].includes(c.op)||!safeRel(c.path))return null;
+  const rel=normalizeRel(c?.path);
+  if(!c||!['write','delete'].includes(c.op)||!rel)return null;
   if(c.op==='write'&&typeof c.content!=='string')return null;
-  return {op:c.op,path:c.path.replaceAll('\\','/'),...(c.op==='write'?{content:c.content}:{}),...(c.expectedSha256?{expectedSha256:String(c.expectedSha256)}:{})};
+  return {op:c.op,path:rel,...(c.op==='write'?{content:c.content}:{}),...(c.expectedSha256?{expectedSha256:String(c.expectedSha256)}:{})};
 }
 export function normalizeProposal(raw,{provider='unknown',role='implementation'}={}){
   const changes=[...new Map((Array.isArray(raw?.changes)?raw.changes:[]).map(normalizeChange).filter(Boolean).map(x=>[`${x.op}:${x.path}`,x])).values()];
   const validation=[...new Set((Array.isArray(raw?.validation_commands)?raw.validation_commands:[]).map(String).map(x=>x.trim()).filter(Boolean))].slice(0,16);
-  return {provider,role,summary:String(raw?.summary||''),changes,validation_commands:validation,risks:(Array.isArray(raw?.risks)?raw.risks:[]).map(String).slice(0,20),needs_more_context:(Array.isArray(raw?.needs_more_context)?raw.needs_more_context:[]).map(String).filter(safeRel).slice(0,32)};
+  const context=[...new Set((Array.isArray(raw?.needs_more_context)?raw.needs_more_context:[]).map(normalizeRel).filter(Boolean))].slice(0,32);
+  return {provider,role,summary:String(raw?.summary||''),changes,validation_commands:validation,risks:(Array.isArray(raw?.risks)?raw.risks:[]).map(String).slice(0,20),needs_more_context:context};
 }
 function goalTokens(goal){return [...new Set(String(goal||'').toLowerCase().match(/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu)||[])]}
 function proposalText(p){return `${p.summary} ${p.changes.map(c=>`${c.path} ${c.op==='write'?c.content.slice(0,800):''}`).join(' ')}`.toLowerCase()}
@@ -50,7 +54,7 @@ function proposalConsensus(p,signals){
   return {exactAgreement,agreedChanges,conflictPaths};
 }
 export function scoreProposal(p,{goal='',manifest=[],consensus=null}={}){
-  const known=new Set((manifest||[]).map(x=>typeof x==='string'?x:x.path));
+  const known=new Set((manifest||[]).map(x=>typeof x==='string'?normalizeRel(x):normalizeRel(x.path)).filter(Boolean));
   const text=proposalText(p);const gt=goalTokens(goal);const coverage=gt.length?gt.filter(t=>text.includes(t)).length/gt.length:0;
   const files=p.changes.length;const writes=p.changes.filter(x=>x.op==='write').length;
   const existingEdits=p.changes.filter(x=>known.has(x.path)).length;
@@ -78,5 +82,5 @@ export function selectFederatedProposal(candidates,{goal='',manifest=[]}={}){
   const winner=ranked.find(x=>x.changes.length&&x.validation_commands.length)||ranked[0]||null;
   const conflictedPaths=[...signals.pathVariants.entries()].filter(([,variants])=>variants.size>1).map(([path])=>path).sort();
   const exactAgreementCount=[...signals.exactSupport.values()].filter(origins=>origins.size>1).length;
-  return {protocol:'taowind.federated-changeset-selection.v0.4',winner,ranked,consensus:{candidateCount:ranked.length,validCount:ranked.filter(x=>x.changes.length&&x.validation_commands.length).length,providers:[...new Set(ranked.map(x=>x.provider))],executableCount:signals.executableCount,independentOriginCount:signals.independentOrigins,exactAgreementCount,conflictedPathCount:conflictedPaths.length,conflictedPaths:conflictedPaths.slice(0,16)}};
+  return {protocol:'taowind.federated-changeset-selection.v0.5',winner,ranked,consensus:{candidateCount:ranked.length,validCount:ranked.filter(x=>x.changes.length&&x.validation_commands.length).length,providers:[...new Set(ranked.map(x=>x.provider))],executableCount:signals.executableCount,independentOriginCount:signals.independentOrigins,exactAgreementCount,conflictedPathCount:conflictedPaths.length,conflictedPaths:conflictedPaths.slice(0,16)}};
 }

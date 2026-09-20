@@ -26,19 +26,21 @@
     "core/repo-context.mjs now emits a deterministic bounded repository path index without reading additional file contents.",
     "repositorySummary now exposes a contextRecovery contract with exactPathHints, truncation/size provenance and an explicit rule to request absent file contents through the existing needs_more_context field rather than guessing unseen code.",
     "The index is capped at 800 paths and approximately 48 KiB of JSON path data, normalizes separators, deduplicates paths and prioritizes existing code/config/test path classes before lexical ordering.",
+    "Credential-like path names (.env variants, credentials/secrets files, common private-key names and PEM/key/P12/PFX files) are excluded from the expanded path-hint surface so context recovery does not widen credential exposure.",
     "No new code-generation provider, product shape, model dependency or development-mode mapping is introduced."
   ],
   "verification": [
     {"command": "node --check core/repo-context.mjs", "status": "PASS"},
     {"command": "node --test tests/repo-context-path-index.test.mjs", "status": "PASS", "tests": 3, "passed": 3, "failed": 0},
     {"case": "determinism + separator normalization + code-path priority", "status": "PASS"},
-    {"case": "bounded exact-path recovery contract", "status": "PASS", "paths": 60, "truncated": false},
+    {"case": "bounded exact-path recovery contract + credential-like hint exclusion", "status": "PASS", "safe_paths": 60, "excluded_credential_like_paths": 4},
     {"case": "byte-budget truncation", "status": "PASS_FAIL_CLOSED", "evidence": "path list stops before exceeding configured byte budget and reports truncated=true"},
     {"check": "RCL/RNCS provider status", "status": "PASS", "rcl_version": "0.94.0-alpha.1", "rncs_fusion_all_ready": true, "rncs_fusion_reference_parity": true}
   ],
   "truth_boundaries": [
     "This cycle improves context recovery for DWAC native synthesis; it does not claim that path discovery by itself makes NaturalConversationRuntime a universal repository code synthesizer.",
     "The path index carries names only, not unseen file contents; actual content is supplied only if DWAC requests an exact path through the existing bounded needs_more_context second pass.",
+    "Credential-like paths are intentionally omitted from the expanded hint index; this is a defensive reduction of exposure, not proof that every possible sensitive filename can be recognized.",
     "The bounded path index can be truncated on very large repositories; truncation is explicit and is not treated as full repository visibility.",
     "Arbitrary complex repository synthesis remains UNRESOLVED; this change narrows one concrete context-recovery failure mode without fabricating semantic synthesis capability.",
     "The hosted Developer Execution Runtime and UPDIA provider were transiently unavailable with HTTP 502 in this cycle; focused local validation is reported instead and no hosted receipt is claimed.",

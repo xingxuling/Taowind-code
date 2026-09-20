@@ -22,67 +22,113 @@ def _source_has(workspace, rel, needles):
  return bool(text) and all(str(x).lower() in text for x in needles)
 
 
-def _truth_boundaries(workspace, limit=64):
+def _is_boundary_key(key):
+ key=str(key or '').strip().lower()
+ return key in {'claim_limit','limitations'} or 'boundary' in key or 'boundaries' in key
+
+
+def _append_boundary_rows(value, source, path, rows, limit):
+ if len(rows)>=limit:return
+ if isinstance(value,str):
+  text=' '.join(value.split())
+  if text:rows.append({'source':source,'path':path,'text':text[:400]})
+  return
+ if isinstance(value,list):
+  for index,item in enumerate(value):
+   _append_boundary_rows(item,source,f'{path}[{index}]',rows,limit)
+   if len(rows)>=limit:return
+  return
+ if isinstance(value,dict):
+  for key,item in value.items():
+   _append_boundary_rows(item,source,f'{path}.{key}' if path else str(key),rows,limit)
+   if len(rows)>=limit:return
+
+
+def _truth_boundaries(workspace, limit=96):
  evidence=workspace/'evidence';rows=[]
  if not evidence.exists():return rows
  for file in sorted(evidence.glob('*.json'),reverse=True):
   try:data=json.loads(file.read_text(encoding='utf-8'))
   except Exception:continue
-  stack=[data]
-  while stack:
-   value=stack.pop()
+  source=str(file.relative_to(workspace))
+  stack=[('',data)]
+  while stack and len(rows)<limit:
+   path,value=stack.pop()
    if isinstance(value,dict):
     for key,item in value.items():
-     if key in {'truth_boundaries','claim_limit','limitations'}:stack.append(item)
-     elif isinstance(item,(dict,list)):stack.append(item)
-     elif isinstance(item,str) and any(tok in item.upper() for tok in ('PENDING','NOT_RUN','UNRESOLVED','BLOCKED')):
-      rows.append({'source':str(file.relative_to(workspace)),'text':item[:400]})
+     child=f'{path}.{key}' if path else str(key)
+     if _is_boundary_key(key):
+      _append_boundary_rows(item,source,child,rows,limit)
+     elif isinstance(item,(dict,list)):
+      stack.append((child,item))
    elif isinstance(value,list):
-    for item in value:
-     if isinstance(item,str):rows.append({'source':str(file.relative_to(workspace)),'text':item[:400]})
-     elif isinstance(item,(dict,list)):stack.append(item)
-   elif isinstance(value,str):rows.append({'source':str(file.relative_to(workspace)),'text':value[:400]})
-   if len(rows)>=limit:return rows
+    for index,item in enumerate(value):
+     if isinstance(item,(dict,list)):stack.append((f'{path}[{index}]',item))
+  if len(rows)>=limit:return rows
  return rows[:limit]
 
 
-def _truth_boundary_candidates(rows, limit=8):
- """Turn unresolved evidence into neutral DWAC candidates after the fixed bootstrap catalog is exhausted.
-
- This does not prescribe a feature or architecture. It only makes an explicit,
- evidence-bearing limitation visible to the North Star controller. The controller
- remains the authority that ranks it and the four-mode router remains the authority
- that chooses the user-level development mode.
- """
- out=[];seen=set()
- marker_weights=(('UNRESOLVED',.98),('BLOCKED',.95),('PENDING',.90),('NOT_RUN',.86),('MISSING',.84),('CANNOT',.82),('NO CLAIM',.80))
- external_markers=(
+def _boundary_external(text):
+ upper=' '.join(str(text or '').upper().split())
+ normalized=re.sub(r'[^A-Z0-9]+','_',upper).strip('_')
+ exact_markers=(
   'PENDING_USER_MACHINE','BLOCKED_EXTERNAL','EXTERNAL_BLOCKER','REQUIRES_CREDENTIAL','PAID_ACTION',
-  'CURRENT_SANDBOX','CANNOT_CLONE','HAS_NO_GITHUB_CHECKOUT','WINDOWS_PORTABLE_REGRESSION',
+  'CURRENT_SANDBOX','CANNOT_CLONE','HAS_NO_GITHUB_CHECKOUT','NO_GITHUB_CHECKOUT',
+  'WINDOWS_PORTABLE_REGRESSION','ENGINE_BINARY_ABSENT',
  )
+ if any(marker in normalized for marker in exact_markers):return True
+ if 'PENDING' in normalized and 'USER' in normalized and 'MACHINE' in normalized:return True
+ phrase_patterns=(
+  r'\bUSER(?:_[A-Z0-9]+){0,3}_MACHINE\b',
+  r'\bMATERIALIZED_(?:CURRENT_)?CHECKOUT\b',
+  r'\bWINDOWS_(?:HOST|MACHINE|RUNTIME)\b',
+ )
+ return any(re.search(pattern,normalized) for pattern in phrase_patterns)
+
+
+def _boundary_meta(text):
+ upper=' '.join(str(text or '').upper().split())
+ return (
+  ('MARKER' in upper and ('SUCH AS' in upper or 'ACTIONABILITY' in upper or 'VOCABULARY' in upper))
+  or ('DISCOVERY MECHANISM' in upper and 'PROOF' in upper)
+ )
+
+
+def _truth_boundary_candidates(rows, limit=16):
+ """Turn explicit unresolved evidence boundaries into neutral DWAC candidates.
+
+ Only fields whose schema names them as boundaries/limitations are considered. This
+ avoids treating historical implementation notes or PASS receipts containing words
+ like UNRESOLVED as current work. External blockers are retained for observation but
+ placed behind actionable internal candidates so they cannot starve autonomous work.
+ """
+ actionable=[];blocked=[];seen=set()
+ marker_weights=(('UNRESOLVED',.98),('BLOCKED',.95),('PENDING',.90),('NOT_RUN',.86),('MISSING',.84),('CANNOT',.82),('NO CLAIM',.80))
  for row in rows or ():
   source=str(row.get('source') or 'evidence/unknown')
+  path=str(row.get('path') or '')
   text=' '.join(str(row.get('text') or '').split())
-  if not text:continue
+  if not text or _boundary_meta(text):continue
   upper=text.upper()
   severity=next((weight for marker,weight in marker_weights if marker in upper),None)
   if severity is None:continue
-  key=f'{source}\n{text}'
+  key=f'{source}\n{path}\n{text}'
   if key in seen:continue
   seen.add(key)
-  external=any(marker in upper for marker in external_markers)
+  external=_boundary_external(text)
   stem=re.sub(r'[^a-z0-9]+','-',Path(source).stem.lower()).strip('-')[:28] or 'evidence'
   digest=hashlib.sha256(key.encode('utf-8')).hexdigest()[:10]
-  out.append({
+  entry={
    'candidate_id':f'truth-boundary-{stem}-{digest}',
    'domain':'truth_boundary',
    'problem':text,
    'severity':severity,
    'externally_blocked':external,
    'evidence':(source,),
-  })
-  if len(out)>=limit:break
- return out
+   'metadata':{'truth_boundary_source':source,'truth_boundary_path':path},
+  }
+  (blocked if external else actionable).append(entry)
+ return (actionable+blocked)[:limit]
 
 
 def _probe_workspace(workspace, four_mode_available):
@@ -145,10 +191,12 @@ try:
   candidates.append(BottleneckCandidate('measured-game-build-closure','validation','close the selected engine path with a real provider execution receipt and observed build artifact',.99,.97,.98,.995,.52,.18))
 
  # Once bootstrap candidates are genuinely closed, do not declare saturation merely
- # because the old finite catalog is exhausted. Promote unresolved evidence into
- # neutral candidates and let DWAC rank them. No feature list or mode mapping lives here.
+ # because the old finite catalog is exhausted. Promote explicit unresolved evidence
+ # boundaries into neutral candidates and let DWAC rank them. No feature list or mode
+ # mapping lives here.
  if not candidates and closed.get('open-ended-candidate-discovery'):
   for row in _truth_boundary_candidates(reality.get('truth_boundaries')):
+   metadata=dict(row.get('metadata') or {})
    signals.append(Observation(
     f"truth-boundary-observation-{row['candidate_id'][-10:]}",
     row['domain'],
@@ -158,7 +206,7 @@ try:
     .84,
     row['evidence'],
     row['externally_blocked'],
-    {'truth_boundary_source':row['evidence'][0]},
+    metadata,
    ))
    candidates.append(BottleneckCandidate(
     row['candidate_id'],
@@ -172,7 +220,7 @@ try:
     .24,
     row['externally_blocked'],
     row['evidence'],
-    {'truth_boundary_source':row['evidence'][0]},
+    metadata,
    ))
 
  if not signals:signals.append(Observation('saturated','autonomy','no unresolved internal candidate observed',.10,.10,.10,('workspace',)))

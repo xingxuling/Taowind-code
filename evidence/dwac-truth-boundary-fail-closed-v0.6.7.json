@@ -1,0 +1,38 @@
+{
+  "protocol": "taowind-code.truth-boundary-fail-closed.evidence.v0.6.7",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "710cac2eb474df149b3ac1a05bc64fa91577bc86",
+  "selected_bottleneck": "truth-boundary-fresh-main-reality-observer--f3eb22e443",
+  "selected_problem": "Unresolved persistent PTY remains an internal candidate while GitHub remote delivery is explicitly marked as an external side-effect candidate so DWAC sovereignty rules can gate it.",
+  "development_mode": "WHOLE_ARTIFACT",
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "claim_limit": "The hosted Developer Execution Runtime and UPDIA provider returned HTTP 502; routing was deterministically replayed from the checked-in DWAC controller/router contract over fresh main evidence."
+  },
+  "validation_diagnosis": [
+    "The selected PTY problem is historical prose from a prior evidence record; persistent PTY is already materialized on current main.",
+    "Natural-language 'pending on the user machine' and engine-binary/current-sandbox boundaries were not consistently classified as external blockers.",
+    "The first-N evidence scan could let external/stale rows starve later autonomous capability gaps."
+  ],
+  "repair": [
+    "Candidate discovery now reads schema-declared boundary/limitation fields instead of arbitrary marker-bearing implementation prose.",
+    "External blocker detection normalizes machine-readable and natural-language user-machine/current-sandbox/engine-binary boundaries.",
+    "Actionable internal boundaries are ordered ahead of blocked boundaries without mapping any task type to a development mode.",
+    "Boundary provenance now includes the source JSON path."
+  ],
+  "verification": [
+    {"command": "python -m py_compile bridge/dwac_bridge.py", "status": "PASS"},
+    {"scenario": "stale PTY implementation prose + user-machine pending boundary + native cognition no-claim boundary", "status": "PASS", "result": "stale prose ignored; user-machine boundary fail-closed; native cognition boundary remains autonomous"},
+    {"check": "focused synthetic DWAC controller/router subprocess", "status": "PASS", "selected_mode_after_repair": "DEEP_DEVELOPMENT"}
+  ],
+  "truth_boundaries": [
+    "Full repository checkout/suite was not available in the current container because github.com DNS resolution failed.",
+    "No GitHub Actions were triggered or rerun.",
+    "This repair changes evidence selection truthfulness; it does not claim the next native cognition bottleneck is already closed."
+  ]
+}

@@ -13,7 +13,7 @@ test('exact independent cross-role agreement boosts the agreeing native proposal
     validated('export const value=1;\n','architecture'),
     validated('export const value=2;\n','verifier'),
   ],{goal:'implement consensus target',manifest:['src/target.mjs']});
-  assert.equal(out.protocol,'taowind.federated-changeset-selection.v0.6');
+  assert.equal(out.protocol,'taowind.federated-changeset-selection.v0.7');
   assert.equal(out.winner.proposal,undefined);
   assert.equal(out.winner.changes[0].content,'export const value=1;\n');
   assert.equal(out.winner.evaluation.agreedChanges,1);
@@ -133,4 +133,48 @@ test('context recovery aggregates requests from non-winning candidates',()=>{
 test('credential-like context requests are rejected before recovery',()=>{
   const p=normalizeProposal({changes:[],validation_commands:[],needs_more_context:['.env','.env.local','secrets.json','credentials.yaml','id_rsa','cert.pem','src/ok.mjs']});
   assert.deepEqual(p.needs_more_context,['src/ok.mjs']);
+});
+
+test('identical duplicate changes on one canonical path collapse deterministically',()=>{
+  const p=normalizeProposal({summary:'duplicate exact write',changes:[
+    {op:'write',path:'src/../src/target.mjs',content:'export const value=1;\n',expectedSha256:'sha-current'},
+    {op:'write',path:'src/target.mjs',content:'export const value=1;\n',expectedSha256:'sha-current'},
+  ],validation_commands:['node --check src/target.mjs']});
+  assert.equal(p.changes.length,1);
+  assert.deepEqual(p.ambiguous_paths,[]);
+  assert.equal(p.changes[0].path,'src/target.mjs');
+});
+
+test('conflicting writes inside one proposal fail closed instead of last-write-wins',()=>{
+  const p=normalizeProposal({summary:'conflicting writes',changes:[
+    {op:'write',path:'src/../src/target.mjs',content:'export const value=1;\n'},
+    {op:'write',path:'src/target.mjs',content:'export const value=2;\n'},
+  ],validation_commands:['node --check src/target.mjs']});
+  assert.deepEqual(p.changes,[]);
+  assert.deepEqual(p.ambiguous_paths,['src/target.mjs']);
+  assert.ok(p.risks.includes('AMBIGUOUS_CHANGE_PATH:src/target.mjs'));
+});
+
+test('write-delete ambiguity inside one proposal fails closed',()=>{
+  const p=normalizeProposal({summary:'conflicting ops',changes:[
+    {op:'write',path:'src/target.mjs',content:'export const value=1;\n'},
+    {op:'delete',path:'src/target.mjs'},
+  ],validation_commands:['node --check src/target.mjs']});
+  assert.deepEqual(p.changes,[]);
+  assert.deepEqual(p.ambiguous_paths,['src/target.mjs']);
+});
+
+test('federation skips an ambiguous proposal and selects an executable alternative',()=>{
+  const out=selectFederatedProposal([
+    {provider:'dwac-native',role:'implementation',proposal:{summary:'implement consensus target with conflict',changes:[
+      {op:'write',path:'src/target.mjs',content:'export const value=1;\n'},
+      {op:'write',path:'src/target.mjs',content:'export const value=2;\n'},
+    ],validation_commands:['node --check src/target.mjs']}},
+    validated('export const value=3;\n','architecture','dwac-native'),
+  ],{goal:'implement consensus target'});
+  assert.equal(out.winner.role,'architecture');
+  assert.equal(out.consensus.validCount,1);
+  const ambiguous=out.ranked.find(x=>x.role==='implementation');
+  assert.equal(ambiguous.evaluation.ambiguousPaths,1);
+  assert.deepEqual(ambiguous.ambiguous_paths,['src/target.mjs']);
 });

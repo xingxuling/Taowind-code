@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {selectFederatedProposal} from '../core/federated-generation.mjs';
+import {normalizeProposal,selectFederatedProposal} from '../core/federated-generation.mjs';
 
-const validated=(content,role='implementation',provider='dwac-native',expectedSha256=null)=>({
+const validated=(content,role='implementation',provider='dwac-native',expectedSha256=null,path='src/target.mjs')=>({
   provider,role,
-  proposal:{summary:'implement consensus target',changes:[{op:'write',path:'src/target.mjs',content,...(expectedSha256?{expectedSha256}:{})}],validation_commands:['node --check src/target.mjs'],risks:[]}
+  proposal:{summary:'implement consensus target',changes:[{op:'write',path,content,...(expectedSha256?{expectedSha256}:{})}],validation_commands:['node --check src/target.mjs'],risks:[]}
 });
 
 test('exact independent cross-role agreement boosts the agreeing native proposal above a conflicting alternative',()=>{
@@ -13,7 +13,7 @@ test('exact independent cross-role agreement boosts the agreeing native proposal
     validated('export const value=1;\n','architecture'),
     validated('export const value=2;\n','verifier'),
   ],{goal:'implement consensus target',manifest:['src/target.mjs']});
-  assert.equal(out.protocol,'taowind.federated-changeset-selection.v0.4');
+  assert.equal(out.protocol,'taowind.federated-changeset-selection.v0.5');
   assert.equal(out.winner.proposal,undefined);
   assert.equal(out.winner.changes[0].content,'export const value=1;\n');
   assert.equal(out.winner.evaluation.agreedChanges,1);
@@ -93,4 +93,30 @@ test('single-candidate behavior stays deterministic and consensus-neutral',()=>{
   assert.equal(out.consensus.validCount,1);
   assert.equal(out.consensus.independentOriginCount,1);
   assert.equal(out.consensus.conflictedPathCount,0);
+});
+
+test('canonical path aliases count as the same exact change',()=>{
+  const out=selectFederatedProposal([
+    validated('export const value=1;\n','implementation','dwac-native',null,'src/../src/target.mjs'),
+    validated('export const value=1;\n','architecture','dwac-native',null,'src/target.mjs'),
+  ],{goal:'implement consensus target',manifest:['./src/target.mjs']});
+  assert.equal(out.consensus.exactAgreementCount,1);
+  assert.equal(out.consensus.conflictedPathCount,0);
+  assert.equal(out.winner.changes[0].path,'src/target.mjs');
+  assert.equal(out.winner.evaluation.existingEdits,1);
+});
+
+test('canonical path aliases expose same-file conflicts instead of evading them',()=>{
+  const out=selectFederatedProposal([
+    validated('export const value=1;\n','implementation','dwac-native',null,'src/../src/target.mjs'),
+    validated('export const value=2;\n','architecture','dwac-native',null,'src/target.mjs'),
+  ],{goal:'implement consensus target'});
+  assert.equal(out.consensus.exactAgreementCount,0);
+  assert.equal(out.consensus.conflictedPathCount,1);
+  assert.deepEqual(out.consensus.conflictedPaths,['src/target.mjs']);
+});
+
+test('context requests are canonicalized and deduplicated before recovery',()=>{
+  const p=normalizeProposal({changes:[],validation_commands:[],needs_more_context:['src/../src/target.mjs','src/target.mjs','../escape.txt','.git/config']});
+  assert.deepEqual(p.needs_more_context,['src/target.mjs']);
 });

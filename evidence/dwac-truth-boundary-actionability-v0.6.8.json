@@ -1,0 +1,55 @@
+{
+  "protocol": "taowind-code.truth-boundary-actionability.evidence.v0.6.8",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "079d0b44b953ddaaa9ce4d0516e0d83ca4c2ccb1",
+  "selected_bottleneck": "truth-boundary-game-forge-v0-6-c2f371667c",
+  "selected_problem": "full current-repository test suite remains pending on a locally materialized current checkout",
+  "development_mode": "WHOLE_ARTIFACT",
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "claim_limit": "The hosted execution provider returned transient HTTP 502 during this cycle; bottleneck selection and routing were deterministically replayed from the checked-in DWAC controller/router source over the fresh canonical evidence ledger."
+  },
+  "diagnosis": [
+    "The highest-ranked open-ended candidate was an execution-environment acceptance boundary, not an internal Taowind Code capability gap.",
+    "The locally-materialized-current-checkout phrase escaped the existing external-boundary matcher because the normalized prefix prevented the word-boundary regular expression from matching.",
+    "A historical truthfulness disclaimer containing the word missing was also eligible even though it described non-fabrication rather than an open capability state.",
+    "The current-container DNS boundary remained observable but could still enter autonomous ranking."
+  ],
+  "repair": [
+    "Execution-container, validation-container, current-execution-environment and materialized-current-checkout boundaries now fail closed as external evidence.",
+    "Truthfulness disclaimers whose action marker only appears inside a does-not-fabricate statement are retained as evidence but excluded from autonomous candidate ranking.",
+    "No task category is mapped to a development mode; the North Star controller and four-mode router remain the routing authority."
+  ],
+  "verification": [
+    {"check": "modified Python decision-surface compile", "status": "PASS"},
+    {"check": "boundary classification matrix", "status": "PASS", "cases": 5, "covered": ["user-machine", "locally-materialized-current-checkout", "current-container", "truthfulness-disclaimer", "native-changeset-gap"]},
+    {"command": "node --check tests/truth-boundary-actionability.test.mjs", "status": "PASS"},
+    {"check": "GitHub compare against canonical base", "status": "PASS", "changed_files": 2, "bridge_changes": 11, "test_added_lines": 61},
+    {"check": "repository rulesets", "status": "PASS", "active_rulesets": 0},
+    {"check": "workflow directory on canonical main", "status": "ABSENT"}
+  ],
+  "post_repair_source_contract_replay": {
+    "selected_problem": "DWAC native changeset generation fails closed when it cannot produce machine-parseable validated changes.",
+    "selected_score": 0.748,
+    "native_mode": "DEEP_DEVELOPMENT",
+    "development_mode": "WHOLE_ARTIFACT",
+    "route_scores": {
+      "WHOLE_ARTIFACT": 0.817889,
+      "DEEP_DEVELOPMENT": 0.313556,
+      "NORTH_STAR": 0.6802,
+      "NORTH_STAR_BURST": 0.783
+    },
+    "sovereignty_gate": "AUTONOMOUS"
+  },
+  "truth_boundaries": [
+    "Hosted runtime execution was unavailable in this cycle, so source-contract replay provenance is preserved explicitly.",
+    "Current-container and materialized-checkout observations remain visible evidence while staying outside autonomous product-work ranking.",
+    "Focused classifier validation covers the changed decision surface; the complete repository suite was not executed in this container.",
+    "No GitHub Actions were triggered or rerun."
+  ]
+}

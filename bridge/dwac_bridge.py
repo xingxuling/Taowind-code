@@ -73,7 +73,9 @@ def _boundary_external(text):
  normalized=re.sub(r'[^A-Z0-9]+','_',upper).strip('_')
  exact_markers=(
   'PENDING_USER_MACHINE','BLOCKED_EXTERNAL','EXTERNAL_BLOCKER','REQUIRES_CREDENTIAL','PAID_ACTION',
-  'CURRENT_SANDBOX','CANNOT_CLONE','HAS_NO_GITHUB_CHECKOUT','NO_GITHUB_CHECKOUT',
+  'CURRENT_SANDBOX','CURRENT_CONTAINER','EXECUTION_CONTAINER','VALIDATION_CONTAINER',
+  'CURRENT_EXECUTION_ENVIRONMENT','THIS_EXECUTION_ENVIRONMENT',
+  'CANNOT_CLONE','HAS_NO_GITHUB_CHECKOUT','NO_GITHUB_CHECKOUT',
   'WINDOWS_PORTABLE_REGRESSION','ENGINE_BINARY_ABSENT',
  )
  if any(marker in normalized for marker in exact_markers):return True
@@ -88,9 +90,14 @@ def _boundary_external(text):
 
 def _boundary_meta(text):
  upper=' '.join(str(text or '').upper().split())
+ truth_disclaimer=(
+  bool(re.search(r'\bDO(?:ES)? NOT FABRICATE\b',upper))
+  and any(marker in upper for marker in ('UNRESOLVED','BLOCKED','PENDING','NOT_RUN','MISSING','CANNOT','NO CLAIM'))
+ )
  return (
   ('MARKER' in upper and ('SUCH AS' in upper or 'ACTIONABILITY' in upper or 'VOCABULARY' in upper))
   or ('DISCOVERY MECHANISM' in upper and 'PROOF' in upper)
+  or truth_disclaimer
  )
 
 

@@ -20,26 +20,30 @@ export function normalizeProposal(raw,{provider='unknown',role='implementation'}
 function goalTokens(goal){return [...new Set(String(goal||'').toLowerCase().match(/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu)||[])]}
 function proposalText(p){return `${p.summary} ${p.changes.map(c=>`${c.path} ${c.op==='write'?c.content.slice(0,800):''}`).join(' ')}`.toLowerCase()}
 function changeFingerprint(change){return JSON.stringify([change.op,change.path,change.op==='write'?change.content:''])}
+function proposalOrigin(proposal){return `${proposal.provider||'unknown'}:${proposal.role||'implementation'}`}
 function consensusSignals(proposals){
   const executable=(proposals||[]).filter(p=>p.changes.length&&p.validation_commands.length);
   const exactSupport=new Map(),pathVariants=new Map();
   for(const proposal of executable){
-    const seenExact=new Set(),seenPaths=new Set();
+    const origin=proposalOrigin(proposal);const seenExact=new Set(),seenPaths=new Set();
     for(const change of proposal.changes){
       const fingerprint=changeFingerprint(change);
-      if(!seenExact.has(fingerprint)){seenExact.add(fingerprint);exactSupport.set(fingerprint,(exactSupport.get(fingerprint)||0)+1)}
+      if(!seenExact.has(fingerprint)){
+        seenExact.add(fingerprint);
+        const supporters=exactSupport.get(fingerprint)||new Set();supporters.add(origin);exactSupport.set(fingerprint,supporters);
+      }
       if(!seenPaths.has(change.path)){
         seenPaths.add(change.path);
         const variants=pathVariants.get(change.path)||new Set();variants.add(fingerprint);pathVariants.set(change.path,variants);
       }
     }
   }
-  return {executableCount:executable.length,exactSupport,pathVariants};
+  return {executableCount:executable.length,exactSupport,pathVariants,independentOrigins:new Set(executable.map(proposalOrigin)).size};
 }
 function proposalConsensus(p,signals){
   let exactAgreement=0,agreedChanges=0,conflictPaths=0;
   for(const change of p.changes){
-    const support=signals?.exactSupport?.get(changeFingerprint(change))||0;
+    const support=signals?.exactSupport?.get(changeFingerprint(change))?.size||0;
     if(support>1){exactAgreement+=support-1;agreedChanges+=1}
     if((signals?.pathVariants?.get(change.path)?.size||0)>1)conflictPaths+=1;
   }
@@ -73,6 +77,6 @@ export function selectFederatedProposal(candidates,{goal='',manifest=[]}={}){
   const ranked=normalized.map(p=>({...p,evaluation:scoreProposal(p,{goal,manifest,consensus:signals})})).sort((a,b)=>b.evaluation.score-a.evaluation.score||a.provider.localeCompare(b.provider)||a.role.localeCompare(b.role));
   const winner=ranked.find(x=>x.changes.length&&x.validation_commands.length)||ranked[0]||null;
   const conflictedPaths=[...signals.pathVariants.entries()].filter(([,variants])=>variants.size>1).map(([path])=>path).sort();
-  const exactAgreementCount=[...signals.exactSupport.values()].filter(count=>count>1).length;
-  return {protocol:'taowind.federated-changeset-selection.v0.2',winner,ranked,consensus:{candidateCount:ranked.length,validCount:ranked.filter(x=>x.changes.length&&x.validation_commands.length).length,providers:[...new Set(ranked.map(x=>x.provider))],executableCount:signals.executableCount,exactAgreementCount,conflictedPathCount:conflictedPaths.length,conflictedPaths:conflictedPaths.slice(0,16)}};
+  const exactAgreementCount=[...signals.exactSupport.values()].filter(origins=>origins.size>1).length;
+  return {protocol:'taowind.federated-changeset-selection.v0.3',winner,ranked,consensus:{candidateCount:ranked.length,validCount:ranked.filter(x=>x.changes.length&&x.validation_commands.length).length,providers:[...new Set(ranked.map(x=>x.provider))],executableCount:signals.executableCount,independentOriginCount:signals.independentOrigins,exactAgreementCount,conflictedPathCount:conflictedPaths.length,conflictedPaths:conflictedPaths.slice(0,16)}};
 }

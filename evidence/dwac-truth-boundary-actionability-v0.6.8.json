@@ -29,7 +29,7 @@
     {"check": "modified Python decision-surface compile", "status": "PASS"},
     {"check": "boundary classification matrix", "status": "PASS", "cases": 5, "covered": ["user-machine", "locally-materialized-current-checkout", "current-container", "truthfulness-disclaimer", "native-changeset-gap"]},
     {"command": "node --check tests/truth-boundary-actionability.test.mjs", "status": "PASS"},
-    {"check": "GitHub compare against canonical base", "status": "PASS", "changed_files": 2, "bridge_changes": 11, "test_added_lines": 61},
+    {"check": "GitHub compare against canonical base", "status": "PASS", "changed_files": 3, "bridge_changes": 11, "test_added_lines": 61, "evidence_added_lines": 55},
     {"check": "repository rulesets", "status": "PASS", "active_rulesets": 0},
     {"check": "workflow directory on canonical main", "status": "ABSENT"}
   ],

@@ -1,0 +1,65 @@
+{
+  "protocol": "taowind-code.dwac-native-consensus-ranking.evidence.v0.7.2",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "320c9955520ceee052dac1e7af8c400a16daba37",
+  "selected_bottleneck": "native-complex-changeset-synthesis",
+  "selected_problem": "Arbitrary complex repository synthesis remains UNRESOLVED. After bounded native implementation/architecture/verifier expansion, the existing federation selector still ranked each executable proposal in isolation: exact cross-role agreement did not increase confidence and same-path disagreement did not increase skepticism.",
+  "development_mode": "WHOLE_ARTIFACT",
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "320c9955520ceee052dac1e7af8c400a16daba37",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "updia_generation": "TRANSIENT_HTTP_502",
+    "turi_host_evidence": "TRANSIENT_HTTP_502",
+    "claim_limit": "No successful hosted DWAC/UPDIA/TURI execution receipt is claimed. The bottleneck family and mode remain grounded in the checked-in DWAC controller/router contract plus the fresh canonical evidence boundary; this cycle only narrows the selected synthesis bottleneck using existing federation assets."
+  },
+  "code_reality": [
+    "Taowind Code already expands unresolved native synthesis into bounded implementation, architecture and verifier candidates.",
+    "core/federated-generation.mjs normalized and scored each proposal independently, so agreement between independent native roles carried no ranking signal.",
+    "The selector likewise did not expose same-path conflicting candidate variants as an explicit consensus risk even though all proposals still pass through existing validation and rollback gates."
+  ],
+  "asset_reuse": [
+    "Reused the existing requestChangesetCandidates multi-role native path; no new model/provider architecture was introduced.",
+    "Reused core/federated-generation.mjs as the only selection surface; RCL authority, ChangeSetIR lowering, transactional changesets, real validation, rollback and GitHub delivery remain unchanged.",
+    "RCL status during this cycle: @taowind/rcl-reality-forge 0.94.0-alpha.1, RNCS fusion ready/deterministic/reference-parity/current evidence."
+  ],
+  "changes": [
+    "Federated selection now derives consensus only from executable candidates that contain both repository changes and validation commands.",
+    "Exact same change content proposed by multiple candidates adds a bounded ranking signal; a non-executable proposal cannot manufacture that support.",
+    "Different executable variants targeting the same path add a bounded conflict penalty and are surfaced in the consensus receipt.",
+    "Single-candidate behavior stays deterministic and consensus-neutral; the selector still chooses one proposal rather than composing unvalidated cross-candidate changes."
+  ],
+  "verification": [
+    {
+      "command": "node --check core/federated-generation.mjs",
+      "status": "PASS"
+    },
+    {
+      "command": "node --test tests/federated-consensus.test.mjs",
+      "status": "PASS",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0
+    },
+    {
+      "check": "validated-local-content-matches-github-branch-blobs",
+      "status": "PASS",
+      "selector_blob_sha1": "aaaf9cb6a9add0904bf42de59278609b0a867f86",
+      "test_blob_sha1": "b4b64529ba3a3e5cee76be3986b832973e82b9f6"
+    }
+  ],
+  "truth_boundaries": [
+    "Arbitrary complex repository synthesis remains UNRESOLVED. Cross-role consensus ranking improves selection evidence; it does not create missing semantic code-generation capability.",
+    "Consensus is evidence for ranking, not proof of correctness. Real validation, browser evidence where required, rollback and delivery gates remain non-compensatory.",
+    "The selector does not merge or compose candidate changesets in this cycle; conflicting candidates stay separate and the existing winner path remains bounded and reversible.",
+    "Hosted Developer Execution Runtime, UPDIA generation and TURI host-evidence preparation returned transient HTTP 502 in this cycle; no hosted success receipt is fabricated.",
+    "No GitHub Actions were intentionally triggered or rerun, no force push was used, and no credential, payment, formal Release or destructive external action was performed."
+  ]
+}

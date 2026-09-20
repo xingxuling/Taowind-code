@@ -22,7 +22,7 @@ def _source_has(workspace, rel, needles):
  return bool(text) and all(str(x).lower() in text for x in needles)
 
 
-def _truth_boundaries(workspace, limit=12):
+def _truth_boundaries(workspace, limit=64):
  evidence=workspace/'evidence';rows=[]
  if not evidence.exists():return rows
  for file in sorted(evidence.glob('*.json'),reverse=True):
@@ -56,7 +56,10 @@ def _truth_boundary_candidates(rows, limit=8):
  """
  out=[];seen=set()
  marker_weights=(('UNRESOLVED',.98),('BLOCKED',.95),('PENDING',.90),('NOT_RUN',.86),('MISSING',.84),('CANNOT',.82),('NO CLAIM',.80))
- external_markers=('PENDING_USER_MACHINE','BLOCKED_EXTERNAL','EXTERNAL_BLOCKER','REQUIRES_CREDENTIAL','PAID_ACTION')
+ external_markers=(
+  'PENDING_USER_MACHINE','BLOCKED_EXTERNAL','EXTERNAL_BLOCKER','REQUIRES_CREDENTIAL','PAID_ACTION',
+  'CURRENT_SANDBOX','CANNOT_CLONE','HAS_NO_GITHUB_CHECKOUT','WINDOWS_PORTABLE_REGRESSION',
+ )
  for row in rows or ():
   source=str(row.get('source') or 'evidence/unknown')
   text=' '.join(str(row.get('text') or '').split())

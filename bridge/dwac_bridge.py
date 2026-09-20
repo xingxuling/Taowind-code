@@ -1,4 +1,4 @@
-import argparse, json, os, re, subprocess, sys
+import argparse, hashlib, json, os, re, subprocess, sys
 from pathlib import Path
 
 p=argparse.ArgumentParser();p.add_argument('--dwac-root',required=True);p.add_argument('--workspace',required=True);p.add_argument('--prompt',required=True);a=p.parse_args()
@@ -22,7 +22,7 @@ def _source_has(workspace, rel, needles):
  return bool(text) and all(str(x).lower() in text for x in needles)
 
 
-def _truth_boundaries(workspace, limit=12):
+def _truth_boundaries(workspace, limit=64):
  evidence=workspace/'evidence';rows=[]
  if not evidence.exists():return rows
  for file in sorted(evidence.glob('*.json'),reverse=True):
@@ -46,6 +46,45 @@ def _truth_boundaries(workspace, limit=12):
  return rows[:limit]
 
 
+def _truth_boundary_candidates(rows, limit=8):
+ """Turn unresolved evidence into neutral DWAC candidates after the fixed bootstrap catalog is exhausted.
+
+ This does not prescribe a feature or architecture. It only makes an explicit,
+ evidence-bearing limitation visible to the North Star controller. The controller
+ remains the authority that ranks it and the four-mode router remains the authority
+ that chooses the user-level development mode.
+ """
+ out=[];seen=set()
+ marker_weights=(('UNRESOLVED',.98),('BLOCKED',.95),('PENDING',.90),('NOT_RUN',.86),('MISSING',.84),('CANNOT',.82),('NO CLAIM',.80))
+ external_markers=(
+  'PENDING_USER_MACHINE','BLOCKED_EXTERNAL','EXTERNAL_BLOCKER','REQUIRES_CREDENTIAL','PAID_ACTION',
+  'CURRENT_SANDBOX','CANNOT_CLONE','HAS_NO_GITHUB_CHECKOUT','WINDOWS_PORTABLE_REGRESSION',
+ )
+ for row in rows or ():
+  source=str(row.get('source') or 'evidence/unknown')
+  text=' '.join(str(row.get('text') or '').split())
+  if not text:continue
+  upper=text.upper()
+  severity=next((weight for marker,weight in marker_weights if marker in upper),None)
+  if severity is None:continue
+  key=f'{source}\n{text}'
+  if key in seen:continue
+  seen.add(key)
+  external=any(marker in upper for marker in external_markers)
+  stem=re.sub(r'[^a-z0-9]+','-',Path(source).stem.lower()).strip('-')[:28] or 'evidence'
+  digest=hashlib.sha256(key.encode('utf-8')).hexdigest()[:10]
+  out.append({
+   'candidate_id':f'truth-boundary-{stem}-{digest}',
+   'domain':'truth_boundary',
+   'problem':text,
+   'severity':severity,
+   'externally_blocked':external,
+   'evidence':(source,),
+  })
+  if len(out)>=limit:break
+ return out
+
+
 def _probe_workspace(workspace, four_mode_available):
  head=_git_head(workspace)
  closed={
@@ -58,6 +97,7 @@ def _probe_workspace(workspace, four_mode_available):
   'fresh-main-observer': _source_has(workspace,'bridge/dwac_bridge.py',['workspace_observation','closed_capabilities','truth_boundaries']),
   'persistent-pty-runtime': _source_has(workspace,'core/terminal.mjs',['node-pty']) or _source_has(workspace,'core/terminal.mjs',['conpty']),
   'github-remote-provider': _source_has(workspace,'core/git.mjs',['push']) and _source_has(workspace,'core/git.mjs',['pull request']),
+  'open-ended-candidate-discovery': _source_has(workspace,'bridge/dwac_bridge.py',['_truth_boundary_candidates','truth-boundary']),
  }
  return {'head':head,'closed_capabilities':closed,'truth_boundaries':_truth_boundaries(workspace)}
 
@@ -103,6 +143,38 @@ try:
  if is_game:
   signals.append(Observation('game-build-evidence','validation','game closure requires measured primary-engine CLI build/export evidence plus a real output artifact existence check',.99,.99,.98,('game-engine-provider','artifact-existence')))
   candidates.append(BottleneckCandidate('measured-game-build-closure','validation','close the selected engine path with a real provider execution receipt and observed build artifact',.99,.97,.98,.995,.52,.18))
+
+ # Once bootstrap candidates are genuinely closed, do not declare saturation merely
+ # because the old finite catalog is exhausted. Promote unresolved evidence into
+ # neutral candidates and let DWAC rank them. No feature list or mode mapping lives here.
+ if not candidates and closed.get('open-ended-candidate-discovery'):
+  for row in _truth_boundary_candidates(reality.get('truth_boundaries')):
+   signals.append(Observation(
+    f"truth-boundary-observation-{row['candidate_id'][-10:]}",
+    row['domain'],
+    row['problem'],
+    row['severity'],
+    .88,
+    .84,
+    row['evidence'],
+    row['externally_blocked'],
+    {'truth_boundary_source':row['evidence'][0]},
+   ))
+   candidates.append(BottleneckCandidate(
+    row['candidate_id'],
+    row['domain'],
+    row['problem'],
+    min(.97,row['severity']),
+    .76,
+    .94 if not row['externally_blocked'] else .30,
+    .98,
+    .52,
+    .24,
+    row['externally_blocked'],
+    row['evidence'],
+    {'truth_boundary_source':row['evidence'][0]},
+   ))
+
  if not signals:signals.append(Observation('saturated','autonomy','no unresolved internal candidate observed',.10,.10,.10,('workspace',)))
  if not candidates:raise RuntimeError('NO_ACTIONABLE_CANDIDATE')
 
@@ -114,7 +186,7 @@ try:
   top_score=float(ranked[0].score) if ranked else 0.0;second_score=float(ranked[1].score) if len(ranked)>1 else 0.0;dominance=max(0.0,top_score-second_score);clamp=lambda value:max(0.0,min(1.0,float(value)))
   route_signal=FourModeSignal(breadth=clamp(len(pressure_domains)/max(1,len(domain_universe))),bottleneck_centrality=clamp(dominance/0.18),evidence_density=clamp(decision.selected.evidence_gain),adjacent_work_count=len(portfolio),direction_stability=clamp(top_score),urgency=clamp(max((item.pressure for item in signals),default=0.0)),artifact_pressure=clamp(len(portfolio)/8.0))
   routed=FourDevelopmentModeRouter().route(route_signal);mode=routed.mode.value;route_reason=routed.reason;route_scores=dict(routed.scores);routing_source='DWAC_FOUR_MODE_ROUTER'
- result={'connected':True,'status':'COMPILED','plan_id':plan_id,'stage_count':stage_count,'topological_order':topological_order,'workspace':a.workspace,'workspace_observation':reality,'artifact_family':artifact_family,'mode':mode,'native_mode':native_mode,'routing_source':routing_source,'route_reason':route_reason,'route_scores':route_scores,'route_signal':({'breadth':route_signal.breadth,'bottleneck_centrality':route_signal.bottleneck_centrality,'evidence_density':route_signal.evidence_density,'adjacent_work_count':route_signal.adjacent_work_count,'direction_stability':route_signal.direction_stability,'urgency':route_signal.urgency,'artifact_pressure':route_signal.artifact_pressure} if route_signal is not None else None),'cycle_id':decision.cycle_id,'selected_bottleneck':decision.selected.candidate_id,'decision_reason':decision.reason,'sovereignty_gate':decision.sovereignty_gate.value,'north_star':goal,'candidate_scores':[{'id':x.candidate_id,'score':x.score} for x in decision.ranked_candidates]}
+ result={'connected':True,'status':'COMPILED','plan_id':plan_id,'stage_count':stage_count,'topological_order':topological_order,'workspace':a.workspace,'workspace_observation':reality,'artifact_family':artifact_family,'mode':mode,'native_mode':native_mode,'routing_source':routing_source,'route_reason':route_reason,'route_scores':route_scores,'route_signal':({'breadth':route_signal.breadth,'bottleneck_centrality':route_signal.bottleneck_centrality,'evidence_density':route_signal.evidence_density,'adjacent_work_count':route_signal.adjacent_work_count,'direction_stability':route_signal.direction_stability,'urgency':route_signal.urgency,'artifact_pressure':route_signal.artifact_pressure} if route_signal is not None else None),'cycle_id':decision.cycle_id,'selected_bottleneck':decision.selected.candidate_id,'selected_problem':decision.selected.problem,'decision_reason':decision.reason,'sovereignty_gate':decision.sovereignty_gate.value,'north_star':goal,'candidate_scores':[{'id':x.candidate_id,'problem':x.problem,'score':x.score} for x in decision.ranked_candidates]}
  result.update(plan_meta);print(json.dumps(result,ensure_ascii=False))
 except Exception as e:
  print(json.dumps({'connected':True,'status':'ERROR','message':f'{type(e).__name__}: {e}'},ensure_ascii=False));sys.exit(2)

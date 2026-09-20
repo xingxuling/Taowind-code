@@ -1,0 +1,64 @@
+{
+  "protocol": "taowind-code.open-ended-candidate-discovery.evidence.v0.6.6",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "20f96ca4234ed7ef721e01a558e61f0e49a91425",
+  "selected_bottleneck": "open-ended-reality-candidate-discovery",
+  "development_mode": "NORTH_STAR_BURST",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "claim_limit": "This is a deterministic replay of the checked-in DWAC controller/router contract over fresh repository evidence, not a hosted Developer Execution Runtime receipt."
+  },
+  "candidate_scores": [
+    {"id": "open-ended-reality-candidate-discovery", "score": 0.854, "gate": "AUTONOMOUS"},
+    {"id": "native-complex-changeset-synthesis", "score": 0.7882, "gate": "AUTONOMOUS"},
+    {"id": "semantic-graph-language-adapters", "score": 0.7238, "gate": "AUTONOMOUS"},
+    {"id": "portable-real-environment-regression", "score": null, "state": "BLOCKED_EXTERNAL"}
+  ],
+  "route_signal": {
+    "breadth": 1.0,
+    "bottleneck_centrality": 0.3655555556,
+    "evidence_density": 0.98,
+    "adjacent_work_count": 3,
+    "direction_stability": 0.854,
+    "urgency": 0.9795,
+    "artifact_pressure": 0.375
+  },
+  "route_scores": {
+    "WHOLE_ARTIFACT": 0.708139,
+    "DEEP_DEVELOPMENT": 0.495056,
+    "NORTH_STAR": 0.7188,
+    "NORTH_STAR_BURST": 0.8148
+  },
+  "observed_gap": [
+    "The fresh-main bridge contains a finite bootstrap candidate catalog. Once fresh-main observation, persistent PTY and GitHub remote delivery are closed, the generic path reaches NO_ACTIONABLE_CANDIDATE even when the repository evidence ledger still contains explicit UNRESOLVED/PENDING/NOT_RUN/BLOCKED truth boundaries.",
+    "That finite observation horizon would stop the long-running North Star loop for lack of a hard-coded next feature, contradicting the requirement that DWAC re-observe code reality and choose new bottlenecks without a manually maintained roadmap.",
+    "Current main still records real residual boundaries, including DWAC_COGNITION_UNRESOLVED for native complex changesets; the historical DWAC North Star record also left language-aware semantic graph evolution open after browser, PTY and remote delivery closure."
+  ],
+  "changes": [
+    "bridge/dwac_bridge.py now promotes explicit evidence-led truth boundaries into neutral BottleneckCandidate inputs only after the bootstrap candidate catalog is exhausted.",
+    "The bridge does not map any discovered candidate to a development mode; NorthStarSelfDevelopmentController ranks the candidates and FourDevelopmentModeRouter independently chooses the mode.",
+    "Candidate identifiers are deterministic hashes of evidence source plus boundary text, preserving traceability without inventing a product feature name.",
+    "Boundaries explicitly marked as user-machine/external/credential/paid blockers remain externally blocked and cannot silently become autonomous work.",
+    "The bridge exposes selected_problem alongside selected_bottleneck so opaque deterministic candidate ids remain auditable."
+  ],
+  "verification": [
+    {"command": "python -m py_compile bridge/dwac_bridge.py", "status": "PASS"},
+    {"command": "node --test tests/open-ended-candidate-discovery.test.mjs", "status": "PASS", "tests": 1, "passed": 1, "failed": 0},
+    {"scenario": "all bootstrap capabilities closed; one internal UNRESOLVED boundary plus one PENDING_USER_MACHINE boundary", "status": "PASS", "selected_problem": "DWAC native complex repository changes remain UNRESOLVED without a reliable machine changeset.", "selected_gate": "AUTONOMOUS", "selected_mode": "DEEP_DEVELOPMENT", "external_boundary_excluded_from_ranked_candidates": true},
+    {"check": "RCL/RNCS provider status", "status": "PASS", "rcl_version": "0.94.0-alpha.1", "rncs_fusion_all_ready": true, "rncs_fusion_reference_parity": true}
+  ],
+  "truth_boundaries": [
+    "The promotion layer is intentionally conservative: only evidence text carrying explicit actionability markers such as UNRESOLVED, BLOCKED, PENDING, NOT_RUN, MISSING, CANNOT or NO CLAIM is promoted.",
+    "Truth-boundary promotion is a discovery mechanism, not proof that the promoted problem can be closed in the current environment.",
+    "The full repository suite was not executed because the current container cannot resolve github.com for a normal clone; focused bridge syntax and synthetic-contract tests were executed locally instead.",
+    "The hosted Developer Execution Runtime and UPDIA provider both returned transient HTTP 502 during this cycle; no successful hosted DWAC execution receipt is claimed.",
+    "No GitHub Actions were triggered or rerun."
+  ]
+}

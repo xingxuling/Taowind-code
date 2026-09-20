@@ -1,6 +1,7 @@
 import path from 'node:path';
 
 const BLOCKED_SEGMENTS=new Set(['.git','node_modules','.next','dist','build','runtime-data','.venv']);
+const SECRET_CONTEXT_PATH=/(^|\/)(?:\.env(?:\.[^\/]*)?|credentials?(?:\.[^\/]*)?|secrets?(?:\.[^\/]*)?|id_(?:rsa|ed25519)|[^\/]+\.(?:pem|key|p12|pfx))$/i;
 function normalizeRel(p){
   if(typeof p!=='string'||!p.trim())return null;
   const norm=path.posix.normalize(p.replaceAll('\\','/'));
@@ -9,6 +10,7 @@ function normalizeRel(p){
   return norm;
 }
 function safeRel(p){return normalizeRel(p)!==null}
+function normalizeContextRel(p){const rel=normalizeRel(p);return rel&&!SECRET_CONTEXT_PATH.test(rel)?rel:null}
 function normalizeChange(c){
   const rel=normalizeRel(c?.path);
   if(!c||!['write','delete'].includes(c.op)||!rel)return null;
@@ -18,7 +20,7 @@ function normalizeChange(c){
 export function normalizeProposal(raw,{provider='unknown',role='implementation'}={}){
   const changes=[...new Map((Array.isArray(raw?.changes)?raw.changes:[]).map(normalizeChange).filter(Boolean).map(x=>[`${x.op}:${x.path}`,x])).values()];
   const validation=[...new Set((Array.isArray(raw?.validation_commands)?raw.validation_commands:[]).map(String).map(x=>x.trim()).filter(Boolean))].slice(0,16);
-  const context=[...new Set((Array.isArray(raw?.needs_more_context)?raw.needs_more_context:[]).map(normalizeRel).filter(Boolean))].slice(0,32);
+  const context=[...new Set((Array.isArray(raw?.needs_more_context)?raw.needs_more_context:[]).map(normalizeContextRel).filter(Boolean))].slice(0,32);
   return {provider,role,summary:String(raw?.summary||''),changes,validation_commands:validation,risks:(Array.isArray(raw?.risks)?raw.risks:[]).map(String).slice(0,20),needs_more_context:context};
 }
 function goalTokens(goal){return [...new Set(String(goal||'').toLowerCase().match(/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu)||[])]}
@@ -79,8 +81,9 @@ export function selectFederatedProposal(candidates,{goal='',manifest=[]}={}){
   const normalized=(candidates||[]).map((x,i)=>normalizeProposal(x.proposal??x,{provider:x.provider||`candidate-${i+1}`,role:x.role||'implementation'}));
   const signals=consensusSignals(normalized);
   const ranked=normalized.map(p=>({...p,evaluation:scoreProposal(p,{goal,manifest,consensus:signals})})).sort((a,b)=>b.evaluation.score-a.evaluation.score||a.provider.localeCompare(b.provider)||a.role.localeCompare(b.role));
+  const contextRequests=[...new Set(ranked.flatMap(p=>p.needs_more_context||[]))].slice(0,32);
   const winner=ranked.find(x=>x.changes.length&&x.validation_commands.length)||ranked[0]||null;
   const conflictedPaths=[...signals.pathVariants.entries()].filter(([,variants])=>variants.size>1).map(([path])=>path).sort();
   const exactAgreementCount=[...signals.exactSupport.values()].filter(origins=>origins.size>1).length;
-  return {protocol:'taowind.federated-changeset-selection.v0.5',winner,ranked,consensus:{candidateCount:ranked.length,validCount:ranked.filter(x=>x.changes.length&&x.validation_commands.length).length,providers:[...new Set(ranked.map(x=>x.provider))],executableCount:signals.executableCount,independentOriginCount:signals.independentOrigins,exactAgreementCount,conflictedPathCount:conflictedPaths.length,conflictedPaths:conflictedPaths.slice(0,16)}};
+  return {protocol:'taowind.federated-changeset-selection.v0.6',winner,ranked,contextRequests,consensus:{candidateCount:ranked.length,validCount:ranked.filter(x=>x.changes.length&&x.validation_commands.length).length,providers:[...new Set(ranked.map(x=>x.provider))],executableCount:signals.executableCount,independentOriginCount:signals.independentOrigins,exactAgreementCount,conflictedPathCount:conflictedPaths.length,conflictedPaths:conflictedPaths.slice(0,16)}};
 }

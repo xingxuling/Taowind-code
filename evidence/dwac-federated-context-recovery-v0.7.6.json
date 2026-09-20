@@ -1,0 +1,54 @@
+{
+  "protocol": "taowind-code.dwac-federated-context-recovery.evidence.v0.7.6",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "2d806abd42699426d7a80295b6848f9ec5c70d69",
+  "selected_bottleneck": "native-complex-changeset-synthesis",
+  "selected_problem": "Arbitrary complex repository synthesis remains UNRESOLVED. Fresh main inspection exposed a context-recovery evidence defect: NorthStarRunner only honored needs_more_context from the selected federation winner, so a lower-ranked architecture/verifier candidate could correctly identify missing repository evidence while an executable but weak winner caused the run to skip that evidence and stage prematurely. Expanding recovery across candidates also required credential-like context paths to remain fail-closed.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "2d806abd42699426d7a80295b6848f9ec5c70d69",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "rcl_status": "TRANSIENT_HTTP_502",
+    "rncs_status": "TRANSIENT_HTTP_502",
+    "claim_limit": "No hosted DWAC/RCL/RNCS success receipt is claimed. The latest canonical evidence still leaves native-complex-changeset-synthesis unresolved. This is a narrow, central and evidence-rich defect in the existing context-recovery path, so the checked-in DWAC routing contract resolves to DEEP_DEVELOPMENT without forced mode rotation."
+  },
+  "code_reality": [
+    "core/north-star-runner.mjs previously derived second-pass context only from federation.winner.needs_more_context.",
+    "Federation scoring intentionally penalizes candidates without executable changes and validation commands, so an evidence-seeking architecture/verifier proposal can rank below an executable candidate even when its context request is valuable.",
+    "core/repo-context.mjs already excludes credential-like paths from exactPathHints, but candidate-supplied needs_more_context previously lacked an equivalent secret-path rejection surface.",
+    "The existing second-pass recovery is bounded to one additional candidate generation round, 32 files and 320000 bytes; this cycle preserves those bounds."
+  ],
+  "asset_reuse": [
+    "Reused the existing federation selector, NorthStarRunner second-pass context recovery, repository context security policy and DWAC implementation/architecture/verifier roles.",
+    "No new model, provider, product form, interface shape or synthesis architecture was introduced.",
+    "RCL authority, ChangeSetIR/preimage semantics, transactional changesets, validation, rollback and GitHub delivery boundaries remain unchanged."
+  ],
+  "changes": [
+    "Federation now exposes one bounded deduplicated contextRequests set aggregated from all normalized ranked candidates, not only the selected winner.",
+    "NorthStarRunner consumes federation.contextRequests before falling back to winner-local needs_more_context, preserving the existing one-round bounded recovery flow.",
+    "Credential-like context requests such as .env, credentials/secrets files, common private-key names and PEM/KEY/P12/PFX files are rejected before recovery.",
+    "Federated selection receipt protocol advances to taowind.federated-changeset-selection.v0.6."
+  ],
+  "verification": [
+    {"command": "node --check core/federated-generation.mjs", "status": "PASS"},
+    {"command": "node --check core/north-star-runner.mjs", "status": "PASS"},
+    {"command": "node --test tests/federated-generation.test.mjs tests/federated-consensus.test.mjs", "status": "PASS", "tests": 14, "passed": 14, "failed": 0},
+    {"check": "validated-local-content-matches-github-branch-blobs", "status": "PASS", "selector_blob_sha1": "bca8b372fa35a38c6aefdff549b9ea09700eeb54", "runner_blob_sha1": "e63a80bf2361d028ab098999c0509e4a49835d94", "test_blob_sha1": "61b354db62acb93f8ba9774837fb8f3becf5e729"},
+    {"check": "github-actions-intent", "status": "NOT_TRIGGERED_BY_DESIGN", "commit_messages": "[skip ci] [skip actions]"}
+  ],
+  "truth_boundaries": [
+    "Arbitrary complex repository synthesis remains UNRESOLVED. Federated context recovery reduces premature synthesis from missing evidence; it does not create missing semantic code-generation capability.",
+    "Context requests are evidence requests, not votes for correctness. The executable winner must still pass transactional staging, real validation, rollback and delivery gates.",
+    "The additional recovery remains bounded to the existing one second pass; this cycle does not introduce open-ended retrieval or candidate loops.",
+    "Hosted Developer Execution Runtime, RCL and RNCS adapter surfaces returned transient HTTP 502 in this run; no hosted success receipt is fabricated.",
+    "No GitHub Actions were intentionally triggered or rerun, no force push was used, and no credential, payment, formal Release or destructive external action was performed."
+  ]
+}

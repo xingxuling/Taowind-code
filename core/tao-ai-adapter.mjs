@@ -67,16 +67,34 @@ const ROLE_PROMPTS={
  verifier:'Act adversarially: prefer changes that are easy to validate, rollback and falsify; surface hidden regressions and missing tests.',
 };
 function systemPrompt(role){return `You are an optional language/code accelerator inside DWAC, not Taowind Code's primary brain. ${ROLE_PROMPTS[role]||ROLE_PROMPTS.implementation} Return JSON only. Produce a bounded candidate changeset for the user's repository. Never claim execution. Do not touch secrets, .git, node_modules, build outputs, lockfiles unless necessary, or files outside the workspace. Schema: {"summary":string,"changes":[{"op":"write"|"delete","path":string,"content"?:string,"expectedSha256"?:string}],"validation_commands":[string],"browser_checks"?: [{"url":string,"requiredSelectors"?:string[],"requiredText"?:string[],"titleIncludes"?:string,"urlIncludes"?:string,"forbidConsoleErrors"?:boolean,"forbidPageExceptions"?:boolean,"forbidCriticalNetworkErrors"?:boolean,"screenshot"?:boolean}],"risks":[string],"needs_more_context"?:string[]}. For UI/web/frontend/browser-facing goals, browser_checks are hard evidence. Do not invent successful observations. If context is insufficient, set changes=[] and list needs_more_context.`}
+
+const NATIVE_CANDIDATE_ROLES=Object.freeze(['implementation','architecture','verifier']);
+export function nativeProposalExecutable(proposal){
+  return Array.isArray(proposal?.changes)&&proposal.changes.length>0&&Array.isArray(proposal?.validation_commands)&&proposal.validation_commands.length>0;
+}
+export function nativeFallbackRoles(firstProposal,{configuredCount=null}={}){
+  const raw=String(configuredCount??'').trim();
+  if(raw){
+    const count=Math.max(1,Math.min(NATIVE_CANDIDATE_ROLES.length,Number(raw)||1));
+    return NATIVE_CANDIDATE_ROLES.slice(1,count);
+  }
+  return nativeProposalExecutable(firstProposal)?[]:NATIVE_CANDIDATE_ROLES.slice(1);
+}
+function nativeCandidateResult(role,payload){
+  try{
+    const out=runDwacBridge('changeset',payload,{role});
+    return {provider:'dwac-native',role,proposal:out.proposal,native:{status:out.status,route:out.route,interaction_class:out.interaction_class,accelerator:out.accelerator}};
+  }catch(error){
+    return {provider:'dwac-native',role,error:String(error?.message||error),proposal:{summary:'DWAC native synthesis failed',changes:[],validation_commands:[],browser_checks:[],risks:[String(error?.message||error)],needs_more_context:[]}};
+  }
+}
 export async function requestChangesetCandidates({goal,dwac,repository,files}){
   const results=[];const native=dwacNativeStatus();const external=providerConfigs();
   const payload={goal,dwac,repository,files,browserEvidence:{cdpConfigured:!!process.env.TAO_BROWSER_CDP_URL,defaultPreviewUrl:process.env.TAOWIND_PREVIEW_URL||null}};
   if(native.connected){
-    const roleCount=Math.max(1,Math.min(3,Number(process.env.DWAC_NATIVE_CANDIDATE_COUNT||1)||1));
-    const roles=['implementation','architecture','verifier'].slice(0,roleCount);
-    for(const role of roles){
-      try{const out=runDwacBridge('changeset',payload,{role});results.push({provider:'dwac-native',role,proposal:out.proposal,native:{status:out.status,route:out.route,interaction_class:out.interaction_class,accelerator:out.accelerator}})}
-      catch(error){results.push({provider:'dwac-native',role,error:String(error?.message||error),proposal:{summary:'DWAC native synthesis failed',changes:[],validation_commands:[],browser_checks:[],risks:[String(error?.message||error)],needs_more_context:[]}})}
-    }
+    const first=nativeCandidateResult('implementation',payload);results.push(first);
+    const fallback=nativeFallbackRoles(first.proposal,{configuredCount:process.env.DWAC_NATIVE_CANDIDATE_COUNT});
+    for(const role of fallback)results.push(nativeCandidateResult(role,payload));
   }
   if(external.length){
     const roles=['architecture','implementation','verifier'];const requested=Math.max(1,Math.min(9,Number(process.env.TAO_AI_CANDIDATE_COUNT||3)||3));

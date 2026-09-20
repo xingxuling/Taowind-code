@@ -1,0 +1,64 @@
+{
+  "protocol": "taowind-code.dwac-native-adaptive-candidates.evidence.v0.7.1",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "9bc97fdb9a87308229d95d7790d0c4c344f196ba",
+  "selected_bottleneck": "native-complex-changeset-synthesis",
+  "selected_problem": "Arbitrary complex repository synthesis remains UNRESOLVED; the native path is still required to produce a semantically correct, machine-valid repository changeset without pretending an optional external accelerator is the core brain.",
+  "development_mode": "WHOLE_ARTIFACT",
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "9bc97fdb9a87308229d95d7790d0c4c344f196ba",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "updia": "TRANSIENT_HTTP_502",
+    "turi": "TRANSIENT_HTTP_502",
+    "claim_limit": "The hosted DWAC/UPDIA/TURI execution surfaces were transiently unavailable. The bottleneck family and route therefore remain grounded in the checked-in DWAC controller/router contract plus the fresh canonical evidence boundary from v0.7.0; no hosted execution receipt is fabricated."
+  },
+  "code_reality": [
+    "Taowind Code already had three native synthesis roles (implementation, architecture, verifier) and a federated proposal scorer/selector, but the default DWAC native candidate count was one when no operator override was supplied.",
+    "With the optional external accelerator absent, that default reduced the existing federation path to a single native proposal even when the first native attempt returned no executable changeset.",
+    "The existing federation selector only accepts a winner with both repository changes and validation commands, so candidate expansion does not bypass validation or delivery authority."
+  ],
+  "asset_reuse": [
+    "Reused core/tao-ai-adapter.mjs role prompts and DWAC native bridge; no new model/provider architecture was introduced.",
+    "Reused core/federated-generation.mjs for candidate normalization, scoring and winner selection.",
+    "Preserved DWAC ChangeSetIR deterministic lowering, RCL authority gates, transactional changesets, validation, rollback and GitHub delivery boundaries unchanged."
+  ],
+  "changes": [
+    "DWAC native cognition now runs the implementation role first and returns immediately to the existing federation path when that first proposal already contains both real repository changes and validation commands.",
+    "When the first native proposal is unresolved, invalid or failed and no explicit candidate-count override is configured, the existing architecture and verifier roles are added as bounded fallback candidates instead of escalating directly toward human intervention or an external accelerator.",
+    "DWAC_NATIVE_CANDIDATE_COUNT remains an explicit bounded operator override from 1 to 3; explicit values preserve deterministic operator control instead of being silently replaced by the adaptive default.",
+    "External accelerator candidate behavior is unchanged."
+  ],
+  "verification": [
+    {
+      "command": "node --check core/tao-ai-adapter.mjs",
+      "status": "PASS"
+    },
+    {
+      "command": "node --test tests/native-candidate-expansion.test.mjs",
+      "status": "PASS",
+      "tests": 3,
+      "passed": 3,
+      "failed": 0
+    },
+    {
+      "check": "validated-local-content-matches-github-branch-blobs",
+      "status": "PASS",
+      "adapter_blob_sha1": "7e85b3f1412c123c468853cdbd5715e0fafcc6fb",
+      "test_blob_sha1": "185f53f967abc5927b87f12d416ffb11ef53eba3"
+    }
+  ],
+  "truth_boundaries": [
+    "Arbitrary complex repository synthesis remains UNRESOLVED. This cycle narrows single-candidate native search fragility; it does not claim that role diversification creates missing semantic code-generation capability.",
+    "Architecture/verifier fallback candidates still originate from the same DWAC NaturalConversationRuntime and remain subject to the existing normalization, deterministic ChangeSetIR lowering, RCL authority, real validation, rollback and delivery gates.",
+    "The hosted Developer Execution Runtime, UPDIA, TURI and RCL/RNCS provider status calls returned transient HTTP 502 during this cycle; no successful hosted DWAC execution or RCL/RNCS status receipt is claimed.",
+    "No GitHub Actions were intentionally triggered or rerun, no force push was used, and no credential, payment, formal Release or destructive external action was performed."
+  ]
+}

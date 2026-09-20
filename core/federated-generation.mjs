@@ -19,7 +19,7 @@ export function normalizeProposal(raw,{provider='unknown',role='implementation'}
 }
 function goalTokens(goal){return [...new Set(String(goal||'').toLowerCase().match(/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu)||[])]}
 function proposalText(p){return `${p.summary} ${p.changes.map(c=>`${c.path} ${c.op==='write'?c.content.slice(0,800):''}`).join(' ')}`.toLowerCase()}
-function changeFingerprint(change){return JSON.stringify([change.op,change.path,change.op==='write'?change.content:''])}
+function changeFingerprint(change){return JSON.stringify([change.op,change.path,change.op==='write'?change.content:'',change.expectedSha256||''])}
 function proposalOrigin(proposal){return `${proposal.provider||'unknown'}:${proposal.role||'implementation'}`}
 function consensusSignals(proposals){
   const executable=(proposals||[]).filter(p=>p.changes.length&&p.validation_commands.length);
@@ -78,5 +78,5 @@ export function selectFederatedProposal(candidates,{goal='',manifest=[]}={}){
   const winner=ranked.find(x=>x.changes.length&&x.validation_commands.length)||ranked[0]||null;
   const conflictedPaths=[...signals.pathVariants.entries()].filter(([,variants])=>variants.size>1).map(([path])=>path).sort();
   const exactAgreementCount=[...signals.exactSupport.values()].filter(origins=>origins.size>1).length;
-  return {protocol:'taowind.federated-changeset-selection.v0.3',winner,ranked,consensus:{candidateCount:ranked.length,validCount:ranked.filter(x=>x.changes.length&&x.validation_commands.length).length,providers:[...new Set(ranked.map(x=>x.provider))],executableCount:signals.executableCount,independentOriginCount:signals.independentOrigins,exactAgreementCount,conflictedPathCount:conflictedPaths.length,conflictedPaths:conflictedPaths.slice(0,16)}};
+  return {protocol:'taowind.federated-changeset-selection.v0.4',winner,ranked,consensus:{candidateCount:ranked.length,validCount:ranked.filter(x=>x.changes.length&&x.validation_commands.length).length,providers:[...new Set(ranked.map(x=>x.provider))],executableCount:signals.executableCount,independentOriginCount:signals.independentOrigins,exactAgreementCount,conflictedPathCount:conflictedPaths.length,conflictedPaths:conflictedPaths.slice(0,16)}};
 }

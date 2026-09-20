@@ -1,0 +1,48 @@
+{
+  "protocol": "taowind-code.dwac-native-changeset-ir.evidence.v0.6.9",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "82ac21340a5cf558cbef514e09456ff66a25d708",
+  "selected_bottleneck": "native-complex-changeset-synthesis",
+  "selected_problem": "DWAC native changeset generation fails closed when it cannot produce machine-parseable validated changes.",
+  "selected_score": 0.748,
+  "development_mode": "WHOLE_ARTIFACT",
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "claim_limit": "The selected bottleneck and route come from the checked-in DWAC controller/router contract and the post-repair fresh-main replay already recorded on canonical main; no hosted DWAC execution receipt is fabricated."
+  },
+  "reused_dwac_assets": [
+    "xingxuling/TaoX:organs/CHANGESET_IR_SCHEMA_v0.1.json",
+    "xingxuling/TaoX:.dwac/self-development/self-development-controller-v0.1.changeset.json#ChangeSetIRCompiler contract",
+    "Taowind Code transactional changeset preimage checks and RCL authority gates"
+  ],
+  "changes": [
+    "The DWAC native cognition prompt now prefers the existing DWAC ChangeSetIR v0.1 contract instead of requiring only the Taowind Code-local proposal shape.",
+    "DWAC ChangeSetIR write/replace/delete operations are deterministically lowered into the existing transactional Taowind Code changeset protocol without a second model rewrite.",
+    "replace requires one exact UTF-8 preimage occurrence; existing write/delete/replace targets receive SHA-256 preimage bindings so stale candidates fail at staging rather than silently overwriting newer reality.",
+    "ChangeSetIR test argv arrays are lowered with shell-safe quoting into the existing validation command surface; no test result is invented.",
+    "Unsafe paths, forbidden generated/dependency trees, ambiguous replacements, missing delete/replace targets and non-ready IR states fail closed with an empty proposal.",
+    "The pre-existing Taowind Code native proposal format remains backward compatible."
+  ],
+  "verification": [
+    {"command": "python -m py_compile bridge/dwac_cognition_bridge.py", "status": "PASS"},
+    {"command": "node --test tests/dwac-changeset-ir-bridge.test.mjs", "status": "PASS", "tests": 3, "passed": 3, "failed": 0},
+    {"case": "write + unique replace + delete + argv validation", "status": "PASS", "evidence": "replace lowered to preimage-bound write; delete bound to prior SHA-256; argv preserved as a validation command"},
+    {"case": "ambiguous replace", "status": "PASS_FAIL_CLOSED", "evidence": "zero changes with REPLACE_PREIMAGE_NOT_UNIQUE risk"},
+    {"case": "path escape", "status": "PASS_FAIL_CLOSED", "evidence": "zero changes with UNSAFE_CHANGE_PATH risk"},
+    {"case": "legacy native proposal", "status": "PASS_BACKWARD_COMPATIBLE"}
+  ],
+  "truth_boundaries": [
+    "This cycle narrows the native complex-changeset bottleneck by making DWAC's existing formal ChangeSetIR directly consumable; it does not claim arbitrary complex repository synthesis is fully closed.",
+    "NaturalConversationRuntime must still produce a semantically correct candidate; deterministic lowering validates structure/preimages but cannot compensate for missing synthesis capability.",
+    "The hosted Developer Execution Runtime was transiently unavailable with HTTP 502, so focused local source validation is used and no hosted execution receipt is claimed.",
+    "No validation command is reported as executed merely because it appears in ChangeSetIR tests; real acceptance remains downstream and RCL-gated.",
+    "No GitHub Actions are used for this change set."
+  ]
+}

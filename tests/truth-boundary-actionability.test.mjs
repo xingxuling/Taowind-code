@@ -37,13 +37,16 @@ function workspace(){
  write(path.join(root,'evidence','yy-container.json'),JSON.stringify({truth_boundaries:[
   'The full repository suite was not executed because the current container cannot resolve github.com for a normal clone.'
  ]}));
- write(path.join(root,'evidence','xx-capability.json'),JSON.stringify({truth_boundaries:[
+ write(path.join(root,'evidence','xx-materialized.json'),JSON.stringify({truth_boundaries:[
+  'full current-repository test suite remains pending on a locally materialized current checkout'
+ ]}));
+ write(path.join(root,'evidence','ww-capability.json'),JSON.stringify({truth_boundaries:[
   'DWAC native changeset generation fails closed when it cannot produce machine-parseable validated changes.'
  ]}));
  return root;
 }
 
-test('candidate discovery ignores truthfulness disclaimers and fails current-container blockers closed',()=>{
+test('candidate discovery ignores truthfulness disclaimers and fails execution-environment blockers closed',()=>{
  const root=workspace();
  const r=spawnSync(process.env.PYTHON||'python',[bridge,'--dwac-root',fakeDwac(),'--workspace',root,'--prompt','build app'],{encoding:'utf8'});
  assert.equal(r.status,0,r.stderr||r.stdout);
@@ -52,5 +55,7 @@ test('candidate discovery ignores truthfulness disclaimers and fails current-con
  assert.equal(out.sovereignty_gate,'AUTONOMOUS');
  assert.ok(!out.candidate_scores.some(x=>/does not fabricate missing provider capabilities/i.test(x.problem)));
  assert.ok(!out.candidate_scores.some(x=>/current container cannot resolve github\.com/i.test(x.problem)));
+ assert.ok(!out.candidate_scores.some(x=>/locally materialized current checkout/i.test(x.problem)));
  assert.ok(out.workspace_observation.truth_boundaries.some(x=>/current container cannot resolve github\.com/i.test(x.text)));
+ assert.ok(out.workspace_observation.truth_boundaries.some(x=>/locally materialized current checkout/i.test(x.text)));
 });

@@ -13,7 +13,7 @@ test('exact independent cross-role agreement boosts the agreeing native proposal
     validated('export const value=1;\n','architecture'),
     validated('export const value=2;\n','verifier'),
   ],{goal:'implement consensus target',manifest:['src/target.mjs']});
-  assert.equal(out.protocol,'taowind.federated-changeset-selection.v0.5');
+  assert.equal(out.protocol,'taowind.federated-changeset-selection.v0.6');
   assert.equal(out.winner.proposal,undefined);
   assert.equal(out.winner.changes[0].content,'export const value=1;\n');
   assert.equal(out.winner.evaluation.agreedChanges,1);
@@ -119,4 +119,18 @@ test('canonical path aliases expose same-file conflicts instead of evading them'
 test('context requests are canonicalized and deduplicated before recovery',()=>{
   const p=normalizeProposal({changes:[],validation_commands:[],needs_more_context:['src/../src/target.mjs','src/target.mjs','../escape.txt','.git/config']});
   assert.deepEqual(p.needs_more_context,['src/target.mjs']);
+});
+
+test('context recovery aggregates requests from non-winning candidates',()=>{
+  const out=selectFederatedProposal([
+    validated('export const value=1;\n','implementation','dwac-native'),
+    {provider:'dwac-native',role:'architecture',proposal:{summary:'need repository context',changes:[],validation_commands:[],needs_more_context:['src/critical.mjs']}},
+  ],{goal:'implement consensus target'});
+  assert.equal(out.winner.role,'implementation');
+  assert.deepEqual(out.contextRequests,['src/critical.mjs']);
+});
+
+test('credential-like context requests are rejected before recovery',()=>{
+  const p=normalizeProposal({changes:[],validation_commands:[],needs_more_context:['.env','.env.local','secrets.json','credentials.yaml','id_rsa','cert.pem','src/ok.mjs']});
+  assert.deepEqual(p.needs_more_context,['src/ok.mjs']);
 });

@@ -27,10 +27,10 @@ test('repository summary exposes bounded exact-path recovery contract without cr
   {path:'.ssh/id_rsa',size:10,ext:''},
  ];
  const out=repositorySummary(manifest);
- assert.equal(out.fileCount,64);
+ assert.equal(out.fileCount,60);
  assert.equal(out.contextRecovery.protocol,'taowind.repo-context-recovery.v0.1');
  assert.equal(out.contextRecovery.indexedPaths,60);
- assert.equal(out.contextRecovery.totalManifestPaths,64);
+ assert.equal(out.contextRecovery.totalManifestPaths,60);
  assert.equal(out.contextRecovery.truncated,false);
  assert.equal(out.contextRecovery.exactPathHints.length,60);
  assert.ok(out.contextRecovery.exactPathHints.every(x=>!/env|credential|\.pem|id_rsa/i.test(x)));

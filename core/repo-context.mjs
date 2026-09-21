@@ -32,7 +32,7 @@ export function repositorySummary(manifest){
   const extensionRows=Object.entries(byExt).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
   const topLevels=[...new Set(visible.map(x=>x.path.split('/')[0]))].sort((a,b)=>a.localeCompare(b));
   return {
-    fileCount:manifest.length,
+    fileCount:visible.length,
     manifestTruncated:manifest?.truncated===true,
     extensions:extensionRows.slice(0,16),
     extensionsTruncated:extensionRows.length>16,
@@ -42,11 +42,11 @@ export function repositorySummary(manifest){
       protocol:'taowind.repo-context-recovery.v0.1',
       exactPathHints:index.paths,
       indexedPaths:index.totalPaths,
-      totalManifestPaths:manifest.length,
+      totalManifestPaths:visible.length,
       manifestTruncated:manifest?.truncated===true,
       truncated:index.truncated||manifest?.truncated===true,
       approxJsonBytes:index.approxJsonBytes,
-      rule:'If required file content is absent from files, request exact paths from exactPathHints via needs_more_context; do not guess unseen file content. Credential-like paths are intentionally absent.'
+      rule:'If required file content is absent from files, request exact paths from exactPathHints via needs_more_context; do not guess unseen file content. Credential-like paths and their counts are intentionally absent.'
     }
   };
 }

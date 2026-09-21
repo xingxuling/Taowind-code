@@ -46,7 +46,7 @@ async function loadNativePty(){
  if(nativePtyPromise)return nativePtyPromise;
  nativePtyPromise=(async()=>{
   for(const specifier of ['@lydell/node-pty','node-pty']){
-   try{const mod=mod.default||mod;if(typeof api.spawn==='function')return {api,specifier};}catch{}
+   try{const mod=await import(specifier);const api=mod.default||mod;if(typeof api.spawn==='function')return {api,specifier};}catch{}
   }
   return null;
  })();

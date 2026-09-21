@@ -7,10 +7,14 @@ import {isCredentialLikePath} from './repo-context.mjs';
 const HIDDEN=new Set(['.git','node_modules','.next','dist','build','.venv','runtime-data']);
 const TEXT_EXT=new Set(['.js','.mjs','.cjs','.ts','.tsx','.jsx','.json','.md','.txt','.css','.html','.yml','.yaml','.toml','.py','.rcl','.sh','.cmd','.ps1','.java','.kt','.kts','.go','.rs','.c','.h','.cpp','.hpp','.cs','.swift','.rb','.php','.vue','.svelte']);
 
-function atomicWrite(file,content){
+function fileMode(st){return st&&st.isFile()?st.mode&0o7777:null}
+function atomicWrite(file,content,{mode=null}={}){
   fs.mkdirSync(path.dirname(file),{recursive:true});
   const tmp=`${file}.taowind-${process.pid}-${Date.now()}.tmp`;
+  let desiredMode=Number.isInteger(mode)?mode:null;
+  if(desiredMode===null&&fs.existsSync(file)){const st=fs.lstatSync(file);if(st.isFile())desiredMode=fileMode(st)}
   fs.writeFileSync(tmp,content);
+  if(desiredMode!==null)fs.chmodSync(tmp,desiredMode);
   fs.renameSync(tmp,file);
 }
 function objectIdentity(st){return st&&st.ino?`${st.dev}:${st.ino}`:null}
@@ -50,14 +54,14 @@ export class WorkspaceService {
   }
   stat(rel){
     const abs=safePath(this.root,rel);
-    if(!fs.existsSync(abs)) return {path:rel,exists:false,sha256:null,size:0,identity:null};
+    if(!fs.existsSync(abs)) return {path:rel,exists:false,sha256:null,size:0,identity:null,mode:null};
     const st=fs.lstatSync(abs),identity=objectIdentity(st);
-    if(st.isSymbolicLink()) return {path:rel,exists:true,type:'symlink',sha256:null,size:st.size,identity};
-    if(!st.isFile()) return {path:rel,exists:true,type:'dir',sha256:null,size:st.size,identity};
-    const bytes=fs.readFileSync(abs); return {path:rel,exists:true,type:'file',sha256:sha256Buffer(bytes),size:bytes.length,identity};
+    if(st.isSymbolicLink()) return {path:rel,exists:true,type:'symlink',sha256:null,size:st.size,identity,mode:null};
+    if(!st.isFile()) return {path:rel,exists:true,type:'dir',sha256:null,size:st.size,identity,mode:null};
+    const bytes=fs.readFileSync(abs); return {path:rel,exists:true,type:'file',sha256:sha256Buffer(bytes),size:bytes.length,identity,mode:fileMode(st)};
   }
-  write(rel,content){
-    const abs=safePath(this.root,rel); const bytes=Buffer.isBuffer(content)?Buffer.from(content):content instanceof Uint8Array?Buffer.from(content):Buffer.from(String(content),'utf8'); atomicWrite(abs,bytes); return {path:rel,bytes:bytes.length,sha256:sha256Buffer(bytes)};
+  write(rel,content,{mode=null}={}){
+    const abs=safePath(this.root,rel); const bytes=Buffer.isBuffer(content)?Buffer.from(content):content instanceof Uint8Array?Buffer.from(content):Buffer.from(String(content),'utf8'); atomicWrite(abs,bytes,{mode}); return {path:rel,bytes:bytes.length,sha256:sha256Buffer(bytes)};
   }
   remove(rel){
     const abs=safePath(this.root,rel); if(!fs.existsSync(abs)) return {path:rel,removed:false}; const st=fs.lstatSync(abs); if(!st.isFile()&&!st.isSymbolicLink()) throw new Error('DELETE_FILE_ONLY'); fs.unlinkSync(abs); return {path:rel,removed:true};

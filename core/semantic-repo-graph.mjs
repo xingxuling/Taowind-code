@@ -67,10 +67,11 @@ export function buildSemanticRepoGraph(files,{goal=''}={}){
 export function selectSemanticContext(graph,{maxFiles=28,maxBytes=220000}={}){
   const selected=[];const seen=new Set();let bytes=0;
   const byPath=new Map(graph.nodes.map(n=>[n.path,n]));
-  const add=n=>{if(!n||seen.has(n.path)||n.size>80000||bytes+n.size>maxBytes||selected.length>=maxFiles)return;seen.add(n.path);selected.push(n.path);bytes+=n.size};
-  for(const n of graph.nodes)add(n);
-  for(const p of [...selected]){
-    for(const e of graph.edges){if(e.from===p)add(byPath.get(e.to));else if(e.to===p)add(byPath.get(e.from))}
+  const add=n=>{if(!n||seen.has(n.path)||n.size>80000||bytes+n.size>maxBytes||selected.length>=maxFiles)return false;seen.add(n.path);selected.push(n.path);bytes+=n.size;return true};
+  for(const n of graph.nodes){
+    add(n);
+    if(!seen.has(n.path))continue;
+    for(const e of graph.edges){if(e.from===n.path)add(byPath.get(e.to));else if(e.to===n.path)add(byPath.get(e.from))}
   }
   return {paths:selected,totalBytes:bytes,reason:'goal lexical relevance + symbol/entry centrality + import/test neighborhood'};
 }

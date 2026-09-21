@@ -3,6 +3,7 @@ import path from 'node:path';
 import {runCommand} from './terminal.mjs';
 
 const VALIDATION_ENV_KEYS=new Set(['PATH','PATHEXT','SYSTEMROOT','COMSPEC','WINDIR','HOME','USERPROFILE','TMPDIR','TMP','TEMP','LANG','LC_ALL','TERM','COLORTERM','CI']);
+const MAX_VALIDATION_COMMANDS=8;
 
 export function buildValidationEnvironment(source=process.env){
   const out={};for(const [key,value] of Object.entries(source||{})){const upper=String(key).toUpperCase();if((VALIDATION_ENV_KEYS.has(upper)||upper.startsWith('LC_'))&&value!==undefined&&value!==null)out[key]=String(value)}return out;
@@ -12,12 +13,14 @@ export function inferValidationCommands(workspace){
   const out=[];const pkgPath=path.join(workspace,'package.json');
   if(fs.existsSync(pkgPath)){try{const pkg=JSON.parse(fs.readFileSync(pkgPath,'utf8'));const scripts=pkg.scripts||{};if(scripts.check)out.push('npm run check');for(const name of ['test','lint','typecheck','build'])if(scripts[name]&&!out.includes(`npm run ${name}`))out.push(`npm run ${name}`)}catch{}}
   const pyproject=path.join(workspace,'pyproject.toml');if(fs.existsSync(pyproject)&&!out.includes('python -m pytest -q'))out.push('python -m pytest -q');
-  return out.slice(0,8);
+  return out.slice(0,MAX_VALIDATION_COMMANDS);
 }
+function normalizeValidationCommands(commands){const out=[];for(const command of Array.isArray(commands)?commands:[]){const text=String(command);if(!text)continue;out.push(text);if(out.length>MAX_VALIDATION_COMMANDS)break}return out}
 function normalizeBrowserChecks(checks){return (Array.isArray(checks)?checks:[]).filter(x=>x&&typeof x==='object').slice(0,8)}
 
 export async function runAcceptance(workspace,commands,{mode='workspace',browserObserver=null,browserChecks=[],browserRequired=false}={}){
-  const chosen=(Array.isArray(commands)&&commands.length?commands:inferValidationCommands(workspace)).map(String).filter(Boolean).slice(0,8);const checks=normalizeBrowserChecks(browserChecks);
+  const source=Array.isArray(commands)&&commands.length?commands:inferValidationCommands(workspace);const chosen=normalizeValidationCommands(source);const checks=normalizeBrowserChecks(browserChecks);
+  if(chosen.length>MAX_VALIDATION_COMMANDS)return {status:'FAILED',passed:false,commands:chosen.slice(0,MAX_VALIDATION_COMMANDS),results:[],browser:{required:browserRequired||checks.length>0,checks,results:[]},hardGate:'VALIDATION_COMMAND_BUDGET_EXCEEDED',validationBudget:{limit:MAX_VALIDATION_COMMANDS,observedAtLeast:chosen.length}};
   if(!chosen.length&&!checks.length&&!browserRequired)return {status:'NO_VALIDATION_EVIDENCE',passed:false,commands:[],results:[],browser:{required:false,checks:[],results:[]},hardGate:'VALIDATION_EVIDENCE_REQUIRED'};
   const validationEnv=buildValidationEnvironment();const results=[];for(const command of chosen){const r=await runCommand(workspace,command,{mode,timeoutMs:120_000,env:validationEnv,inheritProcessEnv:false,isolatedShell:true,containProcessTree:true,maxOutputChars:360000});results.push(r);if(r.code!==0||r.outputLimitExceeded)break}
   const commandsPassed=!chosen.length||(results.length===chosen.length&&results.every(x=>x.code===0&&!x.timedOut&&!x.outputLimitExceeded));

@@ -43,7 +43,14 @@ function relatedByStem(a,b){
 export function buildSemanticRepoGraph(files,{goal=''}={}){
   const inputDocs=(files||[]).filter(x=>x&&typeof x.path==='string'&&typeof x.content==='string');
   const byPath=new Map();
-  for(const file of inputDocs){const normalizedPath=normalizeGraphPath(file.path);byPath.set(normalizedPath,{...file,path:normalizedPath});}
+  for(const file of inputDocs){
+    const normalizedPath=normalizeGraphPath(file.path);const existing=byPath.get(normalizedPath);
+    if(existing){
+      if(existing.content!==file.content)throw Object.assign(new Error(`Conflicting semantic content for canonical path: ${normalizedPath}`),{code:'SEMANTIC_PATH_CONTENT_CONFLICT',path:normalizedPath});
+      continue;
+    }
+    byPath.set(normalizedPath,{...file,path:normalizedPath});
+  }
   const docs=[...byPath.values()];
   const nodes=[];const edges=[];const edgeKeys=new Set();
   const addEdge=edge=>{const key=`${edge.type}\n${edge.from}\n${edge.to}`;if(edgeKeys.has(key))return false;edgeKeys.add(key);edges.push(edge);return true};

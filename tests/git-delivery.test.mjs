@@ -55,6 +55,35 @@ test('validated local delivery commits the Git index only when it matches valida
     fs.writeFileSync(path.join(dir,'a.txt'),'a0\n');git(dir,['add','.']);git(dir,['commit','-m','base']);
     fs.writeFileSync(path.join(dir,'a.txt'),'validated\n');const validated=[receipt(dir,'a.txt')];
     const result=gitLocalCommit(dir,'validated commit',['a.txt'],validated);
-    assert.equal(result.ok,true);assert.equal(result.indexIntegrity.passed,true);assert.equal(git(dir,['show','HEAD:a.txt']),'validated');
+    assert.equal(result.ok,true);assert.equal(result.indexIntegrity.passed,true);assert.equal(result.indexOwnership.passed,true);assert.equal(git(dir,['show','HEAD:a.txt']),'validated');
+  }finally{fs.rmSync(dir,{recursive:true,force:true})}
+});
+
+test('local delivery fails closed without consuming unrelated preexisting staged work',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-git-index-ownership-'));
+  try{
+    git(dir,['init']);git(dir,['config','user.name','Taowind Test']);git(dir,['config','user.email','taowind-test@example.invalid']);
+    fs.writeFileSync(path.join(dir,'a.txt'),'a0\n');fs.writeFileSync(path.join(dir,'b.txt'),'b0\n');git(dir,['add','.']);git(dir,['commit','-m','base']);
+    fs.writeFileSync(path.join(dir,'b.txt'),'b1-user-staged\n');git(dir,['add','b.txt']);
+    fs.writeFileSync(path.join(dir,'a.txt'),'a1-agent\n');const validated=[receipt(dir,'a.txt')];
+    const before=git(dir,['rev-parse','HEAD']);const cachedBefore=git(dir,['show',':b.txt']);
+    const result=gitLocalCommit(dir,'agent change',['a.txt'],validated);
+    assert.equal(result.ok,false);assert.equal(result.error,'GIT_INDEX_PREEXISTING_STAGED_CHANGES');assert.equal(result.indexIntegrity.passed,false);
+    assert.deepEqual(result.indexOwnership.stagedPaths,['b.txt']);assert.equal(git(dir,['rev-parse','HEAD']),before);
+    assert.equal(git(dir,['show',':b.txt']),cachedBefore);assert.equal(git(dir,['diff','--cached','--name-only']),'b.txt');
+    assert.equal(fs.readFileSync(path.join(dir,'a.txt'),'utf8'),'a1-agent\n');
+  }finally{fs.rmSync(dir,{recursive:true,force:true})}
+});
+
+test('local delivery does not overwrite a preexisting staged version of a run-owned path',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-git-index-overlap-'));
+  try{
+    git(dir,['init']);git(dir,['config','user.name','Taowind Test']);git(dir,['config','user.email','taowind-test@example.invalid']);
+    fs.writeFileSync(path.join(dir,'a.txt'),'a0\n');git(dir,['add','.']);git(dir,['commit','-m','base']);
+    fs.writeFileSync(path.join(dir,'a.txt'),'user-staged\n');git(dir,['add','a.txt']);const cachedBefore=git(dir,['show',':a.txt']);
+    fs.writeFileSync(path.join(dir,'a.txt'),'validated-agent\n');const validated=[receipt(dir,'a.txt')];
+    const result=gitLocalCommit(dir,'agent change',['a.txt'],validated);
+    assert.equal(result.ok,false);assert.equal(result.error,'GIT_INDEX_PREEXISTING_STAGED_CHANGES');
+    assert.equal(git(dir,['show',':a.txt']),cachedBefore);assert.equal(fs.readFileSync(path.join(dir,'a.txt'),'utf8'),'validated-agent\n');
   }finally{fs.rmSync(dir,{recursive:true,force:true})}
 });

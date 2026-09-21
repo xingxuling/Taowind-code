@@ -1,0 +1,66 @@
+{
+  "protocol": "taowind-code.dwac-delivery-git-index-ownership.evidence.v0.10.5",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "664f7017daba22d0c5851d1854236a6c2016cf49",
+  "selected_bottleneck": "delivery-git-index-ownership",
+  "selected_problem": "Fresh-main inspection after Git-index postimage binding exposed a narrower ownership defect: gitLocalCommit stages only run-owned paths, but plain `git commit` commits every path already present in the Git index. Preexisting user-staged or unrelated staged changes could therefore be silently included in an autonomous delivery commit; a preexisting staged version of a run-owned path could also be overwritten by the agent's `git add`.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "664f7017daba22d0c5851d1854236a6c2016cf49",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "updia_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "Fresh main reduced the next reproducible bottleneck to one evidence-rich central delivery-integrity defect, so the committed four-mode router's singular-bottleneck gate routes the replay to DEEP_DEVELOPMENT. No forced mode rotation was used.",
+    "claim_limit": "No hosted DWAC/UPDIA success receipt or fabricated numeric score is claimed."
+  },
+  "pre_fix_reproduction": {
+    "result": "REPRODUCED",
+    "sequence": [
+      "Create base commit containing a.txt and b.txt.",
+      "Modify b.txt and stage it before autonomous delivery.",
+      "Modify run-owned a.txt, then mirror current delivery sequence: git add -A -- a.txt followed by plain git commit.",
+      "Observed HEAD contains both a.txt and b.txt; the unrelated pre-staged b.txt entered the autonomous commit."
+    ],
+    "observed_head_files": ["a.txt", "b.txt"]
+  },
+  "changes": [
+    "gitLocalCommit now checks the existing Git index before any run-owned staging occurs.",
+    "Any preexisting staged path fails closed with GIT_INDEX_PREEXISTING_STAGED_CHANGES before git add or commit, preserving both unrelated staged work and a preexisting staged version of a run-owned path.",
+    "The ownership failure is surfaced through the existing indexIntegrity-shaped evidence so NorthStarRunner's current delivery failure path moves the run to REPAIR_REQUIRED without adding a second delivery-state architecture.",
+    "Clean-index validated delivery and the existing post-staging validation-receipt binding remain unchanged."
+  ],
+  "validation": {
+    "commands": [
+      "node --check focused core/git.mjs surface",
+      "node --check focused tests/git-delivery.test.mjs surface",
+      "node --test focused tests/git-delivery.test.mjs surface"
+    ],
+    "result": "PASS",
+    "tests": "5/5 focused Git delivery regressions PASS on the Linux verification host",
+    "coverage": [
+      "existing run-owned-path delivery remains passing",
+      "existing staged-byte postimage drift remains rejected",
+      "clean-index validated commit remains passing",
+      "unrelated preexisting staged work is rejected and preserved",
+      "preexisting staged version of a run-owned path is rejected and preserved"
+    ],
+    "branch_git_blobs": {
+      "core/git.mjs": "750961afb509a059763331c03a07c3293f2da18b",
+      "tests/git-delivery.test.mjs": "5bdd9845ef325006e7a925173d5562c3bca5eb00"
+    },
+    "verification_scope_note": "The local harness exercises the exact modified index-ownership/postimage functions and repository test cases. Unchanged remote-delivery helpers were not executed because the verification host intentionally had no GitHub network credentials and no Actions were used."
+  },
+  "truth_boundaries": [
+    "This closes accidental consumption or overwrite of preexisting staged Git index state by local autonomous delivery; it does not make the index immutable after the ownership check.",
+    "A later concurrent process or Git hook can still mutate the index between integrity verification and commit creation; that separate race is not claimed closed here.",
+    "Fail-closed behavior intentionally prefers user sovereignty over silently adopting existing staged work; it does not attempt to infer ownership of preexisting staged entries.",
+    "OS-level validation sandboxing, arbitrary complex semantic synthesis, Windows descendant-tree equivalence, and crash-level filesystem atomicity remain unresolved.",
+    "No GitHub Actions are intentionally triggered or rerun, no force push is used, and no credential, payment, formal Release, or destructive/irreversible external action is performed."
+  ]
+}

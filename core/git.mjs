@@ -49,6 +49,16 @@ export function checkGitIndexPostimage(cwd,paths=[],validatedPostimage=null){
   }
   return {passed:drift.length===0,checked,drift,hardGate:drift.length?'GIT_INDEX_POSTIMAGE_DRIFT':'PASS'};
 }
+function preexistingStagedPaths(cwd){
+  const staged=run(cwd,['diff','--cached','--name-only','-z']);
+  if(!staged.ok)return {ok:false,paths:[],error:'GIT_INDEX_OWNERSHIP_READ_FAILED',detail:clip(staged.stderr)};
+  return {ok:true,paths:staged.stdout.split('\0').filter(Boolean),error:null,detail:null};
+}
+export function checkGitIndexOwnership(cwd){
+  const staged=preexistingStagedPaths(cwd);
+  if(!staged.ok)return {passed:false,checked:0,stagedPaths:[],hardGate:staged.error,detail:staged.detail};
+  return {passed:staged.paths.length===0,checked:staged.paths.length,stagedPaths:staged.paths,hardGate:staged.paths.length?'GIT_INDEX_PREEXISTING_STAGED_CHANGES':'PASS'};
+}
 export function parseGitHubRepository(remoteUrl){
   const raw=String(remoteUrl||'').trim();
   let match=raw.match(/^git@github\.com:([^/]+)\/(.+?)(?:\.git)?$/i);
@@ -69,14 +79,16 @@ export function gitDeliveryPreview(cwd){return {...gitStatus(cwd),...gitDiffStat
 export function gitLocalCommit(cwd,message,paths=[],validatedPostimage=null){
  const msg=String(message||'').trim(); if(!msg)throw new Error('COMMIT_MESSAGE_REQUIRED');
  const selected=[...new Set((paths||[]).map(String).filter(Boolean))]; if(!selected.length)throw new Error('COMMIT_PATHS_REQUIRED');
- const add=run(cwd,['add','-A','--',...selected]); if(!add.ok)return {ok:false,stage:add,paths:selected};
+ const indexOwnership=checkGitIndexOwnership(cwd);
+ if(!indexOwnership.passed)return {ok:false,error:indexOwnership.hardGate,indexOwnership,indexIntegrity:indexOwnership,paths:selected};
+ const add=run(cwd,['add','-A','--',...selected]); if(!add.ok)return {ok:false,stage:add,indexOwnership,paths:selected};
  let indexIntegrity=null;
  if(validatedPostimage!==null){
    indexIntegrity=checkGitIndexPostimage(cwd,selected,validatedPostimage);
-   if(!indexIntegrity.passed){const unstage=run(cwd,['reset','-q','--',...selected]);return {ok:false,error:indexIntegrity.hardGate,stage:add,unstage,indexIntegrity,paths:selected}}
+   if(!indexIntegrity.passed){const unstage=run(cwd,['reset','-q','--',...selected]);return {ok:false,error:indexIntegrity.hardGate,stage:add,unstage,indexOwnership,indexIntegrity,paths:selected}}
  }
  const commit=run(cwd,['commit','-m',msg],30_000); const head=run(cwd,['rev-parse','HEAD']);
- return {ok:commit.ok,stage:add,indexIntegrity,commit,head:head.ok?head.stdout.trim():null,paths:selected,externalSideEffectPerformed:false,pushPerformed:false};
+ return {ok:commit.ok,stage:add,indexOwnership,indexIntegrity,commit,head:head.ok?head.stdout.trim():null,paths:selected,externalSideEffectPerformed:false,pushPerformed:false};
 }
 export function gitPushBranch(cwd,{remote='origin',branch=null,setUpstream=true}={}){
   const selected=String(branch||currentBranch(cwd)||'').trim();if(!selected)return {ok:false,pushPerformed:false,externalSideEffectPerformed:false,error:'BRANCH_REQUIRED'};

@@ -1,0 +1,34 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "213bb3f34198a452b2e51559ed7513171d8a3fd7",
+  "selected_bottleneck": "context-decoded-byte-budget-integrity",
+  "selected_problem": "Arbitrary complex repository synthesis remains UNRESOLVED. Fresh-main inspection found that `WorkspaceService.contextBundle` compared `maxBytes` against filesystem raw byte size before decoding text, but recorded and returned `totalBytes` from the UTF-8 re-encoding of the decoded string. Malformed UTF-8 can expand to replacement characters, so a file whose raw size fits the budget can produce returned context whose actual encoded size exceeds the declared hard budget.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "The latest canonical main still exposes native complex synthesis as unresolved. The new code reality contains one direct bounded-context integrity defect with a falsifiable malformed-UTF-8 reproduction, so source-contract replay narrows it to DEEP_DEVELOPMENT without prescribing a new cognition architecture or forcing mode rotation."
+  },
+  "changes": [
+    "`contextBundle` still rejects symbolic links, non-files and raw files above the per-file size ceiling before reading.",
+    "After UTF-8 decoding it now computes `contentBytes=Buffer.byteLength(content)` and applies the total `maxBytes` gate to those actual returned-context bytes before accepting the file.",
+    "Accepted-file counting from the previous cycle and all existing credential/path/type admission boundaries remain intact."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED against fresh main: a 100-byte file containing 0xff decoded to replacement characters whose re-encoded context size was 300 bytes. With maxBytes=150 the old bundle accepted it and returned totalBytes > 150, so the hard context budget was false.",
+    "node_check": "PASS",
+    "focused_command": "node --test tests/context-bundle-decoded-byte-budget.test.mjs tests/context-bundle-filter-budget.test.mjs",
+    "focused_result": "2/2 PASS, 0 skipped",
+    "blob_match": {
+      "core/workspace.mjs": "d5a1db3fb6054117da7ba433af5d9f63c112c387",
+      "tests/context-bundle-decoded-byte-budget.test.mjs": "45132d4c6458af1adf815402e48d76cf6f1de355"
+    }
+  },
+  "truth_boundaries": [
+    "Arbitrary complex repository synthesis remains UNRESOLVED. This makes the declared context-byte ceiling truthful for decoded strings; it does not guarantee semantic sufficiency or optimal context selection.",
+    "Context files are still decoded as UTF-8 with replacement semantics; this cycle only ensures replacement expansion cannot violate the returned byte budget.",
+    "Initial semantic seed priority across many otherwise admissible files remains a separate selection-quality question.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

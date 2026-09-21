@@ -32,6 +32,20 @@ export class WorkspaceService {
   readBytes(rel,maxBytes=2_000_000){
     const abs=safePath(this.root,rel); const st=fs.statSync(abs); if(!st.isFile()||st.size>maxBytes) throw new Error('FILE_NOT_READABLE'); return fs.readFileSync(abs);
   }
+  ancestorState(rel){
+    const abs=safePath(this.root,rel),parent=path.dirname(abs);
+    const relParent=path.relative(this.root,parent);
+    if(!relParent||relParent==='.') return {path:rel,ok:true};
+    let cursor=this.root;
+    for(const part of relParent.split(path.sep).filter(Boolean)){
+      cursor=path.join(cursor,part);
+      let st;try{st=fs.lstatSync(cursor)}catch(error){if(error?.code==='ENOENT'||error?.code==='ENOTDIR')break;throw error}
+      const ancestor=path.relative(this.root,cursor).split(path.sep).join('/');
+      if(st.isSymbolicLink()) return {path:rel,ok:false,ancestor,type:'symlink'};
+      if(!st.isDirectory()) return {path:rel,ok:false,ancestor,type:'non-directory'};
+    }
+    return {path:rel,ok:true};
+  }
   stat(rel){
     const abs=safePath(this.root,rel);
     if(!fs.existsSync(abs)) return {path:rel,exists:false,sha256:null,size:0};

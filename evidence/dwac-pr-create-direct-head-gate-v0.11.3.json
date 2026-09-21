@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "54daa507df2e6ca3c1530bb3c39cce87e045dbd3",
+  "selected_bottleneck": "delivery-pr-create-direct-expected-head-hard-gate",
+  "selected_problem": "Fresh main hard-gated expectedHeadSha inside gitRemoteDelivery, gitPushBranch, and GitHub merge, but exported githubCreatePullRequest still allowed a direct caller to perform a PR-create external side effect with no expected validated head binding.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "changes": [
+    "githubCreatePullRequest now requires expectedHeadSha before any GitHub POST side effect.",
+    "The expected head must resolve to a real local commit before PR creation proceeds.",
+    "A regression proves an unbound direct call fails with EXPECTED_HEAD_SHA_REQUIRED and performs zero fetch calls.",
+    "Existing PR receipt/provider tests now carry the expected validated head and valid merge receipt fixtures."
+  ],
+  "validation": {
+    "node_check": "PASS",
+    "command": "node --test tests/github-pr-create-receipt-integrity.test.mjs tests/github-remote-provider.test.mjs",
+    "result": "6/6 PASS, 0 skipped"
+  },
+  "truth_boundaries": [
+    "This closes the direct exported PR-create bypass for missing expected head identity.",
+    "It does not make GitHub PR creation atomically conditional on the remote branch remaining at that head; post-create response head verification still detects but cannot erase a race that occurs inside the external service boundary."
+  ]
+}

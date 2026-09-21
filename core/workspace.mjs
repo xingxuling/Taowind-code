@@ -57,7 +57,7 @@ export class WorkspaceService {
     const bytes=fs.readFileSync(abs); return {path:rel,exists:true,type:'file',sha256:sha256Buffer(bytes),size:bytes.length,identity};
   }
   write(rel,content){
-    const abs=safePath(this.root,rel); const text=String(content); atomicWrite(abs,Buffer.from(text,'utf8')); return {path:rel,bytes:Buffer.byteLength(text),sha256:sha256Buffer(Buffer.from(text,'utf8'))};
+    const abs=safePath(this.root,rel); const bytes=Buffer.isBuffer(content)?Buffer.from(content):content instanceof Uint8Array?Buffer.from(content):Buffer.from(String(content),'utf8'); atomicWrite(abs,bytes); return {path:rel,bytes:bytes.length,sha256:sha256Buffer(bytes)};
   }
   remove(rel){
     const abs=safePath(this.root,rel); if(!fs.existsSync(abs)) return {path:rel,removed:false}; const st=fs.lstatSync(abs); if(!st.isFile()&&!st.isSymbolicLink()) throw new Error('DELETE_FILE_ONLY'); fs.unlinkSync(abs); return {path:rel,removed:true};

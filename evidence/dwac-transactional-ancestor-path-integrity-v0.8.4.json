@@ -1,0 +1,78 @@
+{
+  "protocol": "taowind-code.dwac-transactional-ancestor-path-integrity.evidence.v0.8.4",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "311b50f0b375fab7efcf1ca3184b42b2d4a635aa",
+  "selected_bottleneck": "transactional-ancestor-path-integrity",
+  "selected_problem": "Fresh-main inspection and direct reproduction showed that ChangesetStore only validated each target path's file pre/post image. A nested target could be staged through an existing non-directory ancestor, or an ancestor could become a non-directory after staging. Apply and rollback preflight would still treat a missing nested target as compatible, then fail only during the later filesystem mutation after earlier files had already been changed. In-workspace symlink ancestors were also accepted, aliasing transactional path identity through another directory.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "311b50f0b375fab7efcf1ca3184b42b2d4a635aa",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "candidate_scores": {
+      "transactional-ancestor-path-integrity": 0.814,
+      "native-complex-changeset-synthesis": 0.7656,
+      "repository-context-precision": 0.6516,
+      "filesystem-crash-atomicity": 0.6456
+    },
+    "four_mode_signal": {
+      "breadth": 0.22,
+      "bottleneck_centrality": 0.95,
+      "evidence_density": 0.99,
+      "adjacent_work_count": 3,
+      "direction_stability": 0.90,
+      "urgency": 0.78,
+      "artifact_pressure": 0.40
+    },
+    "four_mode_scores": {
+      "WHOLE_ARTIFACT": 0.249,
+      "DEEP_DEVELOPMENT": 0.9365,
+      "NORTH_STAR": 0.7865,
+      "NORTH_STAR_BURST": 0.7935
+    },
+    "mode_route_basis": "The committed four-mode router's singular evidence-rich bottleneck gate selects DEEP_DEVELOPMENT because centrality and evidence density both exceed the gate thresholds; no mode rotation was forced.",
+    "claim_limit": "No hosted DWAC success receipt is claimed. The committed DWAC North Star scoring and four-mode routing source contracts were replayed against fresh canonical code evidence after the hosted Developer Execution Runtime returned a transient HTTP 502."
+  },
+  "pre_fix_reproduction": {
+    "stage_existing_nondirectory_ancestor": "FAILED as expected: current main accepted dir/child.txt while dir was a regular file (Missing expected exception).",
+    "apply_ancestor_drift": "FAILED as expected: after staging with dir absent, creating dir as a regular file caused apply to throw EEXIST only after a preceding file had already been mutated.",
+    "rollback_ancestor_drift": "FAILED as expected: after apply deleted dir/child.txt, replacing dir with a regular file allowed rollback preflight to pass for the deleted target and fail only during restoration after an earlier rollback mutation.",
+    "internal_symlink_ancestor": "FAILED as expected: current main accepted alias/child.txt when alias was an in-workspace directory symlink."
+  },
+  "changes": [
+    "WorkspaceService now exposes ancestorState(rel), which inspects each existing ancestor component with lstat and distinguishes safe directories from symlink and non-directory ancestors without following in-workspace aliases.",
+    "ChangesetStore.stage rejects unsupported ancestors before persisting a changeset.",
+    "ChangesetStore.apply rechecks ancestor integrity for every path during the all-path preflight before the first mutation.",
+    "ChangesetStore.rollback rechecks ancestor integrity during rollback preflight before the first restoration.",
+    "Existing lexical boundary checks, external symlink-escape protection, final-target type rejection, canonical path identity, preimage/postimage checks and bounded changeset limits remain intact."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/workspace.mjs",
+      "node --check core/changesets.mjs",
+      "node --test tests/changesets.test.mjs tests/path-boundary.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "14/14 PASS; 0 skipped on validation host",
+    "verified_git_blobs": {
+      "core/workspace.mjs": "d32f319ff8ee74ef3f4a31b692db5a36b1ffd2f6",
+      "core/changesets.mjs": "6645b7a92da0d364817273ce4ce42c9579b74993",
+      "tests/changesets.test.mjs": "955a8322d60cc1d7cdf9d55cb118097fc8cb4c92",
+      "tests/path-boundary.test.mjs": "9e2b77b5f093873ec0845a46e223979c4ae38e52"
+    }
+  },
+  "truth_boundaries": [
+    "This closes the reproduced ancestor-type and in-workspace symlink-alias cases at stage/apply/rollback preflight. It does not claim inode-level detection of a directory replaced by another ordinary directory at the same lexical path between preflight and mutation.",
+    "Filesystem crash-level atomicity for arbitrary I/O/process failure remains unresolved.",
+    "Arbitrary complex repository semantic synthesis remains UNRESOLVED.",
+    "No new product form, feature roadmap, provider architecture or hard-coded task-to-mode mapping was introduced.",
+    "No GitHub Actions were intentionally triggered or rerun, no force push was used, and no credential, payment, formal Release or destructive/irreversible external action was performed."
+  ]
+}

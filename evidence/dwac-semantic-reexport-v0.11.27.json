@@ -1,0 +1,18 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "1b52346c02132263cd5689054b66fc7258aabd08",
+  "bottleneck": "semantic-relative-reexport-coverage",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Relative JavaScript re-exports such as export {x} from './x.js' were real dependency edges but were absent from the semantic repository graph.",
+  "pre_fix_reproduction": "src/index.js re-exporting from ./leaf.js produced no imports edge to src/leaf.js.",
+  "change": "Extend the existing literal dependency matcher to recognize relative re-export-from syntax without changing graph architecture or package resolution.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "9/9 PASS",
+    "new_regressions": 1
+  },
+  "truth_boundary": "This covers literal relative re-export-from syntax only; complete parser-grade module semantics remain unresolved.",
+  "github_actions": "not requested"
+}

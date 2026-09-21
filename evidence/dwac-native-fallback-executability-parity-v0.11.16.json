@@ -1,0 +1,38 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "57dab063f7e50f1c5605072030cc4ab483a25987",
+  "selected_bottleneck": "native-fallback-executability-parity",
+  "selected_problem": "Arbitrary complex repository synthesis remains UNRESOLVED. Fresh-main inspection found that native fallback expansion used a weaker raw predicate than the federation that ultimately decides executability. A first implementation candidate containing path traversal, conflicting same-path operations, or more than the acceptance validation budget still looked executable to `nativeProposalExecutable`, suppressing the existing architecture/verifier fallback roles; federation then rejected that sole candidate, prematurely collapsing a synthesis attempt that still had reusable native roles available.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "The newly merged main leaves native complex synthesis open and exposes one narrow, reproducible contradiction between candidate-expansion admission and federated executability. The defect is high-centrality to autonomous synthesis convergence, locally falsifiable, and fixable by reusing existing normalization rather than prescribing a new architecture, so source-contract replay routes to DEEP_DEVELOPMENT without forced mode rotation."
+  },
+  "asset_reuse": [
+    "Reused `normalizeProposal` from `core/federated-generation.mjs` as the existing executable-candidate normalization contract.",
+    "Reused the existing implementation/architecture/verifier native role expansion; no new roles, provider, model, product form, or synthesis architecture was introduced."
+  ],
+  "changes": [
+    "`nativeProposalExecutable` now normalizes the first native proposal with the same federation contract before deciding whether fallback roles can be skipped.",
+    "Unsafe-path, validation-overflow, and ambiguous-path implementation proposals no longer suppress architecture/verifier fallback expansion.",
+    "Explicit `DWAC_NATIVE_CANDIDATE_COUNT` operator overrides retain their existing bounded behavior."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED against fresh main: focused regression 0/1 PASS. Unsafe traversal, 9-command overflow, and same-path conflicting proposals all returned `nativeProposalExecutable=true`, so automatic fallback roles were suppressed even though federation would reject them.",
+    "node_check": "PASS",
+    "focused_command": "node --test tests/native-fallback-executability-parity.test.mjs tests/native-candidate-expansion.test.mjs",
+    "focused_result": "4/4 PASS, 0 skipped",
+    "blob_match": {
+      "core/tao-ai-adapter.mjs": "0a91d889dad81dbd7f933c7401ff42abc7308bfe",
+      "tests/native-fallback-executability-parity.test.mjs": "32a268ab0573e69dd61b5582dede2adbb3e00c8c"
+    }
+  },
+  "truth_boundaries": [
+    "Arbitrary complex repository synthesis remains UNRESOLVED. This improves native candidate recovery when the first role emits a non-executable proposal; it does not guarantee that fallback roles will produce semantically correct code.",
+    "The automatic fallback decision now matches current federation normalization, but future changes to federation executability should remain synchronized with this admission contract.",
+    "External accelerators remain optional and are not required for the core fallback behavior verified here.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

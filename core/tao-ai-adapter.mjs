@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import {normalizeProposal} from './federated-generation.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 
@@ -70,7 +71,8 @@ function systemPrompt(role){return `You are an optional language/code accelerato
 
 const NATIVE_CANDIDATE_ROLES=Object.freeze(['implementation','architecture','verifier']);
 export function nativeProposalExecutable(proposal){
-  return Array.isArray(proposal?.changes)&&proposal.changes.length>0&&Array.isArray(proposal?.validation_commands)&&proposal.validation_commands.length>0;
+  const normalized=normalizeProposal(proposal,{provider:'dwac-native',role:'implementation'});
+  return !!(normalized.changes.length&&normalized.validation_commands.length&&!normalized.validation_overflow&&!normalized.ambiguous_paths.length);
 }
 export function nativeFallbackRoles(firstProposal,{configuredCount=null}={}){
   const raw=String(configuredCount??'').trim();

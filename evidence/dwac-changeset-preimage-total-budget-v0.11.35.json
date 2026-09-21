@@ -1,0 +1,24 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "7b54d90423df692cf86d359082476d348ce611ad",
+  "bottleneck": "changeset-preimage-total-budget-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main declared an 8,000,000-byte total changeset budget, but ChangesetStore.stage counted only proposed write bytes. Existing-file rollback preimages were persisted as base64 snapshots without contributing to the total, so delete-heavy changesets could retain far more repository data than the declared total budget.",
+  "decision_provenance": {
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "route_basis": "This is a single boundedness and resource-integrity defect with a deterministic fresh-main reproduction, direct adjacency to the existing transactional changeset contract, and a narrow fix that reuses the current budget rather than prescribing a new architecture. The four-mode contract therefore resolves to DEEP_DEVELOPMENT without forced mode rotation."
+  },
+  "pre_fix_reproduction": "On the canonical base, five existing 1,800,000-byte files were staged as delete operations. Their 9,000,000 bytes of rollback preimages were accepted and persisted even though MAX_TOTAL_BYTES is 8,000,000, because delete operations contributed zero bytes to the total counter.",
+  "change": "Count every captured existing-file rollback preimage toward the same raw-byte total budget before the changeset is persisted. Proposed write after-images continue to contribute to that total as before, so the cap now bounds the combined raw bytes represented by preimage and after-image snapshots.",
+  "validation": {
+    "node_check": "PASS",
+    "pre_fix_reproduction": "EXPECTED FAILURE reproduced: a 9,000,000-byte delete-only preimage set staged without CHANGESET_TOO_LARGE",
+    "focused_tests": "15/15 PASS; 0 skipped",
+    "new_regressions": 1
+  },
+  "truth_boundary": "This bounds the combined raw preimage and after-image bytes admitted into a changeset. Base64 and JSON serialization add encoding overhead above the raw-byte cap, and this change does not claim filesystem crash atomicity, arbitrary I/O-failure compensation, arbitrary complex repository synthesis, or an optimal budget policy.",
+  "github_actions": "not requested"
+}

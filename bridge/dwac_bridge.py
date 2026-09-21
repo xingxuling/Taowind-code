@@ -53,6 +53,17 @@ def _resolution_refs(value):
  return refs
 
 
+def _committed_resolution_refs(workspace, source, data):
+ if not isinstance(data,dict):return set()
+ try:
+  tracked=subprocess.run(['git','-C',str(workspace),'cat-file','-e',f'HEAD:{source}'],capture_output=True,text=True,timeout=5)
+  clean=subprocess.run(['git','-C',str(workspace),'diff','--quiet','HEAD','--',source],capture_output=True,text=True,timeout=5)
+ except Exception:
+  return set()
+ if tracked.returncode!=0 or clean.returncode!=0:return set()
+ return _resolution_refs(data.get('resolves'))
+
+
 def _evidence_files_by_revision(workspace, evidence):
  files=list(evidence.glob('*.json'))
  if not files:return []
@@ -97,7 +108,7 @@ def _truth_boundaries(workspace, limit=96):
    if (row['source'],row['path']) in resolved:continue
    rows.append(row)
    if len(rows)>=limit:return rows
-  if isinstance(data,dict):resolved.update(_resolution_refs(data.get('resolves')))
+  resolved.update(_committed_resolution_refs(workspace,source,data))
  return rows[:limit]
 
 

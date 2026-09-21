@@ -55,7 +55,7 @@ test('validated local delivery commits the Git index only when it matches valida
     fs.writeFileSync(path.join(dir,'a.txt'),'a0\n');git(dir,['add','.']);git(dir,['commit','-m','base']);
     fs.writeFileSync(path.join(dir,'a.txt'),'validated\n');const validated=[receipt(dir,'a.txt')];
     const result=gitLocalCommit(dir,'validated commit',['a.txt'],validated);
-    assert.equal(result.ok,true);assert.equal(result.indexIntegrity.passed,true);assert.equal(result.indexOwnership.passed,true);assert.equal(git(dir,['show','HEAD:a.txt']),'validated');
+    assert.equal(result.ok,true);assert.equal(result.indexIntegrity.passed,true);assert.equal(result.indexOwnership.passed,true);assert.equal(result.commitIntegrity.passed,true);assert.equal(git(dir,['show','HEAD:a.txt']),'validated');
   }finally{fs.rmSync(dir,{recursive:true,force:true})}
 });
 
@@ -85,5 +85,34 @@ test('local delivery does not overwrite a preexisting staged version of a run-ow
     const result=gitLocalCommit(dir,'agent change',['a.txt'],validated);
     assert.equal(result.ok,false);assert.equal(result.error,'GIT_INDEX_PREEXISTING_STAGED_CHANGES');
     assert.equal(git(dir,['show',':a.txt']),cachedBefore);assert.equal(fs.readFileSync(path.join(dir,'a.txt'),'utf8'),'validated-agent\n');
+  }finally{fs.rmSync(dir,{recursive:true,force:true})}
+});
+
+test('validated local delivery rejects a pre-commit hook that mutates run-owned bytes',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-git-commit-hook-bytes-'));
+  try{
+    git(dir,['init']);git(dir,['config','user.name','Taowind Test']);git(dir,['config','user.email','taowind-test@example.invalid']);
+    fs.writeFileSync(path.join(dir,'a.txt'),'a0\n');git(dir,['add','.']);git(dir,['commit','-m','base']);
+    fs.writeFileSync(path.join(dir,'a.txt'),'validated\n');const validated=[receipt(dir,'a.txt')];const before=git(dir,['rev-parse','HEAD']);
+    const hook=path.join(dir,'.git','hooks','pre-commit');fs.writeFileSync(hook,"#!/bin/sh\nprintf 'hook-mutated\\n' > a.txt\ngit add a.txt\nexit 0\n",{mode:0o755});
+    const result=gitLocalCommit(dir,'must roll back',['a.txt'],validated);
+    assert.equal(result.ok,false);assert.equal(result.error,'GIT_COMMIT_POSTIMAGE_DRIFT');assert.equal(result.commitIntegrity.passed,false);
+    assert.equal(git(dir,['rev-parse','HEAD']),before);assert.equal(git(dir,['diff','--cached','--name-only']),'');
+    assert.equal(fs.readFileSync(path.join(dir,'a.txt'),'utf8'),'hook-mutated\n');
+  }finally{fs.rmSync(dir,{recursive:true,force:true})}
+});
+
+test('validated local delivery rejects a pre-commit hook that stages an unrelated path',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-git-commit-hook-ownership-'));
+  try{
+    git(dir,['init']);git(dir,['config','user.name','Taowind Test']);git(dir,['config','user.email','taowind-test@example.invalid']);
+    fs.writeFileSync(path.join(dir,'a.txt'),'a0\n');fs.writeFileSync(path.join(dir,'b.txt'),'b0\n');git(dir,['add','.']);git(dir,['commit','-m','base']);
+    fs.writeFileSync(path.join(dir,'a.txt'),'validated\n');const validated=[receipt(dir,'a.txt')];const before=git(dir,['rev-parse','HEAD']);
+    const hook=path.join(dir,'.git','hooks','pre-commit');fs.writeFileSync(hook,"#!/bin/sh\nprintf 'hooked-b\\n' > b.txt\ngit add b.txt\nexit 0\n",{mode:0o755});
+    const result=gitLocalCommit(dir,'must roll back',['a.txt'],validated);
+    assert.equal(result.ok,false);assert.equal(result.error,'GIT_COMMIT_POSTIMAGE_DRIFT');
+    assert.ok(result.commitIntegrity.drift.some(item=>item.path==='b.txt'&&item.changed.includes('ownership')));
+    assert.equal(git(dir,['rev-parse','HEAD']),before);assert.equal(git(dir,['diff','--cached','--name-only']),'');
+    assert.equal(fs.readFileSync(path.join(dir,'b.txt'),'utf8'),'hooked-b\n');
   }finally{fs.rmSync(dir,{recursive:true,force:true})}
 });

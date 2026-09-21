@@ -28,11 +28,17 @@ export function isTerminalInputAllowed(input,{mode='workspace'}={}){
 
 export function shellInvocation(command,{platform=process.platform,isolatedShell=false}={}){const raw=String(command||'');if(platform==='win32')return {shell:'powershell.exe',args:['-NoProfile','-Command',raw]};return {shell:'/bin/bash',args:isolatedShell?['--noprofile','--norc','-c',raw]:['-lc',raw]};}
 
-export async function runCommand(cwd,command,{mode='workspace',timeoutMs=60_000,env={},inheritProcessEnv=true,isolatedShell=false}={}){
+function signalCommandTree(child,signal,{containProcessTree=false,platform=process.platform}={}){
+ if(!child?.pid)return false;
+ if(containProcessTree&&platform!=='win32'){try{process.kill(-child.pid,signal);return true}catch{}}
+ try{return child.kill(signal)}catch{return false}
+}
+
+export async function runCommand(cwd,command,{mode='workspace',timeoutMs=60_000,env={},inheritProcessEnv=true,isolatedShell=false,containProcessTree=false}={}){
  const raw=String(command||'').trim(); const allowed=isCommandAllowed(raw,{mode}); if(!allowed.ok)throw errorWithCode(allowed.reason);
- const {shell,args}=shellInvocation(raw,{isolatedShell});
- return await new Promise(resolve=>{let out='',err='',timedOut=false;const started=Date.now();const child=spawn(shell,args,{cwd,env:normalizedEnv(env,inheritProcessEnv),windowsHide:true});const kill=setTimeout(()=>{timedOut=true;child.kill('SIGTERM');err+='\n[TIMEOUT]';},timeoutMs);
- child.stdout.on('data',d=>out+=d);child.stderr.on('data',d=>err+=d);child.on('close',code=>{clearTimeout(kill);resolve({command:raw,code:code??-1,stdout:out.slice(-240000),stderr:err.slice(-120000),timedOut,durationMs:Date.now()-started})})})
+ const {shell,args}=shellInvocation(raw,{isolatedShell});const detached=containProcessTree&&process.platform!=='win32';
+ return await new Promise(resolve=>{let out='',err='',timedOut=false,hardKill=null;const started=Date.now();const child=spawn(shell,args,{cwd,env:normalizedEnv(env,inheritProcessEnv),windowsHide:true,detached});const kill=setTimeout(()=>{timedOut=true;signalCommandTree(child,'SIGTERM',{containProcessTree});err+='\n[TIMEOUT]';if(detached){hardKill=setTimeout(()=>signalCommandTree(child,'SIGKILL',{containProcessTree:true}),750);hardKill.unref?.()}},timeoutMs);
+ child.stdout.on('data',d=>out+=d);child.stderr.on('data',d=>err+=d);child.on('close',code=>{clearTimeout(kill);if(hardKill)clearTimeout(hardKill);resolve({command:raw,code:code??-1,stdout:out.slice(-240000),stderr:err.slice(-120000),timedOut,durationMs:Date.now()-started})})})
 }
 
 let nativePtyPromise=null;

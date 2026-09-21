@@ -1,0 +1,34 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "644a38992756e8655b87d311dff248f1f4b92f5f",
+  "selected_bottleneck": "semantic-import-target-resolution-ambiguity",
+  "selected_problem": "Arbitrary complex repository synthesis remains UNRESOLVED. Fresh-main inspection found that extensionless relative-import edges used the first repository path whose prefix matched the import. Repository input order could therefore make `./foo` resolve to `foo.test.js` instead of `foo.js`, contaminating semantic centrality and context selection with an incorrect dependency edge.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "The fresh canonical main exposes one narrow, deterministic semantic-graph defect with a direct wrong-edge reproduction. Source-contract replay therefore narrows the unresolved synthesis boundary to DEEP_DEVELOPMENT without prescribing a new module-resolution architecture or forcing mode rotation."
+  },
+  "changes": [
+    "Relative import candidates are now ranked deterministically instead of taking the first input-order prefix match.",
+    "Resolution prefers an exact path, then a direct extension-bearing file candidate, then an index candidate; equal-rank candidates are ordered by shortest path and lexical order.",
+    "The change is intentionally limited to the existing heuristic semantic graph and does not claim full runtime module-resolution equivalence."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED against fresh main: with `src/foo.test.js` before `src/foo.js`, `src/main.js` importing `./foo` produced an imports edge to `src/foo.test.js` rather than `src/foo.js`.",
+    "node_check": "PASS",
+    "focused_command": "node --test tests/semantic-import-target-resolution.test.mjs tests/semantic-test-source-linkage.test.mjs",
+    "focused_result": "2/2 PASS, 0 skipped",
+    "blob_match": {
+      "core/semantic-repo-graph.mjs": "570ba3184fd8ef891e7e51bae023d8e17bbfab6e",
+      "tests/semantic-import-target-resolution.test.mjs": "188f23bf3597c5861c2b38380e469a538d7529fb"
+    }
+  },
+  "truth_boundaries": [
+    "Arbitrary complex repository synthesis remains UNRESOLVED. This removes one input-order-sensitive relative-import ambiguity; it does not implement full Node, TypeScript, bundler, Python, or other language module resolution.",
+    "Package exports, tsconfig path aliases, extension priority rules, platform-specific suffixes and non-relative imports remain outside this heuristic semantic graph resolver.",
+    "Semantic-context neighborhood selection remains bounded and does not prove globally optimal context selection for arbitrary software goals.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "6849353bbf179798f5a76320ca5fc1868d27031f",
+  "bottleneck": "semantic-neighborhood-expansion-dead-path",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "selectSemanticContext filled the bounded selection from ranked nodes before attempting import/test neighborhood expansion, so the neighborhood phase could be unreachable whenever maxFiles or maxBytes was exhausted.",
+  "pre_fix_reproduction": {
+    "goal": "featureGoal",
+    "maxFiles": 2,
+    "files": ["src/feature.js", "src/helper.js", "index.js"],
+    "observed": ["src/feature.js", "index.js"],
+    "expected": ["src/feature.js", "src/helper.js"]
+  },
+  "change": "Interleave each ranked node with its existing import/test neighbors so the already-declared neighborhood signal participates before unrelated lower-ranked files consume the budget. No new graph relation type or product architecture was introduced.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "5/5 PASS",
+    "tests": [
+      "semantic-neighborhood-selection.test.mjs",
+      "semantic-repo-graph.test.mjs",
+      "semantic-import-target-resolution.test.mjs",
+      "semantic-test-source-linkage.test.mjs",
+      "semantic-ambiguous-test-source-linkage.test.mjs"
+    ]
+  },
+  "truth_boundary": "Selection remains bounded by the already-observed semantic graph; files absent from the bounded manifest/seed context are still outside this graph and are not claimed to be recoverable by this change.",
+  "github_actions": "not requested"
+}

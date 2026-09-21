@@ -1,0 +1,18 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "2944c29df46be4d0e28c60a2008a52df477f2e84",
+  "bottleneck": "context-bundle-normalized-path-dedup-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "contextBundle deduplicated raw requested path strings before slash and ./ normalization, so several aliases for one real repository file could be admitted repeatedly, duplicating cognition input and consuming the bounded file/byte budget multiple times.",
+  "pre_fix_reproduction": "Requesting ./src/a.js, src\\a.js and src/a.js admitted three copies of the same file instead of one.",
+  "change": "Normalize requested paths to a POSIX repository-relative form before deduplication, then run the existing credential, extension, ancestor, symlink, UTF-8 and byte-budget admission checks.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "10/10 PASS",
+    "new_regressions": 1
+  },
+  "truth_boundary": "This deduplicates lexical path aliases only. Hard-link identity aliases, globally optimal semantic context selection and files absent from bounded observation remain separate concerns.",
+  "github_actions": "not requested"
+}

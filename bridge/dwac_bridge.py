@@ -64,9 +64,18 @@ def _canonical_evidence_data(workspace, source):
 
 
 def _evidence_files_by_revision(workspace, evidence):
- files=list(evidence.glob('*.json'))
+ try:
+  tree=subprocess.run(['git','-C',str(workspace),'ls-tree','-r','--name-only','HEAD','--','evidence'],capture_output=True,text=True,timeout=5)
+ except Exception:
+  tree=None
+ if tree is not None and tree.returncode==0:
+  sources=[line.strip().replace('\\','/') for line in tree.stdout.splitlines() if line.strip().lower().endswith('.json')]
+  by_source={source:workspace/source for source in sources}
+  files=list(by_source.values())
+ else:
+  files=list(evidence.glob('*.json'))
+  by_source={str(file.relative_to(workspace)).replace('\\','/'):file for file in files}
  if not files:return []
- by_source={str(file.relative_to(workspace)).replace('\\','/'):file for file in files}
  try:
   r=subprocess.run(['git','-C',str(workspace),'log','--format=','--name-only','--diff-filter=ACMR','--','evidence'],capture_output=True,text=True,timeout=5)
  except Exception:
@@ -79,13 +88,12 @@ def _evidence_files_by_revision(workspace, evidence):
   if file is None or source in seen:continue
   ordered.append(file);seen.add(source)
  remaining=[file for source,file in by_source.items() if source not in seen]
- remaining.sort(key=lambda file:(file.stat().st_mtime_ns,str(file)),reverse=True)
+ remaining.sort(key=lambda file:(file.stat().st_mtime_ns if file.exists() else 0,str(file)),reverse=True)
  return remaining+ordered
 
 
 def _truth_boundaries(workspace, limit=96):
  evidence=workspace/'evidence';rows=[];resolved=set()
- if not evidence.exists():return rows
  for file in _evidence_files_by_revision(workspace,evidence):
   source=str(file.relative_to(workspace)).replace('\\','/')
   data=_canonical_evidence_data(workspace,source)

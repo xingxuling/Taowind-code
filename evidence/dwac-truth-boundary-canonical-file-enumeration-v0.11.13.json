@@ -1,0 +1,37 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "269f8a8a7bd964f7da2618a34cebd6a4a2d6b2e3",
+  "selected_bottleneck": "truth-boundary-canonical-file-enumeration",
+  "selected_problem": "After canonicalizing evidence bytes to HEAD, evidence path discovery still begins from mutable working-tree `evidence/*.json`. A dirty deletion of a committed evidence file, or of the whole evidence directory, can therefore erase a canonical-main unresolved boundary from autonomous diagnosis before HEAD content is ever read.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "Fresh main exposes one narrow, falsifiable continuation of the canonical-main observation invariant: bytes are already HEAD-bound but path enumeration is not. The defect is local, high-centrality, evidence-dense and does not require any product or architecture decision, so source-contract replay routes to DEEP_DEVELOPMENT without forced mode rotation."
+  },
+  "changes": [
+    "Canonical evidence paths are now enumerated from `git ls-tree ... HEAD -- evidence` when HEAD is available, rather than from mutable working-tree directory contents.",
+    "A dirty deletion of a committed evidence JSON file cannot remove that canonical file from truth-boundary observation.",
+    "A dirty deletion of the entire working-tree evidence directory cannot erase canonical-main boundary discovery; non-Git fallback remains bounded to filesystem enumeration."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED against the prior canonical-byte logic: focused test 0/2 PASS. Deleting the committed evidence file, or deleting the whole evidence directory, produced RuntimeError: NO_ACTIONABLE_CANDIDATE even though HEAD still contained the unresolved boundary.",
+    "python_compile": "PASS",
+    "test_syntax": "PASS",
+    "focused_command": "node --test tests/truth-boundary-canonical-file-enumeration.test.mjs",
+    "focused_result": "2/2 PASS, 0 skipped",
+    "regression_command": "node --test tests/truth-boundary-resolution-causality.test.mjs tests/truth-boundary-resolution-commit-authority.test.mjs tests/truth-boundary-canonical-main-authority.test.mjs tests/truth-boundary-canonical-file-enumeration.test.mjs",
+    "regression_result": "8/8 PASS, 0 skipped",
+    "blob_match": {
+      "bridge/dwac_bridge.py": "b2fd3683760e31f606198b4d9594750c5006c2cd",
+      "tests/truth-boundary-canonical-file-enumeration.test.mjs": "569c8d55685673c7af7295e2ad876c2923ae5597"
+    }
+  },
+  "truth_boundaries": [
+    "Canonical truth-boundary evidence is now HEAD-bound in both path enumeration and file bytes, but other closed-capability probes in `_probe_workspace` still inspect mutable working-tree source files.",
+    "Git HEAD provenance is not semantic or cryptographic proof that an evidence claim is correct.",
+    "The non-Git fallback intentionally retains filesystem enumeration because no canonical revision exists there.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

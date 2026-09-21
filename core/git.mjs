@@ -1,9 +1,14 @@
 import {spawnSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
 // GitHub remote delivery provider: non-force push plus pull request create/merge, always behind explicit approval.
 
 function run(cwd,args,timeout=15_000){
   const r=spawnSync('git',args,{cwd,encoding:'utf8',timeout});
   return {ok:r.status===0,stdout:r.stdout||'',stderr:r.stderr||'',code:r.status??-1};
+}
+function runBytes(cwd,args,timeout=15_000){
+  const r=spawnSync('git',args,{cwd,encoding:null,timeout});
+  return {ok:r.status===0,stdout:Buffer.isBuffer(r.stdout)?r.stdout:Buffer.from(r.stdout||''),stderr:Buffer.isBuffer(r.stderr)?r.stderr.toString('utf8'):String(r.stderr||''),code:r.status??-1};
 }
 function redactSecrets(value){return String(value||'').replace(/(https?:\/\/)([^@\s/]+)@/gi,'$1***@').replace(/(authorization:\s*bearer\s+)[^\s]+/gi,'$1***')}
 function clip(value,limit=12_000){return redactSecrets(value).slice(-limit)}
@@ -14,6 +19,35 @@ function sanitizedRemoteUrl(value){
   if(!raw)return null;
   if(/^git@github\.com:/i.test(raw))return raw;
   try{const u=new URL(raw);u.username='';u.password='';return u.toString().replace(/\/$/,'')}catch{return raw.replace(/:\/\/[^/@]+@/,'://***@')}
+}
+function sha256(bytes){return createHash('sha256').update(bytes).digest('hex')}
+function expectedGitMode(mode){return Number.isInteger(mode)?((mode&0o111)!==0?'100755':'100644'):null}
+function gitIndexEntry(cwd,path){
+  const listed=run(cwd,['ls-files','-s','--',path]);
+  if(!listed.ok)return {path,error:'GIT_INDEX_READ_FAILED',detail:clip(listed.stderr)};
+  const line=listed.stdout.trim().split(/\r?\n/).find(Boolean);
+  if(!line)return {path,exists:false,sha256:null,mode:null,oid:null};
+  const match=line.match(/^(\d{6})\s+([0-9a-f]+)\s+\d+\t/);
+  if(!match)return {path,error:'GIT_INDEX_PARSE_FAILED',detail:clip(line)};
+  const bytes=runBytes(cwd,['cat-file','blob',match[2]]);
+  if(!bytes.ok)return {path,error:'GIT_INDEX_BLOB_READ_FAILED',detail:clip(bytes.stderr)};
+  return {path,exists:true,sha256:sha256(bytes.stdout),mode:match[1],oid:match[2]};
+}
+export function checkGitIndexPostimage(cwd,paths=[],validatedPostimage=null){
+  if(!Array.isArray(validatedPostimage))return {passed:false,checked:0,drift:[],hardGate:'GIT_INDEX_POSTIMAGE_RECEIPT_REQUIRED'};
+  const expectedByPath=new Map(validatedPostimage.map(item=>[String(item?.path||''),item]));
+  const drift=[];let checked=0;
+  for(const path of [...new Set((paths||[]).map(String).filter(Boolean))]){
+    checked+=1;const expected=expectedByPath.get(path);const current=gitIndexEntry(cwd,path);
+    if(!expected){drift.push({path,changed:['receipt'],expected:null,current});continue}
+    if(current.error){drift.push({path,changed:['index'],expected,current});continue}
+    const changed=[];const expectedExists=expected.exists===true;
+    if(expectedExists!==current.exists)changed.push('exists');
+    if(expectedExists&&expected.sha256!==current.sha256)changed.push('sha256');
+    if(expectedExists){const mode=expectedGitMode(expected.mode);if(mode&&mode!==current.mode)changed.push('mode')}
+    if(changed.length)drift.push({path,changed,expected:{exists:expectedExists,sha256:expected.sha256??null,mode:expectedGitMode(expected.mode)},current});
+  }
+  return {passed:drift.length===0,checked,drift,hardGate:drift.length?'GIT_INDEX_POSTIMAGE_DRIFT':'PASS'};
 }
 export function parseGitHubRepository(remoteUrl){
   const raw=String(remoteUrl||'').trim();
@@ -32,12 +66,17 @@ export function gitRemoteInfo(cwd,{remote='origin',env=process.env}={}){
   return {available:url.ok,remote,branch,repository,remoteUrl:url.ok?sanitizedRemoteUrl(url.stdout.trim()):null,githubApiReady:!!repository&&!!githubToken(env)};
 }
 export function gitDeliveryPreview(cwd){return {...gitStatus(cwd),...gitDiffStat(cwd),remote:gitRemoteInfo(cwd),externalSideEffectPerformed:false,pushPerformed:false,prPerformed:false,mergePerformed:false}}
-export function gitLocalCommit(cwd,message,paths=[]){
+export function gitLocalCommit(cwd,message,paths=[],validatedPostimage=null){
  const msg=String(message||'').trim(); if(!msg)throw new Error('COMMIT_MESSAGE_REQUIRED');
  const selected=[...new Set((paths||[]).map(String).filter(Boolean))]; if(!selected.length)throw new Error('COMMIT_PATHS_REQUIRED');
  const add=run(cwd,['add','-A','--',...selected]); if(!add.ok)return {ok:false,stage:add,paths:selected};
+ let indexIntegrity=null;
+ if(validatedPostimage!==null){
+   indexIntegrity=checkGitIndexPostimage(cwd,selected,validatedPostimage);
+   if(!indexIntegrity.passed){const unstage=run(cwd,['reset','-q','--',...selected]);return {ok:false,error:indexIntegrity.hardGate,stage:add,unstage,indexIntegrity,paths:selected}}
+ }
  const commit=run(cwd,['commit','-m',msg],30_000); const head=run(cwd,['rev-parse','HEAD']);
- return {ok:commit.ok,stage:add,commit,head:head.ok?head.stdout.trim():null,paths:selected,externalSideEffectPerformed:false,pushPerformed:false};
+ return {ok:commit.ok,stage:add,indexIntegrity,commit,head:head.ok?head.stdout.trim():null,paths:selected,externalSideEffectPerformed:false,pushPerformed:false};
 }
 export function gitPushBranch(cwd,{remote='origin',branch=null,setUpstream=true}={}){
   const selected=String(branch||currentBranch(cwd)||'').trim();if(!selected)return {ok:false,pushPerformed:false,externalSideEffectPerformed:false,error:'BRANCH_REQUIRED'};

@@ -1,0 +1,50 @@
+{
+  "protocol": "taowind-code.dwac-pr-merge-head-integrity.evidence.v0.10.8",
+  "status": "SOURCE_IMPLEMENTED_TARGETED_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "ebdfee84cf6678ad49996ebef786b97bc64d297c",
+  "selected_bottleneck": "delivery-pr-merge-head-integrity",
+  "selected_problem": "Fresh main bound non-force push to the expected validated commit, but GitHub pull-request merge still treated expectedHeadSha as optional. A PR head could therefore move after review/validation and an unbound merge request would accept GitHub's then-current head instead of the validated candidate.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "ebdfee84cf6678ad49996ebef786b97bc64d297c",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "One narrow evidence-rich remote-delivery artifact-binding gap remained after exact-object push binding, so the committed singular-bottleneck gate routes the replay to DEEP_DEVELOPMENT without forced mode rotation.",
+    "claim_limit": "No hosted DWAC success receipt or fabricated numeric score is claimed."
+  },
+  "pre_fix_reproduction": {
+    "source_observation": "githubMergePullRequest only added GitHub REST `sha` when expectedHeadSha happened to be supplied; otherwise it issued a merge request with only merge_method.",
+    "consequence": "The provider had no fail-closed guarantee that the PR head being merged was the exact previously validated candidate."
+  },
+  "changes": [
+    "githubMergePullRequest now requires a concrete expectedHeadSha before making any GitHub merge API call.",
+    "Missing or malformed expected heads fail closed with EXPECTED_HEAD_SHA_REQUIRED or EXPECTED_HEAD_SHA_INVALID and perform no merge side effect.",
+    "Every accepted merge request always sends the expected head as the GitHub REST merge `sha` precondition.",
+    "gitRemoteDelivery propagates the merge hard-gate error instead of collapsing it into a generic PR_MERGE_FAILED result."
+  ],
+  "validation": {
+    "result": "PASS",
+    "targeted_harness": "2/2 PASS",
+    "cases": [
+      "missing and malformed expected heads return before the mocked GitHub API is invoked",
+      "valid expected head is present verbatim as the merge request body sha precondition"
+    ],
+    "unchanged_regression_basis": "The push and PR-creation paths were unchanged from v0.10.7, where the focused remote-provider harness passed 3/3 against real local/bare Git plus mocked GitHub REST.",
+    "branch_git_blobs": {
+      "core/git.mjs": "5f2e8ba3b50c96a2e374019ea719518f9a039a26",
+      "tests/github-remote-provider.test.mjs": "432d61c546bb0c8cb5f08a588aa7afbb518fac52"
+    }
+  },
+  "truth_boundaries": [
+    "This makes expected PR head identity mandatory at the provider merge boundary; it does not independently prove review/check state, which remains subject to repository rules and caller policy.",
+    "GitHub itself enforces the supplied head SHA precondition; if the PR head moved, the merge must fail rather than silently adopt the new head.",
+    "No force push, repository-rule bypass, credential exposure, payment, formal Release, or destructive/irreversible external action is introduced.",
+    "OS-level validation sandboxing, arbitrary complex semantic synthesis, Windows descendant-tree equivalence, and crash-level filesystem atomicity remain unresolved."
+  ]
+}

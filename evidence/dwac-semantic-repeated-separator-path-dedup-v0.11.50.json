@@ -1,0 +1,24 @@
+{
+  "version": "0.11.50",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "1c476aa9d327245485a249ff6acd4e37d54fc28b",
+  "selected_bottleneck": "semantic-repeated-separator-path-node-dedup-integrity",
+  "selected_problem": "Fresh-main inspection after dot-segment closure found another directly falsifiable path-identity mismatch: src/a.js and src//a.js remained distinct semantic nodes while import path normalization treats repeated separators as one lexical path.",
+  "mode_route": ["DEEP_DEVELOPMENT"],
+  "sovereignty_gate": "AUTONOMOUS",
+  "pre_fix_reality": {
+    "case": ["src/a.js", "src//a.js", "src/b.js"],
+    "observed_stats_files": 3,
+    "expected_unique_semantic_files": 2,
+    "new_regression": "FAIL as expected before fix"
+  },
+  "change": "Extend the existing semantic graph lexical path normalizer to collapse repeated forward-slash separators before node identity, ranking and budgeting.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "6/6 PASS",
+    "skipped": 0,
+    "new_regressions": 1,
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This closes repeated-separator aliases under the existing repo-relative lexical path model. Parent-segment equivalence, filesystem case/Unicode identity, conflicting content aliases, complete parser-grade module resolution and arbitrary complex repository synthesis remain unresolved."
+}

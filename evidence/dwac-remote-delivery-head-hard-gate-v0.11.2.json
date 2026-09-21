@@ -1,0 +1,57 @@
+{
+  "protocol": "taowind-code.dwac-remote-delivery-head-hard-gate.evidence.v0.11.2",
+  "status": "SOURCE_IMPLEMENTED_TARGETED_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "6694f0c9535b21ba344314c5340a5cdd722acd91",
+  "selected_bottleneck": "delivery-remote-expected-head-hard-gate",
+  "selected_problem": "Fresh main could verify a PR-create response against expectedHeadSha when one was supplied, but gitRemoteDelivery still allowed `createPullRequest=true` with `push=false` and no expected head. That path could create an externally visible PR without any validated-commit binding, bypassing the new receipt integrity contract.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "6694f0c9535b21ba344314c5340a5cdd722acd91",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "The fresh main left a singular deterministic bypass around the newly-established PR head binding: remote delivery did not require the binding value before PR creation. The evidence-rich central bottleneck routes to DEEP_DEVELOPMENT without forced rotation.",
+    "claim_limit": "No hosted DWAC success receipt or fabricated numeric routing score is claimed."
+  },
+  "pre_fix_reproduction": {
+    "result": "REPRODUCED",
+    "observation": "Calling gitRemoteDelivery with explicitApproval=true, push=false, createPullRequest=true and no expectedHeadSha reached githubCreatePullRequest and could perform the GitHub POST because the helper treated head binding as optional.",
+    "consequence": "The provider-level remote delivery contract could create a PR with no validated commit identity even though push and merge paths already required expected-head binding."
+  },
+  "changes": [
+    "gitRemoteDelivery now requires a non-empty expectedHeadSha whenever push, PR creation, or merge is requested.",
+    "The gate runs immediately after explicit-approval verification and before any push or GitHub API side effect.",
+    "No-op remote-delivery calls with no external operation requested remain unaffected.",
+    "Existing lower-level push/merge validation remains in place for malformed or unresolved expected commits."
+  ],
+  "validation": {
+    "result": "PASS",
+    "commands": [
+      "node --check exact candidate core/git.mjs",
+      "node --check exact candidate tests/github-remote-delivery-head-gate.test.mjs",
+      "node --test exact candidate PR receipt + PR head + remote hard-gate focused tests"
+    ],
+    "tests": "7/7 PASS",
+    "cases": [
+      "remote PR creation without expected head fails before fetch/GitHub side effect",
+      "remote PR creation with expected head and matching returned PR head succeeds",
+      "previous PR create head-integrity 3/3 regressions remain passing",
+      "previous PR create receipt-integrity 2/2 regressions remain passing"
+    ],
+    "branch_git_blobs": {
+      "core/git.mjs": "cd36ceaeda7d3c01e6c28a085bbd9d3c5eb1bca0",
+      "tests/github-remote-delivery-head-gate.test.mjs": "1b8be7830cf0e4badcf84172af008783e4a15d70"
+    },
+    "verification_note": "The candidate core/test files executed locally and their Git blob hashes match the branch content. No GitHub Actions were used."
+  },
+  "truth_boundaries": [
+    "This removes an unbound provider path but does not make GitHub PR creation atomically conditional on remote head identity; a branch can still move before the POST and produce a mismatched PR side effect, which the post-create head check detects and rejects.",
+    "The GitHub merge endpoint still lacks a caller-supplied expected-base-SHA precondition, so base movement remains unresolved.",
+    "OS-level validation sandboxing, arbitrary complex semantic synthesis, Windows descendant-tree equivalence, and crash-level filesystem atomicity remain unresolved.",
+    "No force push, repository-rule bypass, credential exposure, payment, formal Release, or destructive/irreversible external action is introduced."
+  ]
+}

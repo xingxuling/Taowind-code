@@ -1,8 +1,8 @@
 import path from 'node:path';
+import {isCredentialLikePath} from './repo-context.mjs';
 
 const BLOCKED_SEGMENTS=new Set(['.git','node_modules','.next','dist','build','runtime-data','.venv']);
 const MAX_EXECUTABLE_VALIDATION_COMMANDS=8;
-const SECRET_CONTEXT_PATH=/(^|\/)(?:\.env(?:\.[^\/]*)?|credentials?(?:\.[^\/]*)?|secrets?(?:\.[^\/]*)?|id_(?:rsa|ed25519)|[^\/]+\.(?:pem|key|p12|pfx))$/i;
 function normalizeRel(p){
   if(typeof p!=='string'||!p.trim())return null;
   const norm=path.posix.normalize(p.replaceAll('\\','/'));
@@ -11,13 +11,14 @@ function normalizeRel(p){
   return norm;
 }
 function safeRel(p){return normalizeRel(p)!==null}
-function normalizeContextRel(p){const rel=normalizeRel(p);return rel&&!SECRET_CONTEXT_PATH.test(rel)?rel:null}
+function normalizeContextRel(p){const rel=normalizeRel(p);return rel&&!isCredentialLikePath(rel)?rel:null}
 function normalizeChange(c){
   const rel=normalizeRel(c?.path);
   if(!c||!['write','delete'].includes(c.op)||!rel)return null;
   if(c.op==='write'&&typeof c.content!=='string')return null;
   return {op:c.op,path:rel,...(c.op==='write'?{content:c.content}:{}),...(c.expectedSha256?{expectedSha256:String(c.expectedSha256)}:{})};
 }
+function changeFingerprint(change){return JSON.stringify([change.op,change.path,change.op==='write'?change.content:'',change.expectedSha256||''])}
 function normalizeChanges(rawChanges){
   const byPath=new Map();
   for(const change of (Array.isArray(rawChanges)?rawChanges:[]).map(normalizeChange).filter(Boolean)){
@@ -39,7 +40,6 @@ export function normalizeProposal(raw,{provider='unknown',role='implementation'}
 }
 function goalTokens(goal){return [...new Set(String(goal||'').toLowerCase().match(/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu)||[])]}
 function proposalText(p){return `${p.summary} ${p.changes.map(c=>`${c.path} ${c.op==='write'?c.content.slice(0,800):''}`).join(' ')}`.toLowerCase()}
-function changeFingerprint(change){return JSON.stringify([change.op,change.path,change.op==='write'?change.content:'',change.expectedSha256||''])}
 function proposalOrigin(proposal){return `${proposal.provider||'unknown'}:${proposal.role||'implementation'}`}
 function executableProposal(p){return !!(p?.changes?.length&&p.validation_commands?.length&&!p.validation_overflow&&!p.ambiguous_paths?.length)}
 function consensusSignals(proposals){

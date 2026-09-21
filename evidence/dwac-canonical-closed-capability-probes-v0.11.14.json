@@ -1,0 +1,39 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "eaea90a7d0995cb6d6ba41a9abe80a455b4f4e13",
+  "selected_bottleneck": "canonical-main-closed-capability-probes",
+  "selected_problem": "Canonical truth-boundary evidence is HEAD-bound, but `_probe_workspace` still derives closed-capability existence and source-marker checks from the mutable working tree. Dirty deletion can reopen an already-committed capability and dirty addition/edit can fabricate closure that canonical main does not contain, steering autonomous diagnosis away from fresh-main code reality.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "Fresh canonical main exposes one narrow continuation of the observation-authority invariant documented by the latest evidence. The defect is local to closed-capability probes, directly falsifiable, and high-centrality for autonomous candidate selection, so source-contract replay routes to DEEP_DEVELOPMENT without forced mode rotation."
+  },
+  "changes": [
+    "Closed-capability source existence and marker checks now read the canonical HEAD blob when a Git HEAD exists.",
+    "Dirty deletion or editing of committed capability source cannot reopen a capability that canonical main already contains.",
+    "Dirty addition of source absent from canonical HEAD cannot fabricate capability closure; non-Git workspaces retain filesystem fallback semantics."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED on prior canonical-main logic: focused regression 0/2 PASS. Dirty deletion made committed terminal/Git capabilities appear open; dirty addition made capabilities absent from HEAD appear closed.",
+    "python_compile": "PASS",
+    "focused_command": "node --test tests/truth-boundary-canonical-closed-capabilities.test.mjs",
+    "focused_result": "2/2 PASS, 0 skipped",
+    "blob_match": {
+      "bridge/dwac_bridge.py": "0b125c45caef5183d64d3c75c0eb83c11d41f557",
+      "tests/truth-boundary-canonical-closed-capabilities.test.mjs": "aab0313523caabcd4c2b5f2b766ed0c3624c8f0f"
+    }
+  },
+  "resolves": [
+    {
+      "source": "evidence/dwac-truth-boundary-canonical-file-enumeration-v0.11.13.json",
+      "path": "truth_boundaries[0]"
+    }
+  ],
+  "truth_boundaries": [
+    "Canonical HEAD authority now covers evidence discovery, evidence bytes, and closed-capability source probes, but the bridge still trusts Git HEAD provenance rather than proving semantic correctness of committed claims.",
+    "Non-Git workspace fallback necessarily observes mutable filesystem reality because no canonical revision exists.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

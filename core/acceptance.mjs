@@ -10,7 +10,7 @@ export function buildValidationEnvironment(source=process.env){
 
 export function inferValidationCommands(workspace){
   const out=[];const pkgPath=path.join(workspace,'package.json');
-  if(fs.existsSync(pkgPath)){try{const pkg=JSON.parse(fs.readFileSync(pkgPath,'utf8'));const scripts=pkg.scripts||{};if(scripts.check)out.push('npm run check');else for(const name of ['test','lint','typecheck','build'])if(scripts[name]&&!out.includes(`npm run ${name}`))out.push(`npm run ${name}`)}catch{}}
+  if(fs.existsSync(pkgPath)){try{const pkg=JSON.parse(fs.readFileSync(pkgPath,'utf8'));const scripts=pkg.scripts||{};if(scripts.check)out.push('npm run check');for(const name of ['test','lint','typecheck','build'])if(scripts[name]&&!out.includes(`npm run ${name}`))out.push(`npm run ${name}`)}catch{}}
   const pyproject=path.join(workspace,'pyproject.toml');if(fs.existsSync(pyproject)&&!out.length)out.push('python -m pytest -q');
   return out.slice(0,4);
 }

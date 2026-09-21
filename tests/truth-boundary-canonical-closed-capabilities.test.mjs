@@ -4,8 +4,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 
-const bridge=process.env.TAOWIND_BRIDGE||path.resolve(path.dirname(new URL(import.meta.url).pathname),'../bridge/dwac_bridge.py');
+const here=path.dirname(fileURLToPath(import.meta.url));
+const bridge=process.env.TAOWIND_BRIDGE||path.resolve(here,'../bridge/dwac_bridge.py');
 function write(file,content){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,content)}
 function git(root,args){const r=spawnSync('git',['-C',root,...args],{encoding:'utf8'});assert.equal(r.status,0,r.stderr||r.stdout);return r.stdout.trim()}
 function fakeDwac(){

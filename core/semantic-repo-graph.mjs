@@ -23,7 +23,7 @@ function normalizeImport(from,spec){
 function isTestFile(p){return /(^|\/)(test|tests|__tests__)(\/|$)|\.(test|spec)\.[^.]+$/i.test(p)}
 function isEntryLike(p){return /(^|\/)(index|main|app|server|cli)\.[^.]+$/i.test(p)||/^(package\.json|pyproject\.toml|Cargo\.toml|go\.mod)$/i.test(p)}
 function relatedByStem(a,b){
-  const stem=x=>path.posix.basename(x).replace(/\.(test|spec)?\.[^.]+$/i,'').replace(/[-_.]?test$/i,'');
+  const stem=x=>path.posix.basename(x).replace(/\.[^.]+$/,'').replace(/\.(?:test|spec)$/i,'').replace(/[-_.]?test$/i,'');
   return stem(a)===stem(b);
 }
 

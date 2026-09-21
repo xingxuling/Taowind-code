@@ -1,0 +1,34 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "8cead41238db7b0ff76e920d12deadde59be7e16",
+  "selected_bottleneck": "semantic-test-source-stem-linkage",
+  "selected_problem": "Arbitrary complex repository synthesis remains UNRESOLVED. Fresh-main inspection found that semantic test/source linkage normalized `widget.test.js` to `widget` but left `widget.js` as `widget.js`, so common colocated `.test` / `.spec` files never formed the graph's declared `tests` edge to their source file. This removed real test-neighborhood evidence from centrality and semantic context ranking.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "The canonical main exposes one narrow semantic-graph defect with a deterministic two-file reproduction and no need to prescribe a new cognition architecture. Source-contract replay therefore narrows the unresolved synthesis boundary to DEEP_DEVELOPMENT without forcing mode rotation."
+  },
+  "changes": [
+    "Semantic graph stem normalization now removes the ordinary file extension first, then removes a trailing `.test` / `.spec` marker from the logical stem.",
+    "Common colocated pairs such as `widget.js` + `widget.test.js` and `parser.ts` + `parser.spec.ts` now produce `tests` edges.",
+    "Existing directory-based test linkage and import-edge logic remain unchanged."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED against fresh main: `src/widget.js` plus `src/widget.test.js` produced zero semantic graph edges, despite the latter being classified as a test file.",
+    "node_check": "PASS",
+    "focused_command": "node --test tests/semantic-test-source-linkage.test.mjs",
+    "focused_result": "1/1 PASS, 0 skipped",
+    "blob_match": {
+      "core/semantic-repo-graph.mjs": "95122f406edb15191cb2be9721302d6235108f5c",
+      "tests/semantic-test-source-linkage.test.mjs": "6769f7a47b019ab182d0c4c449959bc9d92d0d6c"
+    }
+  },
+  "truth_boundaries": [
+    "Arbitrary complex repository synthesis remains UNRESOLVED. This restores same-stem colocated `.test` / `.spec` relationships; it does not infer arbitrary framework-specific test ownership or semantic behavior.",
+    "Relative import target resolution remains heuristic and can still be ambiguous when several repository paths share one extensionless import prefix.",
+    "Semantic-context neighborhood selection remains bounded and does not prove globally optimal context selection for arbitrary software goals.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

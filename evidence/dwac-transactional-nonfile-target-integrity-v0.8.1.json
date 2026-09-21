@@ -1,0 +1,72 @@
+{
+  "protocol": "taowind-code.dwac-transactional-nonfile-target-integrity.evidence.v0.8.1",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "18aaf8617faec63b2becb775b94d6a0a1abb021e",
+  "selected_bottleneck": "transactional-nonfile-target-integrity",
+  "selected_problem": "Fresh-main inspection found that ChangesetStore.stage accepted an existing directory as a write/delete target. Apply preflight only compared existence and sha256, so a multi-file changeset could mutate earlier regular files and then fail on the directory with DELETE_FILE_ONLY or a filesystem rename/write error, violating the reversible delivery boundary even though the unsupported target was deterministically knowable at stage time.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "18aaf8617faec63b2becb775b94d6a0a1abb021e",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "ranked_candidate_scores": {
+      "transactional-nonfile-target-integrity": 0.8688,
+      "native-complex-changeset-synthesis": 0.7006,
+      "filesystem-crash-atomicity": 0.6828
+    },
+    "selected_candidate_inputs": {
+      "expected_goal_gain": 0.97,
+      "reuse_gain": 0.98,
+      "autonomy_gain": 0.96,
+      "evidence_gain": 1.0,
+      "implementation_cost": 0.08,
+      "regression_risk": 0.07
+    },
+    "four_mode_signal": {
+      "breadth": 0.06,
+      "bottleneck_centrality": 0.98,
+      "evidence_density": 1.0,
+      "adjacent_work_count": 1,
+      "direction_stability": 0.92,
+      "urgency": 0.84,
+      "artifact_pressure": 0.10
+    },
+    "four_mode_scores": {
+      "WHOLE_ARTIFACT": 0.066,
+      "DEEP_DEVELOPMENT": 0.98,
+      "NORTH_STAR": 0.788,
+      "NORTH_STAR_BURST": 0.765
+    },
+    "claim_limit": "No hosted DWAC success receipt is claimed. The committed DWAC North Star and four-mode router contracts were replayed against fresh canonical code evidence after the hosted Developer Execution Runtime returned transient HTTP 502."
+  },
+  "pre_fix_reproduction": {
+    "command": "node --test tests/repro.test.mjs",
+    "result": "EXPECTED_FAILURE",
+    "summary": "The fresh-main implementation staged a multi-file changeset containing a directory target instead of rejecting it; the new regression expectation failed with Missing expected exception."
+  },
+  "changes": [
+    "ChangesetStore.stage now fails closed when an existing target is not a regular file.",
+    "The unsupported target is rejected before any changeset document is persisted or any later apply can begin.",
+    "Existing canonical path, preimage, apply-preflight and rollback-preflight semantics remain unchanged."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/changesets.mjs",
+      "node --test tests/changesets.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "7/7 PASS",
+    "verified_git_blobs": {
+      "core/changesets.mjs": "dfc45ba19900456633ea86e351fc8289792fb0c2",
+      "tests/changesets.test.mjs": "0859de44733748a0227aee578070fdc972556a37"
+    }
+  },
+  "truthfulness_boundary": "This closes the deterministically knowable existing-directory target case at stage time. It does not claim crash-level filesystem atomicity for arbitrary I/O failures, nor does it claim general native semantic synthesis for arbitrary repositories is solved."
+}

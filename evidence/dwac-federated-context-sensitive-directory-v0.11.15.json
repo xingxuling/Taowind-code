@@ -1,0 +1,38 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "46edc93248d4cc1cbb5a5c502c1655ca8b2445ab",
+  "selected_bottleneck": "federated-context-sensitive-directory-boundary",
+  "selected_problem": "Arbitrary complex repository synthesis remains UNRESOLVED. Fresh-main inspection found a narrow context-recovery inconsistency: the centralized repository/context policy already rejects credential-like path segments at any depth, but `core/federated-generation.mjs` still carried an older end-of-path-only secret regex. A federated proposal could therefore admit `secrets/token.txt`, `credentials/service.json`, or `.env.local/nested.txt` into `needs_more_context` even though the authoritative downstream context bundle must reject those requests. This wastes autonomous recovery attempts and makes proposal admission disagree with the repository's current sovereignty policy.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "After reobserving the merged canonical main, the broad native-complex-changeset-synthesis boundary remains open. Fresh code exposes one directly falsifiable, high-evidence defect inside its existing context-recovery path. The change reuses an already-authoritative classifier rather than prescribing a new synthesis architecture, so source-contract replay narrows to DEEP_DEVELOPMENT without forced mode rotation."
+  },
+  "asset_reuse": [
+    "Reused `isCredentialLikePath` from `core/repo-context.mjs`, which already encodes the nested credential-directory rule established by the context secret boundary work.",
+    "No new secret classifier, cognition provider, synthesis architecture, product form, or interface was introduced."
+  ],
+  "changes": [
+    "Federated `needs_more_context` admission now calls the existing centralized `isCredentialLikePath` policy after repository-relative normalization.",
+    "Nested credential-like paths are rejected before federated context aggregation, while benign normalized repository paths remain available for recovery.",
+    "The redundant end-of-path-only secret regex was removed from `core/federated-generation.mjs`."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED against fresh main: focused regression 0/1 PASS. `normalizeProposal` preserved `secrets/token.txt`, `credentials/service.json`, and `.env.local/nested.txt` in `needs_more_context`.",
+    "node_check": "PASS",
+    "focused_command": "node --test tests/federated-context-sensitive-directory.test.mjs",
+    "focused_result": "1/1 PASS, 0 skipped",
+    "blob_match": {
+      "core/federated-generation.mjs": "d347bdf65740e7e2b97ebc29243a3ba83c900ece",
+      "tests/federated-context-sensitive-directory.test.mjs": "191ff378c37f9f9689264e4b94450869976da031"
+    }
+  },
+  "truth_boundaries": [
+    "Arbitrary complex repository synthesis remains UNRESOLVED. This closes one contradictory context-request admission path; it does not create missing semantic code-generation capability.",
+    "Downstream `WorkspaceService.contextBundle` was already fail-closed for these nested credential-like paths, so this cycle does not claim a newly discovered direct secret exfiltration path; it aligns upstream federation admission with the existing authoritative boundary.",
+    "Path-name policy is not content-based secret detection for otherwise benign regular files.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

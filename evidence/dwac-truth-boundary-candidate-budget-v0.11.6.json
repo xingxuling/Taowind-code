@@ -1,0 +1,30 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "480afb15a239e35e9a7ebe5ad85eb695497a052a",
+  "selected_bottleneck": "truth-boundary-candidate-budget-ranking",
+  "selected_problem": "After evidence revision freshness was restored, open-ended candidate discovery still truncated to the first 16 actionable boundary rows before DWAC ranking. Sixteen recent low-severity NO CLAIM boundaries could therefore exclude a later higher-severity UNRESOLVED boundary that was already inside the 96-row observation budget.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "single evidence-rich high-centrality autonomous diagnosis defect"
+  },
+  "changes": [
+    "Truth-boundary candidates are now stably ordered by explicit marker severity before the 16-candidate budget is applied.",
+    "Equal-severity boundaries preserve observation order, so evidence recency remains the tie-breaker established by the previous cycle.",
+    "Externally blocked boundaries remain behind actionable internal boundaries and are severity-ordered only within the blocked partition.",
+    "A focused regression proves that sixteen NO CLAIM rows can no longer hide a later UNRESOLVED row from DWAC diagnosis."
+  ],
+  "validation": {
+    "python_compile": "PASS",
+    "pre_fix_regression": "FAIL_AS_EXPECTED: selected No claim 0 and excluded the later UNRESOLVED boundary",
+    "candidate_budget_test": "1/1 PASS, 0 skipped",
+    "freshness_regression": "1/1 PASS, 0 skipped"
+  },
+  "truth_boundaries": [
+    "Marker severity is a diagnosis priority signal, not proof that an older boundary remains semantically open after newer code changes.",
+    "Equal-severity ties preserve the revision-aware observation order from the fresh-evidence cycle.",
+    "The candidate budget remains bounded at 16 and the observation row budget remains bounded at 96."
+  ]
+}

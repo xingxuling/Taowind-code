@@ -155,6 +155,8 @@ def _truth_boundary_candidates(rows, limit=16):
    'metadata':{'truth_boundary_source':source,'truth_boundary_path':path},
   }
   (blocked if external else actionable).append(entry)
+ actionable.sort(key=lambda entry:entry['severity'],reverse=True)
+ blocked.sort(key=lambda entry:entry['severity'],reverse=True)
  return (actionable+blocked)[:limit]
 
 

@@ -1,0 +1,28 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "fresh_main": "25861533259afd0e2ccdf9431f2d5b63a44ad021",
+  "selected_bottleneck": "semantic-ranking-host-locale-determinism",
+  "selected_problem": "Fresh main still used default-locale String.localeCompare in semantic graph rank tie-breakers and semantic neighborhood tie-breakers. Equal-scored files could therefore reorder across host locales and change bounded semantic context selection.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "route_basis": "After workspace and repository-context ordering were made host-locale independent, the same directly reproducible bias remained in semantic ranking. Closing it preserves the existing scoring and neighborhood architecture rather than choosing a new semantic model.",
+  "pre_fix_reproduction": {
+    "files": ["ä.js", "z.js"],
+    "equal_scores": true,
+    "en_US_first": "ä.js",
+    "sv_SE_first": "z.js"
+  },
+  "change": "Replace default-locale semantic path tie-breakers with deterministic code-unit lexical comparison.",
+  "validation": {
+    "pre_fix_regression": "FAIL_AS_EXPECTED",
+    "node_check": "PASS",
+    "focused_tests": "1/1 PASS",
+    "skipped": 0,
+    "test": "semantic-locale-determinism.test.mjs"
+  },
+  "truth_boundary": "This closes host-locale dependence in the existing semantic graph ranking and neighborhood tie-breakers. It does not claim parser-grade module resolution, exhaustive repository observation, optimal semantic scoring, or arbitrary complex repository synthesis.",
+  "hosted_dwac_runtime": "TEMPORARY_502",
+  "execution_mode": "DWAC_SOURCE_CONTRACT_REPLAY",
+  "github_actions": "not requested"
+}

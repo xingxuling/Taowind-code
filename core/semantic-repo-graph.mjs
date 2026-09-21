@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+const compareText=(a,b)=>a<b?-1:a>b?1:0;
 const TOKEN_RE=/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu;
 const IMPORT_PATTERNS=[
   /(?:import\s+[^'"\n]*?from\s*|export\s+[^'"\n]*?from\s*|import\s*\(\s*|import\s*|require\s*\()\s*['"]([^'"]+)['"]/g,
@@ -66,7 +67,7 @@ export function buildSemanticRepoGraph(files,{goal=''}={}){
     const centrality=adjacency.get(n.path)?.size||0;
     const score=lexical*8+Math.min(centrality,8)*1.5+(n.isEntry?3:0)+(n.isTest?1.5:0)+Math.min(n.symbols.length,12)*0.15;
     return {...n,score:Number(score.toFixed(3)),centrality,goalMatches:lexical};
-  }).sort((a,b)=>b.score-a.score||a.size-b.size||a.path.localeCompare(b.path));
+  }).sort((a,b)=>b.score-a.score||a.size-b.size||compareText(a.path,b.path));
   return {version:'taowind.semantic-repo-graph.v0.1',goal,goalTokens,nodes:ranked,edges,stats:{files:nodes.length,edges:edges.length,symbols:nodes.reduce((a,n)=>a+n.symbols.length,0),tests:tests.length}};
 }
 
@@ -80,7 +81,7 @@ export function selectSemanticContext(graph,{maxFiles=28,maxBytes=220000}={}){
     if(!seen.has(n.path))continue;
     const neighborPaths=new Set();
     for(const e of graph.edges){if(e.from===n.path)neighborPaths.add(e.to);else if(e.to===n.path)neighborPaths.add(e.from)}
-    const neighbors=[...neighborPaths].sort((a,b)=>(rankByPath.get(a)??Number.MAX_SAFE_INTEGER)-(rankByPath.get(b)??Number.MAX_SAFE_INTEGER)||a.localeCompare(b));
+    const neighbors=[...neighborPaths].sort((a,b)=>(rankByPath.get(a)??Number.MAX_SAFE_INTEGER)-(rankByPath.get(b)??Number.MAX_SAFE_INTEGER)||compareText(a,b));
     for(const neighborPath of neighbors)add(byPath.get(neighborPath));
   }
   return {paths:selected,totalBytes:bytes,reason:'goal lexical relevance + symbol/entry centrality + import/test neighborhood'};

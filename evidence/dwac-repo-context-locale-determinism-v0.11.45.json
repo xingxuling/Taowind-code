@@ -1,0 +1,27 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "fresh_main": "202831a886ef9f2c69e16515cc3f79ef26997934",
+  "selected_bottleneck": "repository-context-host-locale-determinism",
+  "selected_problem": "Fresh main still used default-locale String.localeCompare in bounded repository context selection, exact-path hint ranking, extension summary ordering, and top-level summary ordering. Equivalent repository metadata therefore produced different bounded context views across host locales.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "route_basis": "After workspace ordering was made host-locale independent, the same reality boundary remained immediately downstream in repository-context ranking. The defect is directly reproducible and can be closed without selecting a new sampling or module-resolution architecture.",
+  "pre_fix_reproduction": {
+    "manifest": ["ä/a.ä", "z/a.z"],
+    "en_US_first": "ä/a.ä",
+    "sv_SE_first": "z/a.z"
+  },
+  "change": "Replace default-locale collation in repository context tie-breakers with deterministic code-unit lexical comparison.",
+  "validation": {
+    "pre_fix_regression": "FAIL_AS_EXPECTED",
+    "node_check": "PASS",
+    "focused_tests": "1/1 PASS",
+    "skipped": 0,
+    "test": "repo-context-locale-determinism.test.mjs"
+  },
+  "truth_boundary": "This closes host-locale dependence in existing repository-context bounded ranking and summary views. It does not claim optimal context selection, exhaustive repository coverage, parser-grade module semantics, or locale independence in unrelated subsystems.",
+  "hosted_dwac_runtime": "TEMPORARY_502",
+  "execution_mode": "DWAC_SOURCE_CONTRACT_REPLAY",
+  "github_actions": "not requested"
+}

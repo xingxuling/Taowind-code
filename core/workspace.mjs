@@ -84,7 +84,7 @@ export class WorkspaceService {
   }
   manifest({maxFiles=2000}={}){
     const out=[]; let truncated=false;
-    const walk=(dir,rel='')=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){if(truncated)return;if(HIDDEN.has(e.name))continue;const childRel=rel?`${rel}/${e.name}`:e.name;const child=path.join(dir,e.name);if(e.isDirectory()){walk(child,childRel);continue;}if(!e.isFile())continue;if(out.length>=maxFiles){truncated=true;return;}const st=fs.statSync(child);out.push({path:childRel,size:st.size,ext:path.extname(e.name).toLowerCase()});}};
+    const walk=(dir,rel='')=>{for(const e of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){if(truncated)return;if(HIDDEN.has(e.name))continue;const childRel=rel?`${rel}/${e.name}`:e.name;const child=path.join(dir,e.name);if(e.isDirectory()){walk(child,childRel);continue;}if(!e.isFile())continue;if(out.length>=maxFiles){truncated=true;return;}const st=fs.statSync(child);out.push({path:childRel,size:st.size,ext:path.extname(e.name).toLowerCase()});}};
     walk(this.root); out.truncated=truncated; out.maxFiles=maxFiles; return out;
   }
   contextBundle(paths,{maxBytes=220_000,maxFiles=32}={}){

@@ -13,6 +13,7 @@ function atomicWrite(file,content){
   fs.writeFileSync(tmp,content);
   fs.renameSync(tmp,file);
 }
+function objectIdentity(st){return st&&st.ino?`${st.dev}:${st.ino}`:null}
 
 export class WorkspaceService {
   constructor(root){
@@ -49,11 +50,11 @@ export class WorkspaceService {
   }
   stat(rel){
     const abs=safePath(this.root,rel);
-    if(!fs.existsSync(abs)) return {path:rel,exists:false,sha256:null,size:0};
-    const st=fs.lstatSync(abs);
-    if(st.isSymbolicLink()) return {path:rel,exists:true,type:'symlink',sha256:null,size:st.size};
-    if(!st.isFile()) return {path:rel,exists:true,type:'dir',sha256:null,size:st.size};
-    const bytes=fs.readFileSync(abs); return {path:rel,exists:true,type:'file',sha256:sha256Buffer(bytes),size:bytes.length};
+    if(!fs.existsSync(abs)) return {path:rel,exists:false,sha256:null,size:0,identity:null};
+    const st=fs.lstatSync(abs),identity=objectIdentity(st);
+    if(st.isSymbolicLink()) return {path:rel,exists:true,type:'symlink',sha256:null,size:st.size,identity};
+    if(!st.isFile()) return {path:rel,exists:true,type:'dir',sha256:null,size:st.size,identity};
+    const bytes=fs.readFileSync(abs); return {path:rel,exists:true,type:'file',sha256:sha256Buffer(bytes),size:bytes.length,identity};
   }
   write(rel,content){
     const abs=safePath(this.root,rel); const text=String(content); atomicWrite(abs,Buffer.from(text,'utf8')); return {path:rel,bytes:Buffer.byteLength(text),sha256:sha256Buffer(Buffer.from(text,'utf8'))};

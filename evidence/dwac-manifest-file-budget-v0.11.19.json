@@ -1,0 +1,34 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "509c3e446ca21611a5056443549bdf84a649332a",
+  "selected_bottleneck": "manifest-recursive-file-budget-integrity",
+  "selected_problem": "Arbitrary complex repository synthesis remains UNRESOLVED. Fresh-main inspection found that WorkspaceService.manifest declared maxFiles as a hard repository-observation budget, but recursive unwinding could append one additional sibling file at every ancestor after a deep child filled the budget. A direct reproduction with maxFiles=1 returned seven files, so downstream repository summary, semantic graph seeding and context recovery could receive more repository entries than the declared bound.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "The latest canonical main still exposes native complex synthesis as unresolved. The fresh code reality contains one narrow, directly falsifiable repository-observation budget defect in the existing manifest traversal, so source-contract replay narrows it to DEEP_DEVELOPMENT without prescribing a new synthesis architecture or forcing mode rotation."
+  },
+  "changes": [
+    "WorkspaceService.manifest now re-checks maxFiles at the start of every directory-entry iteration, including after a recursive child returns.",
+    "Recursive unwinding can no longer append sibling files after the manifest budget has already been reached.",
+    "Existing hidden-directory filters, file metadata shape and traversal semantics remain otherwise unchanged."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED against fresh main: a six-level nested directory with one sibling file at each ancestor and maxFiles=1 returned 7 manifest entries instead of 1.",
+    "node_check": "PASS",
+    "focused_command": "node --test tests/manifest-file-budget.test.mjs",
+    "focused_result": "1/1 PASS, 0 skipped",
+    "blob_match": {
+      "core/workspace.mjs": "455455b2d1dff96744d4f756923095be6a7a549a",
+      "tests/manifest-file-budget.test.mjs": "21b0c1dd3f41cb31449437735ad9e4e0e5448c83"
+    }
+  },
+  "truth_boundaries": [
+    "Arbitrary complex repository synthesis remains UNRESOLVED. This makes manifest maxFiles truthful under recursive unwinding; it does not prove semantic sufficiency of the bounded repository observation.",
+    "Manifest traversal is still depth-first and may omit later peer subtrees once the file-count budget is legitimately exhausted; fair or goal-aware repository coverage remains a separate selection-quality question.",
+    "Initial semantic seed priority across many otherwise admissible files remains a separate selection-quality question.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

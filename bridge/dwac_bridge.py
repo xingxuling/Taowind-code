@@ -44,10 +44,30 @@ def _append_boundary_rows(value, source, path, rows, limit):
    if len(rows)>=limit:return
 
 
+def _evidence_files_by_revision(workspace, evidence):
+ files=list(evidence.glob('*.json'))
+ if not files:return []
+ by_source={str(file.relative_to(workspace)).replace('\\','/'):file for file in files}
+ try:
+  r=subprocess.run(['git','-C',str(workspace),'log','--format=','--name-only','--diff-filter=ACMR','--','evidence'],capture_output=True,text=True,timeout=5)
+ except Exception:
+  r=None
+ if r is None or r.returncode!=0:return sorted(files,reverse=True)
+ ordered=[];seen=set()
+ for line in r.stdout.splitlines():
+  source=line.strip().replace('\\','/')
+  file=by_source.get(source)
+  if file is None or source in seen:continue
+  ordered.append(file);seen.add(source)
+ remaining=[file for source,file in by_source.items() if source not in seen]
+ remaining.sort(key=lambda file:(file.stat().st_mtime_ns,str(file)),reverse=True)
+ return remaining+ordered
+
+
 def _truth_boundaries(workspace, limit=96):
  evidence=workspace/'evidence';rows=[]
  if not evidence.exists():return rows
- for file in sorted(evidence.glob('*.json'),reverse=True):
+ for file in _evidence_files_by_revision(workspace,evidence):
   try:data=json.loads(file.read_text(encoding='utf-8'))
   except Exception:continue
   source=str(file.relative_to(workspace))

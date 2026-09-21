@@ -53,15 +53,14 @@ def _resolution_refs(value):
  return refs
 
 
-def _committed_resolution_refs(workspace, source, data):
- if not isinstance(data,dict):return set()
+def _canonical_evidence_data(workspace, source):
  try:
-  tracked=subprocess.run(['git','-C',str(workspace),'cat-file','-e',f'HEAD:{source}'],capture_output=True,text=True,timeout=5)
-  clean=subprocess.run(['git','-C',str(workspace),'diff','--quiet','HEAD','--',source],capture_output=True,text=True,timeout=5)
+  r=subprocess.run(['git','-C',str(workspace),'show',f'HEAD:{source}'],capture_output=True,text=True,timeout=5)
  except Exception:
-  return set()
- if tracked.returncode!=0 or clean.returncode!=0:return set()
- return _resolution_refs(data.get('resolves'))
+  return None
+ if r.returncode!=0:return None
+ try:return json.loads(r.stdout)
+ except Exception:return None
 
 
 def _evidence_files_by_revision(workspace, evidence):
@@ -88,9 +87,9 @@ def _truth_boundaries(workspace, limit=96):
  evidence=workspace/'evidence';rows=[];resolved=set()
  if not evidence.exists():return rows
  for file in _evidence_files_by_revision(workspace,evidence):
-  try:data=json.loads(file.read_text(encoding='utf-8'))
-  except Exception:continue
   source=str(file.relative_to(workspace)).replace('\\','/')
+  data=_canonical_evidence_data(workspace,source)
+  if data is None:continue
   file_rows=[];stack=[('',data)]
   while stack and len(file_rows)<limit:
    path,value=stack.pop()
@@ -108,7 +107,7 @@ def _truth_boundaries(workspace, limit=96):
    if (row['source'],row['path']) in resolved:continue
    rows.append(row)
    if len(rows)>=limit:return rows
-  resolved.update(_committed_resolution_refs(workspace,source,data))
+  if isinstance(data,dict):resolved.update(_resolution_refs(data.get('resolves')))
  return rows[:limit]
 
 

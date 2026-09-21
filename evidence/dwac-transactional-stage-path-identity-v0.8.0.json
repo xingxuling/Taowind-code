@@ -1,0 +1,76 @@
+{
+  "protocol": "taowind-code.dwac-transactional-stage-path-identity.evidence.v0.8.0",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "71f67362630c19936ce3e6fce7661b83b2daab2d",
+  "selected_bottleneck": "transactional-stage-path-identity",
+  "selected_problem": "Fresh-main inspection found that ChangesetStore.stage could accept multiple entries that resolve to the same workspace path (for example a.txt and dir/../a.txt). Apply preflight then validated both entries against the same original preimage before sequential mutation, enabling last-write-wins behavior and creating rollback states that can conflict after only part of the duplicate-path sequence is restored.",
+  "development_modes": [
+    "DEEP_DEVELOPMENT"
+  ],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "71f67362630c19936ce3e6fce7661b83b2daab2d",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "updia_think": "TRANSIENT_HTTP_502",
+    "ranked_candidate_scores": {
+      "transactional-stage-path-identity": 0.8542,
+      "native-complex-changeset-synthesis": 0.6784,
+      "filesystem-crash-atomicity": 0.634
+    },
+    "selected_candidate_inputs": {
+      "expected_goal_gain": 0.96,
+      "reuse_gain": 0.97,
+      "autonomy_gain": 0.94,
+      "evidence_gain": 1.0,
+      "implementation_cost": 0.12,
+      "regression_risk": 0.12
+    },
+    "four_mode_signal": {
+      "breadth": 0.08,
+      "bottleneck_centrality": 0.97,
+      "evidence_density": 1.0,
+      "adjacent_work_count": 1,
+      "direction_stability": 0.91,
+      "urgency": 0.8,
+      "artifact_pressure": 0.12
+    },
+    "four_mode_scores": {
+      "WHOLE_ARTIFACT": 0.084,
+      "DEEP_DEVELOPMENT": 0.9715,
+      "NORTH_STAR": 0.7905,
+      "NORTH_STAR_BURST": 0.263725
+    },
+    "claim_limit": "No hosted DWAC or UPDIA success receipt is claimed. The committed DWAC North Star and four-mode router source contracts were replayed against fresh canonical code evidence after both hosted execution paths returned transient HTTP 502. The selected defect is narrow, central to reversible code delivery, directly reproducible, and independently verifiable."
+  },
+  "pre_fix_reproduction": {
+    "command": "node --test tests/changesets.test.mjs",
+    "result": "EXPECTED_FAILURE",
+    "summary": "5 passed, 1 failed: duplicate canonical workspace targets were accepted instead of failing closed."
+  },
+  "changes": [
+    "ChangesetStore.stage now canonicalizes staged paths with POSIX normalization before snapshotting workspace state.",
+    "Traversal-like, absolute, drive-qualified, and empty/dot identities fail closed before workspace access.",
+    "A per-changeset canonical path set rejects a second operation targeting the same workspace identity with DUPLICATE_CHANGE_PATH.",
+    "Existing apply and rollback preflight semantics remain unchanged."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/changesets.mjs",
+      "node --test tests/changesets.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "6/6 PASS",
+    "verified_git_blobs": {
+      "core/changesets.mjs": "080b5342a4d2c22bc50a6aa3d8dd115c6ea54899",
+      "tests/changesets.test.mjs": "e18f8f704fd993bfb92903bed6170435460e3963"
+    }
+  },
+  "truthfulness_boundary": "This closes duplicate canonical path ambiguity at ChangesetStore.stage. It does not claim filesystem crash atomicity for arbitrary I/O failures, nor does it claim that general native semantic synthesis for arbitrary repositories is solved."
+}

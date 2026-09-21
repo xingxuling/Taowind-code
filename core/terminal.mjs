@@ -26,9 +26,11 @@ export function isTerminalInputAllowed(input,{mode='workspace'}={}){
   return {ok:true};
 }
 
-export async function runCommand(cwd,command,{mode='workspace',timeoutMs=60_000,env={},inheritProcessEnv=true}={}){
+export function shellInvocation(command,{platform=process.platform,isolatedShell=false}={}){const raw=String(command||'');if(platform==='win32')return {shell:'powershell.exe',args:['-NoProfile','-Command',raw]};return {shell:'/bin/bash',args:isolatedShell?['--noprofile','--norc','-c',raw]:['-lc',raw]};}
+
+export async function runCommand(cwd,command,{mode='workspace',timeoutMs=60_000,env={},inheritProcessEnv=true,isolatedShell=false}={}){
  const raw=String(command||'').trim(); const allowed=isCommandAllowed(raw,{mode}); if(!allowed.ok)throw errorWithCode(allowed.reason);
- const shell=process.platform==='win32'?'powershell.exe':'/bin/bash'; const args=process.platform==='win32'?['-NoProfile','-Command',raw]:['-lc',raw];
+ const {shell,args}=shellInvocation(raw,{isolatedShell});
  return await new Promise(resolve=>{let out='',err='',timedOut=false;const started=Date.now();const child=spawn(shell,args,{cwd,env:normalizedEnv(env,inheritProcessEnv),windowsHide:true});const kill=setTimeout(()=>{timedOut=true;child.kill('SIGTERM');err+='\n[TIMEOUT]';},timeoutMs);
  child.stdout.on('data',d=>out+=d);child.stderr.on('data',d=>err+=d);child.on('close',code=>{clearTimeout(kill);resolve({command:raw,code:code??-1,stdout:out.slice(-240000),stderr:err.slice(-120000),timedOut,durationMs:Date.now()-started})})})
 }

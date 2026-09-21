@@ -39,16 +39,18 @@ test('remote delivery pushes the expected validated commit even if the local bra
   }finally{fs.rmSync(root,{recursive:true,force:true})}
 });
 
-test('GitHub pull request and merge calls use an environment token without exposing it in receipts',async()=>{
+test('GitHub pull request merge requires and sends the expected head SHA without exposing credentials',async()=>{
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-pr-'));
   try{
     initRepo(dir);git(dir,['checkout','-b','feature/api']);git(dir,['remote','add','origin','https://secret-user:secret-pass@github.com/acme/demo.git']);
     const info=gitRemoteInfo(dir,{env:{GITHUB_TOKEN:'top-secret-token'}});
     assert.equal(info.repository,'acme/demo');assert.doesNotMatch(info.remoteUrl,/secret-user|secret-pass/);assert.equal(info.githubApiReady,true);
     const calls=[];const fetchImpl=async(url,init)=>{calls.push({url,init});const isMerge=/\/merge$/.test(url);return {ok:true,status:isMerge?200:201,text:async()=>JSON.stringify(isMerge?{merged:true,sha:'deadbeef',message:'merged'}:{number:42,html_url:'https://github.com/acme/demo/pull/42',state:'open'})}};
-    const env={GITHUB_TOKEN:'top-secret-token'};
+    const env={GITHUB_TOKEN:'top-secret-token'};const expectedHeadSha='0123456789abcdef0123456789abcdef01234567';
     const pr=await githubCreatePullRequest(dir,{title:'feat: remote delivery',env,fetchImpl});assert.equal(pr.ok,true);assert.equal(pr.number,42);
-    const merged=await githubMergePullRequest(dir,{number:42,env,fetchImpl});assert.equal(merged.ok,true);assert.equal(merged.sha,'deadbeef');
-    assert.equal(calls.length,2);assert.match(calls[0].init.headers.authorization,/top-secret-token/);assert.doesNotMatch(JSON.stringify({pr,merged,info}),/top-secret-token|secret-pass/);
+    const unbound=await githubMergePullRequest(dir,{number:42,env,fetchImpl});assert.equal(unbound.ok,false);assert.equal(unbound.error,'EXPECTED_HEAD_SHA_REQUIRED');assert.equal(calls.length,1);
+    const malformed=await githubMergePullRequest(dir,{number:42,expectedHeadSha:'deadbeef',env,fetchImpl});assert.equal(malformed.ok,false);assert.equal(malformed.error,'EXPECTED_HEAD_SHA_INVALID');assert.equal(calls.length,1);
+    const merged=await githubMergePullRequest(dir,{number:42,expectedHeadSha,env,fetchImpl});assert.equal(merged.ok,true);assert.equal(merged.sha,'deadbeef');assert.equal(merged.expectedHeadSha,expectedHeadSha);
+    assert.equal(calls.length,2);assert.equal(JSON.parse(calls[1].init.body).sha,expectedHeadSha);assert.match(calls[0].init.headers.authorization,/top-secret-token/);assert.doesNotMatch(JSON.stringify({pr,unbound,malformed,merged,info}),/top-secret-token|secret-pass/);
   }finally{fs.rmSync(dir,{recursive:true,force:true})}
 });

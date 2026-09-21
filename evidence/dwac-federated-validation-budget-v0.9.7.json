@@ -1,0 +1,67 @@
+{
+  "protocol": "taowind-code.dwac-federated-validation-budget.evidence.v0.9.7",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "36ca9676e6a87cc8da1ee4f4dc7c31b6e712c2ed",
+  "selected_bottleneck": "federated-validation-budget-executability",
+  "selected_problem": "After the previous cycle made acceptance fail closed above eight validation commands, fresh-main inspection found federation could still rank, count and select a proposal with nine-to-sixteen validation commands as executable. Such a winner was guaranteed to reach acceptance and fail VALIDATION_COMMAND_BUDGET_EXCEEDED only after its changes had already been staged/applied, wasting an avoidable repair cycle and allowing impossible candidates to contribute consensus signals.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "36ca9676e6a87cc8da1ee4f4dc7c31b6e712c2ed",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "four_mode_signal": {
+      "breadth": 0.09,
+      "bottleneck_centrality": 0.98,
+      "evidence_density": 1.0,
+      "adjacent_work_count": 1,
+      "direction_stability": 0.99,
+      "urgency": 0.88,
+      "artifact_pressure": 0.05
+    },
+    "four_mode_scores": {
+      "WHOLE_ARTIFACT": 0.061,
+      "DEEP_DEVELOPMENT": 0.9755,
+      "NORTH_STAR": 0.8185,
+      "NORTH_STAR_BURST": 0.7975
+    },
+    "mode_route_basis": "The committed router selects DEEP_DEVELOPMENT through the singular evidence-rich central bottleneck gate; no forced mode rotation was used.",
+    "claim_limit": "No hosted DWAC success receipt is claimed. Selection/routing use committed DWAC source-contract replay over fresh canonical main while the provider remained transiently unavailable."
+  },
+  "pre_fix_reproduction": {
+    "input": "One proposal with nine unique validation commands plus a second proposal within the eight-command acceptance budget.",
+    "observed": "Fresh main treated the nine-command proposal as executable for consensus/validCount and allowed it to be a winner candidate even though acceptance now deterministically rejects it before execution."
+  },
+  "changes": [
+    "Federated proposal normalization preserves up to sixteen validation commands for audit, but now marks validation_overflow when the normalized unique set exceeds the executable acceptance budget of eight.",
+    "Overflowing proposals receive a bounded VALIDATION_COMMAND_BUDGET_EXCEEDED risk marker.",
+    "Consensus executableCount, validCount and winner selection now use one executableProposal predicate that excludes validation-overflow candidates as well as empty/ambiguous candidates.",
+    "A bounded valid proposal can win instead of a higher-ranked candidate that is already known to be impossible to accept."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/federated-generation.mjs",
+      "node --check tests/federated-validation-budget.test.mjs",
+      "node --test tests/federated-validation-budget.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "1/1 focused regression PASS; 0 skipped",
+    "verified_git_blobs": {
+      "core/federated-generation.mjs": "804aece816148e01fcff72832b8d6f2a9057ed80",
+      "tests/federated-validation-budget.test.mjs": "bf1f9a5584c5f5164ed190395c61ff1c2560f640"
+    }
+  },
+  "truth_boundaries": [
+    "This prevents federation from choosing a proposal already known to exceed the current acceptance command budget; it does not solve evidence selection when more than eight validations are genuinely required.",
+    "The executable budget value is currently duplicated between generation and acceptance; a future shared policy contract may reduce drift risk, but introducing that architecture was not necessary to close this concrete false-executability path.",
+    "Monorepo and arbitrary multi-language validation discovery remain incomplete.",
+    "OS-level filesystem/network sandboxing, Windows descendant-tree equivalence, arbitrary complex semantic synthesis and crash-level filesystem atomicity remain unresolved.",
+    "No GitHub Actions were intentionally triggered or rerun, no force push was used, and no credential, payment, formal Release or destructive/irreversible external action was performed."
+  ]
+}

@@ -8,6 +8,7 @@ import {isCredentialLikePath} from './repo-context.mjs';
 const HIDDEN=new Set(['.git','node_modules','.next','dist','build','.venv','runtime-data']);
 const UTF8_DECODER=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true});
 const TEXT_EXT=new Set(['.js','.mjs','.cjs','.ts','.tsx','.jsx','.json','.md','.txt','.css','.html','.yml','.yaml','.toml','.py','.rcl','.sh','.cmd','.ps1','.java','.kt','.kts','.go','.rs','.c','.h','.cpp','.hpp','.cs','.swift','.rb','.php','.vue','.svelte']);
+const compareText=(a,b)=>a<b?-1:a>b?1:0;
 
 function fileMode(st){return st&&st.isFile()?st.mode&0o7777:null}
 function atomicWrite(file,content,{mode=null}={}){
@@ -36,67 +37,25 @@ function credentialLikeIdentities(root){
 }
 
 export class WorkspaceService {
-  constructor(root){
-    this.root=path.resolve(root);
-    fs.mkdirSync(this.root,{recursive:true});
-  }
+  constructor(root){this.root=path.resolve(root);fs.mkdirSync(this.root,{recursive:true});}
   tree(rel='.',depth=0){
     const abs=safePath(this.root,rel); const stat=fs.statSync(abs); if(!stat.isDirectory()) return null;
     return fs.readdirSync(abs,{withFileTypes:true})
       .filter(x=>!HIDDEN.has(x.name))
-      .sort((a,b)=>Number(b.isDirectory())-Number(a.isDirectory())||a.name.localeCompare(b.name))
+      .sort((a,b)=>Number(b.isDirectory())-Number(a.isDirectory())||compareText(a.name,b.name))
       .slice(0,300)
       .map(x=>{const child=path.posix.join(rel==='.'?'':rel.replaceAll('\\','/'),x.name);return {name:x.name,path:child,type:x.isDirectory()?'dir':'file',children:x.isDirectory()&&depth<5?this.tree(child,depth+1):undefined};});
   }
-  read(rel){
-    const abs=safePath(this.root,rel); const st=fs.statSync(abs); if(!st.isFile()||st.size>2_000_000) throw new Error('FILE_NOT_READABLE'); try{return UTF8_DECODER.decode(fs.readFileSync(abs));}catch{throw new Error('FILE_NOT_READABLE')}
-  }
-  readBytes(rel,maxBytes=2_000_000){
-    const abs=safePath(this.root,rel); const st=fs.statSync(abs); if(!st.isFile()||st.size>maxBytes) throw new Error('FILE_NOT_READABLE'); return fs.readFileSync(abs);
-  }
-  ancestorState(rel){
-    const abs=safePath(this.root,rel),parent=path.dirname(abs);
-    const relParent=path.relative(this.root,parent);
-    if(!relParent||relParent==='.') return {path:rel,ok:true};
-    let cursor=this.root;
-    for(const part of relParent.split(path.sep).filter(Boolean)){
-      cursor=path.join(cursor,part);
-      let st;try{st=fs.lstatSync(cursor)}catch(error){if(error?.code==='ENOENT'||error?.code==='ENOTDIR')break;throw error}
-      const ancestor=path.relative(this.root,cursor).split(path.sep).join('/');
-      if(st.isSymbolicLink()) return {path:rel,ok:false,ancestor,type:'symlink'};
-      if(!st.isDirectory()) return {path:rel,ok:false,ancestor,type:'non-directory'};
-    }
-    return {path:rel,ok:true};
-  }
-  stat(rel){
-    const abs=safePath(this.root,rel);
-    if(!fs.existsSync(abs)) return {path:rel,exists:false,sha256:null,size:0,identity:null,mode:null};
-    const st=fs.lstatSync(abs),identity=objectIdentity(st);
-    if(st.isSymbolicLink()) return {path:rel,exists:true,type:'symlink',sha256:null,size:st.size,identity,mode:null};
-    if(!st.isFile()) return {path:rel,exists:true,type:'dir',sha256:null,size:st.size,identity,mode:null};
-    const bytes=fs.readFileSync(abs); return {path:rel,exists:true,type:'file',sha256:sha256Buffer(bytes),size:bytes.length,identity,mode:fileMode(st)};
-  }
-  write(rel,content,{mode=null}={}){
-    const abs=safePath(this.root,rel); const bytes=Buffer.isBuffer(content)?Buffer.from(content):content instanceof Uint8Array?Buffer.from(content):Buffer.from(String(content),'utf8'); atomicWrite(abs,bytes,{mode}); return {path:rel,bytes:bytes.length,sha256:sha256Buffer(bytes)};
-  }
-  remove(rel){
-    const abs=safePath(this.root,rel); if(!fs.existsSync(abs)) return {path:rel,removed:false}; const st=fs.lstatSync(abs); if(!st.isFile()&&!st.isSymbolicLink()) throw new Error('DELETE_FILE_ONLY'); fs.unlinkSync(abs); return {path:rel,removed:true};
-  }
+  read(rel){const abs=safePath(this.root,rel); const st=fs.statSync(abs); if(!st.isFile()||st.size>2_000_000) throw new Error('FILE_NOT_READABLE'); try{return UTF8_DECODER.decode(fs.readFileSync(abs));}catch{throw new Error('FILE_NOT_READABLE')}}
+  readBytes(rel,maxBytes=2_000_000){const abs=safePath(this.root,rel); const st=fs.statSync(abs); if(!st.isFile()||st.size>maxBytes) throw new Error('FILE_NOT_READABLE'); return fs.readFileSync(abs);}
+  ancestorState(rel){const abs=safePath(this.root,rel),parent=path.dirname(abs);const relParent=path.relative(this.root,parent);if(!relParent||relParent==='.') return {path:rel,ok:true};let cursor=this.root;for(const part of relParent.split(path.sep).filter(Boolean)){cursor=path.join(cursor,part);let st;try{st=fs.lstatSync(cursor)}catch(error){if(error?.code==='ENOENT'||error?.code==='ENOTDIR')break;throw error}const ancestor=path.relative(this.root,cursor).split(path.sep).join('/');if(st.isSymbolicLink()) return {path:rel,ok:false,ancestor,type:'symlink'};if(!st.isDirectory()) return {path:rel,ok:false,ancestor,type:'non-directory'};}return {path:rel,ok:true};}
+  stat(rel){const abs=safePath(this.root,rel);if(!fs.existsSync(abs)) return {path:rel,exists:false,sha256:null,size:0,identity:null,mode:null};const st=fs.lstatSync(abs),identity=objectIdentity(st);if(st.isSymbolicLink()) return {path:rel,exists:true,type:'symlink',sha256:null,size:st.size,identity,mode:null};if(!st.isFile()) return {path:rel,exists:true,type:'dir',sha256:null,size:st.size,identity,mode:null};const bytes=fs.readFileSync(abs); return {path:rel,exists:true,type:'file',sha256:sha256Buffer(bytes),size:bytes.length,identity,mode:fileMode(st)};}
+  write(rel,content,{mode=null}={}){const abs=safePath(this.root,rel); const bytes=Buffer.isBuffer(content)?Buffer.from(content):content instanceof Uint8Array?Buffer.from(content):Buffer.from(String(content),'utf8'); atomicWrite(abs,bytes,{mode}); return {path:rel,bytes:bytes.length,sha256:sha256Buffer(bytes)};}
+  remove(rel){const abs=safePath(this.root,rel); if(!fs.existsSync(abs)) return {path:rel,removed:false}; const st=fs.lstatSync(abs); if(!st.isFile()&&!st.isSymbolicLink()) throw new Error('DELETE_FILE_ONLY'); fs.unlinkSync(abs); return {path:rel,removed:true};}
   manifest({maxFiles=2000}={}){
     const out=[]; let truncated=false;
-    const walk=(dir,rel='')=>{for(const e of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){if(truncated)return;if(HIDDEN.has(e.name))continue;const childRel=rel?`${rel}/${e.name}`:e.name;const child=path.join(dir,e.name);if(e.isDirectory()){walk(child,childRel);continue;}if(!e.isFile())continue;if(out.length>=maxFiles){truncated=true;return;}const st=fs.statSync(child);out.push({path:childRel,size:st.size,ext:path.extname(e.name).toLowerCase()});}};
+    const walk=(dir,rel='')=>{for(const e of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>compareText(a.name,b.name))){if(truncated)return;if(HIDDEN.has(e.name))continue;const childRel=rel?`${rel}/${e.name}`:e.name;const child=path.join(dir,e.name);if(e.isDirectory()){walk(child,childRel);continue;}if(!e.isFile())continue;if(out.length>=maxFiles){truncated=true;return;}const st=fs.statSync(child);out.push({path:childRel,size:st.size,ext:path.extname(e.name).toLowerCase()});}};
     walk(this.root); out.truncated=truncated; out.maxFiles=maxFiles; return out;
   }
-  contextBundle(paths,{maxBytes=220_000,maxFiles=32}={}){
-    const selected=[]; const seenPaths=new Set(); const seenIdentities=new Set(); let blockedIdentities=null; let total=0;
-    for(const raw of paths||[]){
-      if(selected.length>=maxFiles)break;
-      const rel=path.posix.normalize(String(raw||'').replaceAll('\\','/')).replace(/^\.\//,'');
-      if(!rel||rel==='.'||seenPaths.has(rel))continue; seenPaths.add(rel);
-      if(isCredentialLikePath(rel))continue;
-      const ext=path.extname(rel).toLowerCase(); if(ext&&!TEXT_EXT.has(ext))continue;
-      try{const ancestor=this.ancestorState(rel);if(!ancestor.ok)continue;const abs=safePath(this.root,rel);const st=fs.lstatSync(abs);if(st.isSymbolicLink()||!st.isFile()||st.size>80_000)continue;const identity=objectIdentity(st);if(identity&&seenIdentities.has(identity))continue;if(identity&&st.nlink>1){blockedIdentities??=credentialLikeIdentities(this.root);if(blockedIdentities.has(identity))continue;}const bytes=fs.readFileSync(abs);const content=UTF8_DECODER.decode(bytes);const contentBytes=bytes.length;if(total+contentBytes>maxBytes)continue;selected.push({path:rel,content});total+=contentBytes;if(identity)seenIdentities.add(identity);}catch{}
-    }
-    return {files:selected,totalBytes:total};
-  }
+  contextBundle(paths,{maxBytes=220_000,maxFiles=32}={}){const selected=[]; const seenPaths=new Set(); const seenIdentities=new Set(); let blockedIdentities=null; let total=0;for(const raw of paths||[]){if(selected.length>=maxFiles)break;const rel=path.posix.normalize(String(raw||'').replaceAll('\\','/')).replace(/^\.\//,'');if(!rel||rel==='.'||seenPaths.has(rel))continue; seenPaths.add(rel);if(isCredentialLikePath(rel))continue;const ext=path.extname(rel).toLowerCase(); if(ext&&!TEXT_EXT.has(ext))continue;try{const ancestor=this.ancestorState(rel);if(!ancestor.ok)continue;const abs=safePath(this.root,rel);const st=fs.lstatSync(abs);if(st.isSymbolicLink()||!st.isFile()||st.size>80_000)continue;const identity=objectIdentity(st);if(identity&&seenIdentities.has(identity))continue;if(identity&&st.nlink>1){blockedIdentities??=credentialLikeIdentities(this.root);if(blockedIdentities.has(identity))continue;}const bytes=fs.readFileSync(abs);const content=UTF8_DECODER.decode(bytes);const contentBytes=bytes.length;if(total+contentBytes>maxBytes)continue;selected.push({path:rel,content});total+=contentBytes;if(identity)seenIdentities.add(identity);}catch{}}return {files:selected,totalBytes:total};}
 }

@@ -16,3 +16,8 @@ export function compareValidationPostimage(workspace,snapshot){
   }
   return {passed:drift.length===0,checked:Array.isArray(snapshot)?snapshot.length:0,drift};
 }
+export function enforceValidationPostimage(result,postimageIntegrity){
+  const guarded={...(result||{}),postimageIntegrity};
+  if(result?.passed===true&&postimageIntegrity?.passed===false)return {...guarded,status:'FAILED',passed:false,hardGate:'VALIDATION_POSTIMAGE_DRIFT'};
+  return guarded;
+}

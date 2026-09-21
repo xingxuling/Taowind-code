@@ -1,0 +1,77 @@
+{
+  "protocol": "taowind-code.dwac-validation-inference-cap.evidence.v0.9.5",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "b612885f64bdf6378027c5142111f8ff2fc58558",
+  "selected_bottleneck": "validation-inference-truncation",
+  "selected_problem": "Fresh-main reality testing found inferValidationCommands truncated its candidate list to four commands even though runAcceptance already supports up to eight. A repository declaring check, test, lint, typecheck and build could silently omit build; a failing build was therefore able to hide behind four passing earlier scripts and produce a false PASS.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "b612885f64bdf6378027c5142111f8ff2fc58558",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "candidate_scores": {
+      "validation-inference-truncation": 0.8292,
+      "validation-workspace-confinement": 0.6884,
+      "native-complex-changeset-synthesis": 0.6712,
+      "filesystem-crash-atomicity": 0.5846,
+      "windows-validation-process-tree-containment": 0.578
+    },
+    "four_mode_signal": {
+      "breadth": 0.12,
+      "bottleneck_centrality": 0.96,
+      "evidence_density": 0.99,
+      "adjacent_work_count": 1,
+      "direction_stability": 0.99,
+      "urgency": 0.87,
+      "artifact_pressure": 0.10
+    },
+    "four_mode_scores": {
+      "WHOLE_ARTIFACT": 0.097,
+      "DEEP_DEVELOPMENT": 0.957,
+      "NORTH_STAR": 0.818,
+      "NORTH_STAR_BURST": 0.793
+    },
+    "mode_route_basis": "The committed four-mode router selects DEEP_DEVELOPMENT through the singular evidence-rich central bottleneck gate; no mode rotation was forced.",
+    "claim_limit": "No hosted DWAC success receipt is claimed. Selection/routing use committed DWAC source-contract replay over fresh canonical main while the provider remained transiently unavailable."
+  },
+  "pre_fix_reproduction": {
+    "package_scripts": ["check: exit 0", "test: exit 0", "lint: exit 0", "typecheck: exit 0", "build: exit 7"],
+    "observed": "inferValidationCommands returned only the first four commands, runAcceptance executed four passing scripts and returned PASS without running the failing build."
+  },
+  "changes": [
+    "The inference layer now uses the same eight-command upper bound already enforced by runAcceptance instead of silently narrowing evidence to four.",
+    "The currently known package plus pyproject heuristics produce at most six commands, so this closes silent truncation for the repository's present inference set while remaining bounded.",
+    "A regression proves a failing fifth build command can no longer be omitted behind four passing validation scripts."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/acceptance.mjs",
+      "node --test tests/acceptance.test.mjs tests/terminal-pty.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "16/16 PASS; 0 skipped on the final POSIX validation run",
+    "validation_note": "An earlier combined run hit the pre-existing timing-sensitive persistent-PTY cursor test once; an immediate full rerun passed 16/16. The changed acceptance regression was passing in both runs.",
+    "verified_git_blobs": {
+      "core/acceptance.mjs": "56c0829b724761dc92da0c575b3b9a5983397e4f",
+      "tests/acceptance.test.mjs": "8f5dc954baf6269fbd19291abd59847c398d710a",
+      "core/terminal.mjs": "b6718a2ed610d1a5b6d742ecd8df87e6b4760e88",
+      "tests/terminal-pty.test.mjs": "b7721798c238c5da09b77243b55ab8cde8433f5d"
+    }
+  },
+  "truth_boundaries": [
+    "This aligns current inference with the existing eight-command acceptance bound; it does not claim exhaustive validation discovery for arbitrary monorepos or language/toolchain graphs.",
+    "If future inference discovers more than eight commands, an explicit evidence-selection policy will still be required rather than silently claiming exhaustive validation.",
+    "The observed persistent-PTY cursor timing flake is outside this acceptance-inference change and remains a separate evidence-quality observation frontier.",
+    "This is not an OS-level filesystem/network sandbox; validation workspace confinement remains unresolved.",
+    "Arbitrary complex repository semantic synthesis remains UNRESOLVED.",
+    "Filesystem crash-level atomicity for arbitrary I/O/process failure remains unresolved.",
+    "No GitHub Actions were intentionally triggered or rerun, no force push was used, and no credential, payment, formal Release or destructive/irreversible external action was performed."
+  ]
+}

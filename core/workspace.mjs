@@ -8,6 +8,7 @@ import {isCredentialLikePath} from './repo-context.mjs';
 const HIDDEN=new Set(['.git','node_modules','.next','dist','build','.venv','runtime-data']);
 const UTF8_DECODER=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true});
 const TEXT_EXT=new Set(['.js','.mjs','.cjs','.ts','.tsx','.jsx','.json','.md','.txt','.css','.html','.yml','.yaml','.toml','.py','.rcl','.sh','.cmd','.ps1','.java','.kt','.kts','.go','.rs','.c','.h','.cpp','.hpp','.cs','.swift','.rb','.php','.vue','.svelte']);
+const compareText=(a,b)=>a<b?-1:a>b?1:0;
 
 function fileMode(st){return st&&st.isFile()?st.mode&0o7777:null}
 function atomicWrite(file,content,{mode=null}={}){
@@ -44,7 +45,7 @@ export class WorkspaceService {
     const abs=safePath(this.root,rel); const stat=fs.statSync(abs); if(!stat.isDirectory()) return null;
     return fs.readdirSync(abs,{withFileTypes:true})
       .filter(x=>!HIDDEN.has(x.name))
-      .sort((a,b)=>Number(b.isDirectory())-Number(a.isDirectory())||a.name.localeCompare(b.name))
+      .sort((a,b)=>Number(b.isDirectory())-Number(a.isDirectory())||compareText(a.name,b.name))
       .slice(0,300)
       .map(x=>{const child=path.posix.join(rel==='.'?'':rel.replaceAll('\\','/'),x.name);return {name:x.name,path:child,type:x.isDirectory()?'dir':'file',children:x.isDirectory()&&depth<5?this.tree(child,depth+1):undefined};});
   }
@@ -84,7 +85,7 @@ export class WorkspaceService {
   }
   manifest({maxFiles=2000}={}){
     const out=[]; let truncated=false;
-    const walk=(dir,rel='')=>{for(const e of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){if(truncated)return;if(HIDDEN.has(e.name))continue;const childRel=rel?`${rel}/${e.name}`:e.name;const child=path.join(dir,e.name);if(e.isDirectory()){walk(child,childRel);continue;}if(!e.isFile())continue;if(out.length>=maxFiles){truncated=true;return;}const st=fs.statSync(child);out.push({path:childRel,size:st.size,ext:path.extname(e.name).toLowerCase()});}};
+    const walk=(dir,rel='')=>{for(const e of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>compareText(a.name,b.name))){if(truncated)return;if(HIDDEN.has(e.name))continue;const childRel=rel?`${rel}/${e.name}`:e.name;const child=path.join(dir,e.name);if(e.isDirectory()){walk(child,childRel);continue;}if(!e.isFile())continue;if(out.length>=maxFiles){truncated=true;return;}const st=fs.statSync(child);out.push({path:childRel,size:st.size,ext:path.extname(e.name).toLowerCase()});}};
     walk(this.root); out.truncated=truncated; out.maxFiles=maxFiles; return out;
   }
   contextBundle(paths,{maxBytes=220_000,maxFiles=32}={}){

@@ -1,0 +1,28 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "fresh_main": "f05dc0662f396dcf3cb3cb7a48af53e4b36d3a81",
+  "selected_bottleneck": "workspace-observation-host-locale-determinism",
+  "selected_problem": "Fresh main used String.localeCompare without an explicit locale in bounded workspace tree and manifest ordering. The same filenames can therefore be ordered differently by hosts with different default locales, changing capped observation results and downstream semantic seed context.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "route_basis": "The defect is singular, directly reproducible across host locale settings, and sits on the bounded observation boundary. Closing it does not select a new large-repository sampling architecture or force a mode rotation.",
+  "pre_fix_reproduction": {
+    "files": ["ä.js", "z.js"],
+    "maxFiles": 1,
+    "en_US": ["ä.js"],
+    "sv_SE": ["z.js"]
+  },
+  "change": "Replace default-locale collation in WorkspaceService.tree and WorkspaceService.manifest with deterministic code-unit lexical comparison.",
+  "validation": {
+    "pre_fix_regression": "FAIL_AS_EXPECTED",
+    "node_check": "PASS",
+    "focused_tests": "1/1 PASS",
+    "skipped": 0,
+    "test": "workspace-locale-determinism.test.mjs"
+  },
+  "truth_boundary": "This proves locale-independent ordering for the existing bounded workspace tree and manifest views. It does not claim exhaustive repository coverage, optimal sampling, parser-grade module semantics, or locale-independent ordering in unrelated subsystems.",
+  "hosted_dwac_runtime": "TEMPORARY_502",
+  "execution_mode": "DWAC_SOURCE_CONTRACT_REPLAY",
+  "github_actions": "not requested"
+}

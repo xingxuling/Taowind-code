@@ -27,8 +27,9 @@ export class ChangesetStore{
    const applied=[];for(const {change:c} of preflight){if(c.op==='delete')this.workspace.remove(c.path);else this.workspace.write(c.path,decode(c.after.contentBase64).toString('utf8'));const post=this.workspace.stat(c.path);applied.push({path:c.path,op:c.op,sha256:post.sha256,exists:post.exists})}
    doc.status='APPLIED';doc.updatedAt=now();doc.applyReceipt={at:doc.updatedAt,files:applied,receiptSha256:sha256Text(JSON.stringify(applied))};atomicJson(this.file(id),doc);return doc;
  }
- rollback(id){const doc=this.get(id);if(doc.status!=='APPLIED')throw new Error('CHANGESET_NOT_APPLIED');const restored=[];
-   for(const c of [...doc.changes].reverse()){const current=this.workspace.stat(c.path);const expectedPost=c.op==='delete'?null:c.after.sha256;if(current.sha256!==expectedPost||current.exists!==(c.op!=='delete'))throw new Error(`ROLLBACK_CONFLICT:${c.path}`);if(!c.before.exists)this.workspace.remove(c.path);else{if(c.before.type!=='file')throw new Error(`ROLLBACK_UNSUPPORTED_TYPE:${c.path}`);this.workspace.write(c.path,decode(c.before.contentBase64).toString('utf8'))}const post=this.workspace.stat(c.path);restored.push({path:c.path,exists:post.exists,sha256:post.sha256})}
+ rollback(id){const doc=this.get(id);if(doc.status!=='APPLIED')throw new Error('CHANGESET_NOT_APPLIED');const preflight=[];
+   for(const c of [...doc.changes].reverse()){const current=this.workspace.stat(c.path);const expectedPost=c.op==='delete'?null:c.after.sha256;if(current.sha256!==expectedPost||current.exists!==(c.op!=='delete'))throw new Error(`ROLLBACK_CONFLICT:${c.path}`);preflight.push(c)}
+   const restored=[];for(const c of preflight){if(!c.before.exists)this.workspace.remove(c.path);else{if(c.before.type!=='file')throw new Error(`ROLLBACK_UNSUPPORTED_TYPE:${c.path}`);this.workspace.write(c.path,decode(c.before.contentBase64).toString('utf8'))}const post=this.workspace.stat(c.path);restored.push({path:c.path,exists:post.exists,sha256:post.sha256})}
    doc.status='ROLLED_BACK';doc.updatedAt=now();doc.rollbackReceipt={at:doc.updatedAt,files:restored,receiptSha256:sha256Text(JSON.stringify(restored))};atomicJson(this.file(id),doc);return doc;
  }
 }

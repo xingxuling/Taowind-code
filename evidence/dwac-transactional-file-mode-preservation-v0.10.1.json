@@ -1,0 +1,53 @@
+{
+  "protocol": "taowind-code.dwac-transactional-file-mode-preservation.evidence.v0.10.1",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "6e7ff241c054e07fe004ce3983d1ad5167f77b17",
+  "selected_bottleneck": "transactional-file-mode-preservation",
+  "selected_problem": "Fresh-main reproduction found atomic replacement writes create a new temporary file with default permissions and rename it over the target. An executable regular file therefore lost its POSIX mode during transactional apply, while a deleted executable restored by rollback also had no stored mode to recover. Mode-only human edits were additionally invisible to optimistic-concurrency preflight.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "6e7ff241c054e07fe004ce3983d1ad5167f77b17",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "Fresh-main reproduction isolated one evidence-rich central reversibility and concurrency bottleneck in the existing transaction path. The committed four-mode router's singular-bottleneck gate routes the replay to DEEP_DEVELOPMENT; no forced rotation was used.",
+    "claim_limit": "No hosted DWAC success receipt or fabricated numeric DWAC score is claimed."
+  },
+  "pre_fix_reproduction": {
+    "fixture": "Create an executable regular file with mode 0755, then perform the exact existing atomic-write pattern: write a temporary file with default mode and rename it over the target.",
+    "observed": "On the verification host the target mode changed from 0755 to 0644, proving transactional content replacement did not preserve executable metadata."
+  },
+  "changes": [
+    "WorkspaceService.stat now exposes regular-file POSIX mode and WorkspaceService.write preserves an existing regular-file mode across atomic replacement; an explicit mode can be supplied when recreating a deleted file.",
+    "Changeset staging snapshots regular-file mode, apply preflight rejects mode-only drift, apply receipts record resulting mode, and rollback preflight rejects post-apply mode-only drift.",
+    "Rollback restores the staged mode when recreating a deleted or replaced regular file.",
+    "Focused regressions cover executable-mode preservation through write/apply/rollback, deleted-file mode restoration, and fail-closed handling of a mode-only edit before apply."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/workspace.mjs",
+      "node --check core/changesets.mjs",
+      "node --check tests/changesets-file-mode.test.mjs",
+      "node --test tests/changesets-file-mode.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "3/3 focused POSIX file-mode regressions PASS; 0 skipped on the Linux verification host",
+    "pre_fix_observation": "Fresh-main atomic replacement reproduced executable-mode loss: 0755 became 0644.",
+    "verified_git_blobs": {
+      "core/workspace.mjs": "70855d9bf878cf9ab98eecab00031714205050cc",
+      "core/changesets.mjs": "4a319640f00b7a1d353b55193a91d4bb5ac7a03d",
+      "tests/changesets-file-mode.test.mjs": "a678f1f806e5747de120993bd13129bb07c62f10"
+    }
+  },
+  "truth_boundaries": [
+    "This closes regular-file POSIX mode preservation and mode-only concurrency detection in the current transaction path; it does not claim preservation of ownership, ACLs, extended attributes, timestamps, hard-link topology, or platform-specific metadata.",
+    "The focused mode assertions are POSIX-specific; Windows permission semantics are not claimed equivalent and the regression explicitly skips there.",
+    "Crash-level filesystem atomicity, OS-level validation sandboxing, Windows descendant-tree equivalence, and arbitrary complex semantic synthesis remain unresolved.",
+    "No GitHub Actions are intentionally triggered or rerun, no force push is used, and no credential, payment, formal Release, or destructive/irreversible external action is performed."
+  ]
+}

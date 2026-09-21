@@ -1,0 +1,21 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "76534d1aa76c14a2bc97c6daa0a1b171477a5a35",
+  "bottleneck": "semantic-extensionless-import-decorated-fallback",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Extensionless relative import resolution accepted any path beginning with the import stem plus a dot, so ./foo could fabricate an imports edge to foo.test.js or foo/index.test.js when no real foo source target existed.",
+  "pre_fix_reproduction": {
+    "cases": ["src/foo.test.js", "src/foo/index.test.js"],
+    "result": "both produced false imports edges from src/main.js"
+  },
+  "change": "Restrict extensionless direct and index fallback matches to a single extension segment. Existing exact-path resolution and deterministic ranking remain unchanged.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "7/7 PASS",
+    "new_regressions": 2
+  },
+  "truth_boundary": "This remains a lightweight relative-import heuristic, not a complete JavaScript/TypeScript/Python/package module resolver.",
+  "github_actions": "not requested"
+}

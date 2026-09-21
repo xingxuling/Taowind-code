@@ -1,0 +1,36 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "a2101a5d6b3a52b06440bef39d9b1b083a42700a",
+  "selected_bottleneck": "delivery-remote-merge-base-preflight",
+  "selected_problem": "Fresh main still allowed the canonical remote-delivery merge path to send GitHub's merge PUT with only an expected head SHA. A base branch that had already moved before delivery could therefore be merged without any base-identity check, even though that drift was observable before the write side effect.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "WHOLE_ARTIFACT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "The revision-aware truth-boundary portfolio contains several equally severe open integration boundaries, so the committed four-mode router observes high portfolio/artifact pressure and routes the source-contract replay to WHOLE_ARTIFACT rather than forcing a mode rotation."
+  },
+  "changes": [
+    "The existing GitHub delivery implementation is preserved byte-for-byte as core/git-base.mjs and reused behind a small integrity veneer rather than reimplemented.",
+    "Canonical gitRemoteDelivery merge now binds delivery to an expected base identity, deriving it from the local base ref when the caller does not supply one.",
+    "Before any push, PR-create, or merge write side effect in a merge-bearing delivery, the provider reads the remote base ref and fails closed on observable base drift.",
+    "Immediately before the merge PUT, the provider reads the pull request and verifies its reported base SHA against the same expected base identity.",
+    "The existing GitHub merge expected-head SHA precondition remains active."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED: legacy provider returned ok=true and issued PUT /pulls/9/merge without reading any base identity even when expectedBaseSha was supplied.",
+    "node_checks": "PASS: core/git-base.mjs, core/git.mjs, focused regression",
+    "command": "node --test tests/github-remote-merge-base-gate.test.mjs tests/github-merge-receipt-integrity.test.mjs",
+    "result": "6/6 PASS, 0 skipped",
+    "verified_blobs": {
+      "core/git-base.mjs": "28f1f0a0709363ee021876c0e03fe79366fd0303",
+      "core/git.mjs": "4af5a0ebbcdf7a44d1ca2db5ebbc23a0ba265d61",
+      "tests/github-remote-merge-base-gate.test.mjs": "78fed941bbf4886e81c9666d71dd71cf7432faf1"
+    }
+  },
+  "truth_boundaries": [
+    "UNRESOLVED: direct githubMergePullRequest calls that omit expectedBaseSha still delegate to the legacy head-only helper for compatibility; the canonical gitRemoteDelivery merge path is base-bound.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still offers an atomic expected-head precondition but no equivalent caller-supplied expected-base precondition; the new GET-to-PUT base checks detect pre-existing drift but cannot eliminate a race inside the external service boundary.",
+    "No force push, repository-rule bypass, credential exposure, payment, formal Release, or destructive/irreversible action is introduced."
+  ]
+}

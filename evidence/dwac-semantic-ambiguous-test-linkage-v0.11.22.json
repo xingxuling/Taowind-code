@@ -1,0 +1,34 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "4cd7b638522eb253394eb71cfdfb872131c553b1",
+  "selected_bottleneck": "semantic-ambiguous-test-source-linkage",
+  "selected_problem": "Arbitrary complex repository synthesis remains UNRESOLVED. Fresh-main inspection found that basename-only test/source matching created a `tests` edge from one test to every non-test file with the same logical stem. A repository containing `src/index.js`, `lib/index.js`, and `tests/index.test.js` therefore fabricated two ownership edges without evidence for either relationship, distorting semantic centrality and context selection.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "The fresh canonical main exposes one narrow falsifiable semantic-graph integrity defect. Source-contract replay therefore narrows it to DEEP_DEVELOPMENT without prescribing a new test-discovery architecture or forcing mode rotation."
+  },
+  "changes": [
+    "A test/source stem relationship now emits a `tests` edge only when exactly one non-test source candidate matches the logical stem.",
+    "Ambiguous same-stem ownership fails closed instead of fabricating multiple semantic edges.",
+    "The previous unique colocated `.test` / `.spec` linkage and deterministic relative-import behavior remain covered by regressions."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED against fresh main: `tests/index.test.js` produced two `tests` edges, one to `src/index.js` and one to `lib/index.js`, solely from basename equality.",
+    "node_check": "PASS",
+    "focused_command": "node --test tests/semantic-ambiguous-test-source-linkage.test.mjs tests/semantic-test-source-linkage.test.mjs tests/semantic-import-target-resolution.test.mjs",
+    "focused_result": "3/3 PASS, 0 skipped",
+    "blob_match": {
+      "core/semantic-repo-graph.mjs": "23208173288afde818f7fcc34c22e22d1f1fa68b",
+      "tests/semantic-ambiguous-test-source-linkage.test.mjs": "8e2e8df37c2511131ec7ee9d6f8995671570576c"
+    }
+  },
+  "truth_boundaries": [
+    "Arbitrary complex repository synthesis remains UNRESOLVED. This fails closed on ambiguous basename-only test ownership; it does not infer framework-specific test ownership when several sources are plausible.",
+    "Tests that intentionally cover several same-stem modules will not receive heuristic `tests` edges without stronger evidence; avoiding false semantic claims is preferred to fabricating ownership.",
+    "Semantic-context neighborhood selection remains bounded and does not prove globally optimal context selection for arbitrary software goals.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

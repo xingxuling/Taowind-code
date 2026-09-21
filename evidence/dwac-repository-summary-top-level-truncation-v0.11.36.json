@@ -1,0 +1,24 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "a9ee10f5e46eba97bc36505397d1bd0971bc0d4e",
+  "bottleneck": "repository-summary-top-level-truncation-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main bounded repositorySummary.topLevel to 80 entries but exposed no truncation marker for that field. With 81 distinct top-level roots, topLevel returned only 80 while contextRecovery.truncated remained false because all exact path hints still fit, making the summary unable to distinguish a complete 80-entry view from an incomplete 80-of-81 view.",
+  "decision_provenance": {
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "route_basis": "The defect is a narrow observation-integrity contradiction on fresh main: a bounded cognition hint silently loses reality while adjacent truncation surfaces are explicitly marked. It is directly falsifiable and requires no new context-selection architecture, so the four-mode contract resolves to DEEP_DEVELOPMENT without forced rotation."
+  },
+  "pre_fix_reproduction": "A synthetic manifest with 81 distinct non-secret top-level directories returned topLevel.length=80 and contextRecovery.truncated=false, while topLevelTruncated was absent. The new regression failed with undefined != true.",
+  "change": "Compute the distinct non-secret top-level set once, preserve the existing 80-entry bounded view, and expose topLevelTruncated when that view omits one or more observed top-level roots.",
+  "validation": {
+    "node_check": "PASS",
+    "pre_fix_reproduction": "EXPECTED FAILURE reproduced: incomplete 80-of-81 topLevel view had no truncation marker",
+    "focused_tests": "4/4 PASS; 0 skipped",
+    "new_regressions": 1
+  },
+  "truth_boundary": "This makes the 80-entry top-level summary honest about truncation. It does not expand the manifest observation budget, guarantee full repository coverage when the manifest itself is truncated, choose an optimal large-repository sampling policy, or solve arbitrary complex repository synthesis.",
+  "github_actions": "not requested"
+}

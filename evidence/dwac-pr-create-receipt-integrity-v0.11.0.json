@@ -1,0 +1,56 @@
+{
+  "protocol": "taowind-code.dwac-pr-create-receipt-integrity.evidence.v0.11.0",
+  "status": "SOURCE_IMPLEMENTED_TARGETED_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "56937b287278dc352a814eb892027ed6ed4bd22d",
+  "selected_bottleneck": "delivery-pr-create-receipt-integrity",
+  "selected_problem": "Fresh main made merge receipts verifiable, but GitHub PR creation still treated any successful HTTP response as a complete successful delivery receipt. If GitHub returned a 2xx/201 response without a usable repository-scoped PR number, the provider could claim `ok=true` and `prPerformed=true` while leaving no stable PR identity for traceability or later merge.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "56937b287278dc352a814eb892027ed6ed4bd22d",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "One narrow evidence-rich central remote-delivery receipt gap remained after merge-receipt closure, so the committed singular-bottleneck gate routes this replay to DEEP_DEVELOPMENT without forced mode rotation.",
+    "claim_limit": "No hosted DWAC success receipt or fabricated numeric routing score is claimed."
+  },
+  "pre_fix_reproduction": {
+    "result": "REPRODUCED",
+    "observed": "With a mocked HTTP 201 response containing URL/state but no `number`, the previous githubCreatePullRequest contract returned `ok=true`, `prPerformed=true`, `externalSideEffectPerformed=true`, and `number=null`.",
+    "consequence": "Remote PR creation could be reported as successfully closed without a durable repository-scoped PR identity, weakening traceability and making the next merge step non-addressable."
+  },
+  "changes": [
+    "githubCreatePullRequest now treats a positive integer PR number as mandatory receipt evidence for `ok=true`.",
+    "HTTP-success responses without a usable PR number fail closed with PR_CREATE_RECEIPT_INVALID.",
+    "When GitHub may already have created the PR but the response receipt is malformed, `prPerformed=true` and `externalSideEffectPerformed=true` are preserved so the provider does not erase the possibility of an already-performed external side effect.",
+    "Valid positive PR numbers remain accepted and returned as the stable repository-scoped PR identity."
+  ],
+  "validation": {
+    "result": "PASS",
+    "commands": [
+      "node --check exact branch core/git.mjs",
+      "node --check exact branch tests/github-pr-create-receipt-integrity.test.mjs",
+      "node --test exact branch tests/github-pr-create-receipt-integrity.test.mjs"
+    ],
+    "tests": "2/2 PASS",
+    "cases": [
+      "HTTP 201 without PR number rejects the receipt while preserving performed-side-effect truth",
+      "HTTP 201 with a positive repository-scoped PR number succeeds"
+    ],
+    "branch_git_blobs": {
+      "core/git.mjs": "ede8d79f53d78eef8ea7fb3881da3a0198152e01",
+      "tests/github-pr-create-receipt-integrity.test.mjs": "9be6aa8669ff6e81b83e2ce47bf1a04a53c3bd8c"
+    },
+    "verification_note": "The verified local source/test files were byte-identical to the branch blobs above. No GitHub Actions were used."
+  },
+  "truth_boundaries": [
+    "This binds provider-level PR-create success to a durable PR number; it does not make the GitHub POST operation transactional with observation of its response.",
+    "PR creation is still branch-name based and GitHub's create-PR endpoint does not provide a caller-supplied expected-head-SHA precondition. The later merge expected-head gate prevents silently merging a moved head, but cannot prevent a race before PR creation itself.",
+    "The GitHub merge endpoint still has no caller-supplied expected-base-SHA precondition, so base movement remains a separate integration-boundary problem.",
+    "OS-level validation sandboxing, arbitrary complex semantic synthesis, Windows descendant-tree equivalence, and crash-level filesystem atomicity remain unresolved.",
+    "No force push, repository-rule bypass, credential exposure, payment, formal Release, or destructive/irreversible external action is introduced."
+  ]
+}

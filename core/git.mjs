@@ -157,19 +157,21 @@ export async function githubCreatePullRequest(cwd,{remote='origin',base='main',h
   return {ok:result.ok,prPerformed:result.ok,externalSideEffectPerformed:result.ok,repository:ctx.repository,number:result.data?.number||null,url:result.data?.html_url||null,state:result.data?.state||null,status:result.status,error:result.error};
 }
 export async function githubMergePullRequest(cwd,{number,remote='origin',mergeMethod='squash',expectedHeadSha=null,token=null,env=process.env,fetchImpl=globalThis.fetch}={}){
-  const ctx=apiContext(cwd,{remote,token,env});const prNumber=Number(number);
+  const ctx=apiContext(cwd,{remote,token,env});const prNumber=Number(number);const expected=String(expectedHeadSha||'').trim();
   if(!ctx.repository)return {ok:false,mergePerformed:false,externalSideEffectPerformed:false,error:'GITHUB_REPOSITORY_REQUIRED'};
   if(!ctx.token)return {ok:false,mergePerformed:false,externalSideEffectPerformed:false,error:'GITHUB_TOKEN_REQUIRED',repository:ctx.repository};
   if(!Number.isInteger(prNumber)||prNumber<1)return {ok:false,mergePerformed:false,externalSideEffectPerformed:false,error:'PR_NUMBER_REQUIRED',repository:ctx.repository};
-  const body={merge_method:['merge','squash','rebase'].includes(mergeMethod)?mergeMethod:'squash'};if(expectedHeadSha)body.sha=String(expectedHeadSha);
+  if(!expected)return {ok:false,mergePerformed:false,externalSideEffectPerformed:false,error:'EXPECTED_HEAD_SHA_REQUIRED',repository:ctx.repository,number:prNumber};
+  if(!/^[0-9a-f]{40,64}$/i.test(expected))return {ok:false,mergePerformed:false,externalSideEffectPerformed:false,error:'EXPECTED_HEAD_SHA_INVALID',repository:ctx.repository,number:prNumber};
+  const body={merge_method:['merge','squash','rebase'].includes(mergeMethod)?mergeMethod:'squash',sha:expected};
   const result=await apiJson(fetchImpl,`https://api.github.com/repos/${ctx.repository}/pulls/${prNumber}/merge`,{method:'PUT',headers:{accept:'application/vnd.github+json',authorization:`Bearer ${ctx.token}`,'content-type':'application/json','x-github-api-version':'2022-11-28'},body:JSON.stringify(body)});
-  return {ok:result.ok&&result.data?.merged!==false,mergePerformed:result.ok&&result.data?.merged!==false,externalSideEffectPerformed:result.ok&&result.data?.merged!==false,repository:ctx.repository,number:prNumber,sha:result.data?.sha||null,message:result.data?.message||null,status:result.status,error:result.ok?null:result.error};
+  return {ok:result.ok&&result.data?.merged!==false,mergePerformed:result.ok&&result.data?.merged!==false,externalSideEffectPerformed:result.ok&&result.data?.merged!==false,repository:ctx.repository,number:prNumber,expectedHeadSha:expected,sha:result.data?.sha||null,message:result.data?.message||null,status:result.status,error:result.ok?null:result.error};
 }
 export async function gitRemoteDelivery(cwd,{explicitApproval=false,push=true,createPullRequest=false,merge=false,remote='origin',branch=null,base='main',title='',body='',draft=false,prNumber=null,mergeMethod='squash',expectedHeadSha=null,token=null,env=process.env,fetchImpl=globalThis.fetch}={}){
   const result={ok:false,explicitApproval:explicitApproval===true,externalSideEffectPerformed:false,pushPerformed:false,prPerformed:false,mergePerformed:false};
   if(explicitApproval!==true)return {...result,error:'EXPLICIT_APPROVAL_REQUIRED'};
   let pushResult=null;if(push){pushResult=gitPushBranch(cwd,{remote,branch,expectedHeadSha});Object.assign(result,{push:pushResult,pushPerformed:pushResult.pushPerformed===true,externalSideEffectPerformed:pushResult.externalSideEffectPerformed===true});if(!pushResult.ok)return {...result,error:pushResult.error||'PUSH_FAILED'}}
   let pr=null;if(createPullRequest){pr=await githubCreatePullRequest(cwd,{remote,base,head:branch,title,body,draft,token,env,fetchImpl});Object.assign(result,{pullRequest:pr,prPerformed:pr.prPerformed===true,externalSideEffectPerformed:result.externalSideEffectPerformed||pr.externalSideEffectPerformed===true});if(!pr.ok)return {...result,error:'PR_CREATE_FAILED'}}
-  let mergeResult=null;if(merge){const number=prNumber||pr?.number;mergeResult=await githubMergePullRequest(cwd,{number,remote,mergeMethod,expectedHeadSha,token,env,fetchImpl});Object.assign(result,{merge:mergeResult,mergePerformed:mergeResult.mergePerformed===true,externalSideEffectPerformed:result.externalSideEffectPerformed||mergeResult.externalSideEffectPerformed===true});if(!mergeResult.ok)return {...result,error:'PR_MERGE_FAILED'}}
+  let mergeResult=null;if(merge){const number=prNumber||pr?.number;mergeResult=await githubMergePullRequest(cwd,{number,remote,mergeMethod,expectedHeadSha,token,env,fetchImpl});Object.assign(result,{merge:mergeResult,mergePerformed:mergeResult.mergePerformed===true,externalSideEffectPerformed:result.externalSideEffectPerformed||mergeResult.externalSideEffectPerformed===true});if(!mergeResult.ok)return {...result,error:mergeResult.error||'PR_MERGE_FAILED'}}
   return {...result,ok:true,error:null};
 }

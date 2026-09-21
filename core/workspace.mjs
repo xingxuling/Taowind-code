@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {safePath} from './path-boundary.mjs';
 import {sha256Buffer} from './hash.mjs';
+import {isCredentialLikePath} from './repo-context.mjs';
 
 const HIDDEN=new Set(['.git','node_modules','.next','dist','build','.venv','runtime-data']);
 const TEXT_EXT=new Set(['.js','.mjs','.cjs','.ts','.tsx','.jsx','.json','.md','.txt','.css','.html','.yml','.yaml','.toml','.py','.rcl','.sh','.cmd','.ps1','.java','.kt','.kts','.go','.rs','.c','.h','.cpp','.hpp','.cs','.swift','.rb','.php','.vue','.svelte']);
@@ -65,9 +66,11 @@ export class WorkspaceService {
   }
   contextBundle(paths,{maxBytes=220_000,maxFiles=32}={}){
     const selected=[]; let total=0;
-    for(const rel of [...new Set(paths||[])].slice(0,maxFiles)){
+    for(const raw of [...new Set(paths||[])].slice(0,maxFiles)){
+      const rel=String(raw||'').replaceAll('\\','/').replace(/^\.\//,'');
+      if(!rel||isCredentialLikePath(rel))continue;
       const ext=path.extname(rel).toLowerCase(); if(ext&&!TEXT_EXT.has(ext))continue;
-      try{const abs=safePath(this.root,rel);const st=fs.statSync(abs);if(!st.isFile()||st.size>80_000||total+st.size>maxBytes)continue;const content=fs.readFileSync(abs,'utf8');selected.push({path:rel,content});total+=Buffer.byteLength(content);}catch{}
+      try{const ancestor=this.ancestorState(rel);if(!ancestor.ok)continue;const abs=safePath(this.root,rel);const st=fs.lstatSync(abs);if(st.isSymbolicLink()||!st.isFile()||st.size>80_000||total+st.size>maxBytes)continue;const content=fs.readFileSync(abs,'utf8');selected.push({path:rel,content});total+=Buffer.byteLength(content);}catch{}
     }
     return {files:selected,totalBytes:total};
   }

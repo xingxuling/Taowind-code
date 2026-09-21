@@ -44,6 +44,15 @@ def _append_boundary_rows(value, source, path, rows, limit):
    if len(rows)>=limit:return
 
 
+def _resolution_refs(value):
+ refs=set();items=value if isinstance(value,list) else [value]
+ for item in items:
+  if not isinstance(item,dict):continue
+  source=str(item.get('source') or '').replace('\\','/').strip();path=str(item.get('path') or '').strip()
+  if source and path:refs.add((source,path))
+ return refs
+
+
 def _evidence_files_by_revision(workspace, evidence):
  files=list(evidence.glob('*.json'))
  if not files:return []
@@ -65,26 +74,30 @@ def _evidence_files_by_revision(workspace, evidence):
 
 
 def _truth_boundaries(workspace, limit=96):
- evidence=workspace/'evidence';rows=[]
+ evidence=workspace/'evidence';rows=[];resolved=set()
  if not evidence.exists():return rows
  for file in _evidence_files_by_revision(workspace,evidence):
   try:data=json.loads(file.read_text(encoding='utf-8'))
   except Exception:continue
-  source=str(file.relative_to(workspace))
-  stack=[('',data)]
-  while stack and len(rows)<limit:
+  source=str(file.relative_to(workspace)).replace('\\','/')
+  if isinstance(data,dict):resolved.update(_resolution_refs(data.get('resolves')))
+  file_rows=[];stack=[('',data)]
+  while stack and len(file_rows)<limit:
    path,value=stack.pop()
    if isinstance(value,dict):
     for key,item in value.items():
      child=f'{path}.{key}' if path else str(key)
      if _is_boundary_key(key):
-      _append_boundary_rows(item,source,child,rows,limit)
+      _append_boundary_rows(item,source,child,file_rows,limit)
      elif isinstance(item,(dict,list)):
       stack.append((child,item))
    elif isinstance(value,list):
     for index,item in enumerate(value):
      if isinstance(item,(dict,list)):stack.append((f'{path}[{index}]',item))
-  if len(rows)>=limit:return rows
+  for row in file_rows:
+   if (row['source'],row['path']) in resolved:continue
+   rows.append(row)
+   if len(rows)>=limit:return rows
  return rows[:limit]
 
 

@@ -1,0 +1,24 @@
+{
+  "version": "0.11.51",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "35810ed5693d3e6bf2c3b3cb025a0f24a9d09efa",
+  "selected_bottleneck": "semantic-parent-segment-path-node-dedup-integrity",
+  "selected_problem": "Fresh-main inspection after slash, explicit-dot and repeated-separator closure found a remaining directly falsifiable lexical identity mismatch: src/a.js and src/tmp/../a.js remained distinct semantic nodes even though relative import normalization already resolves parent segments.",
+  "mode_route": ["DEEP_DEVELOPMENT"],
+  "sovereignty_gate": "AUTONOMOUS",
+  "pre_fix_reality": {
+    "case": ["src/a.js", "src/tmp/../a.js", "src/b.js"],
+    "observed_stats_files": 3,
+    "expected_unique_semantic_files": 2,
+    "new_regression": "FAIL as expected before fix"
+  },
+  "change": "Reuse POSIX lexical path normalization for semantic graph path identity so slash, repeated-separator, explicit-dot and parent-segment aliases share the same node identity.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "7/7 PASS",
+    "skipped": 0,
+    "new_regressions": 1,
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This closes lexical parent-segment aliases under the existing repo-relative graph path model. Paths escaping the repository root are not newly authorized or dereferenced by this graph-only normalization. Filesystem case/Unicode identity, conflicting-content aliases, complete parser-grade module resolution and arbitrary complex repository synthesis remain unresolved."
+}

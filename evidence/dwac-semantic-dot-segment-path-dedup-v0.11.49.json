@@ -1,0 +1,24 @@
+{
+  "version": "0.11.49",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "84cdaf43e69e50457fd0b98296208a65c8d452ae",
+  "selected_bottleneck": "semantic-dot-segment-path-node-dedup-integrity",
+  "selected_problem": "After normalized slash aliases were closed on fresh main, semantic graph path identity still treated src/a.js and src/./a.js as distinct nodes even though relative import normalization resolves dot segments. The mismatch can inflate graph stats, ranking and bounded context selection.",
+  "mode_route": ["DEEP_DEVELOPMENT"],
+  "sovereignty_gate": "AUTONOMOUS",
+  "pre_fix_reality": {
+    "case": ["src/a.js", "src/./a.js", "src/b.js"],
+    "observed_stats_files": 3,
+    "expected_unique_semantic_files": 2,
+    "new_regression": "FAIL as expected before fix"
+  },
+  "change": "Extend semantic graph lexical path identity normalization to remove explicit dot path segments while preserving parent-segment, case and Unicode semantics.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "5/5 PASS",
+    "skipped": 0,
+    "new_regressions": 1,
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This closes explicit dot-segment aliases such as src/./a.js and ./src/a.js under the existing graph path model. Parent-segment equivalence, repeated separators, filesystem case/Unicode identity, conflicting content aliases, complete parser-grade module resolution and arbitrary complex repository synthesis remain unresolved."
+}

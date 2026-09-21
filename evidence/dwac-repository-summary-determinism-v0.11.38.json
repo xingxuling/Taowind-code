@@ -1,0 +1,24 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "141903f145bf934bf06a4e77f96f309dac6260b8",
+  "bottleneck": "repository-summary-bounded-view-determinism",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main exposed truncation for the bounded top-level and extension summary views, but equal-ranked rows still inherited manifest enumeration order. Reversing the same manifest changed both bounded summaries, so equivalent repository reality could produce different cognition inputs across filesystem enumeration orders.",
+  "decision_provenance": {
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "route_basis": "The defect is singular, directly falsifiable, adjacent to the just-closed bounded-summary truth markers, and requires only deterministic tie-breaking without prescribing a new context-selection architecture. The four-mode contract therefore resolves to DEEP_DEVELOPMENT without forced rotation."
+  },
+  "pre_fix_reproduction": "A synthetic 90-file manifest spanning 90 top-level roots and 20 extensions produced different topLevel and extensions bounded views when the exact same entries were reversed. The new regression failed before the change.",
+  "change": "Preserve extension frequency as the primary ordering but use extension name as a deterministic tie-breaker, and sort the observed non-credential top-level roots lexically before the existing 80-entry bound.",
+  "validation": {
+    "node_check": "PASS",
+    "pre_fix_reproduction": "EXPECTED FAILURE reproduced: reversed enumeration changed bounded summary contents/order",
+    "focused_tests": "6/6 PASS; 0 skipped",
+    "new_regressions": 1
+  },
+  "truth_boundary": "This makes the already-observed bounded summary deterministic for equivalent manifest sets. It does not expand manifest coverage, choose an optimal large-repository sampling policy, implement parser-grade module resolution, or solve arbitrary complex repository synthesis.",
+  "github_actions": "not requested"
+}

@@ -2,7 +2,7 @@ import path from 'node:path';
 
 const TOKEN_RE=/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu;
 const IMPORT_PATTERNS=[
-  /(?:import\s+[^'"\n]*?from\s*|import\s*\(\s*|import\s*|require\s*\()\s*['"]([^'"]+)['"]/g,
+  /(?:import\s+[^'"\n]*?from\s*|export\s+[^'"\n]*?from\s*|import\s*\(\s*|import\s*|require\s*\()\s*['"]([^'"]+)['"]/g,
   /(?:from|import)\s+([A-Za-z_][A-Za-z0-9_.]*)/g,
 ];
 const SYMBOL_PATTERNS=[

@@ -1,0 +1,51 @@
+{
+  "protocol": "taowind-code.dwac-delivery-git-index-integrity.evidence.v0.10.4",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "c6263db819ee126f258864c9e328902f61d34561",
+  "selected_bottleneck": "delivery-git-index-postimage-integrity",
+  "selected_problem": "After delivery postvalidation rechecks were added, fresh-main inspection exposed a remaining time-of-check/time-of-use gap: NorthStarRunner.delivery checked the validated postimage before git_commit authorization, while gitLocalCommit later staged the current working-tree bytes. A path could therefore change after the delivery check but before git add, allowing unvalidated bytes to enter the Git index and commit.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "c6263db819ee126f258864c9e328902f61d34561",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "Fresh main reduced the next evidence-rich central bottleneck to a narrow delivery-index binding gap. The committed four-mode router's singular-bottleneck gate routes the replay to DEEP_DEVELOPMENT; no forced rotation was used.",
+    "claim_limit": "No hosted DWAC success receipt or fabricated numeric DWAC score is claimed."
+  },
+  "pre_fix_reproduction": {
+    "source_observation": "NorthStarRunner.delivery called checkDeliveryPostimage before git_commit authorization, while gitLocalCommit later performed git add from the then-current workspace and committed that index without comparing the staged bytes to the validation receipt.",
+    "consequence": "A content or executable-mode edit occurring between the delivery check and git add could be committed without having passed the recorded validation."
+  },
+  "changes": [
+    "gitLocalCommit can now receive the validated postimage receipt and, after git add, re-read the Git index blobs and tracked executable mode for every run-owned path.",
+    "The staged Git index must match validation-time existence, SHA-256 content, and Git-representable executable mode before git commit is allowed.",
+    "If the staged index diverges, delivery fails closed with GIT_INDEX_POSTIMAGE_DRIFT, selected paths are unstaged, no commit is created, and NorthStarRunner moves the run to REPAIR_REQUIRED with auditable evidence.",
+    "The original pre-authorization delivery postimage check remains in place, while the new index binding closes the later staging race without pretending the working tree itself is immutable."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/git.mjs",
+      "node --check core/north-star-runner.mjs",
+      "node --test tests/git-delivery.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "3/3 focused Git delivery regressions PASS on the Linux verification host",
+    "verified_git_blobs": {
+      "core/git.mjs": "8aad0dea8f596db60999ed4d76ab00660999d90b",
+      "core/north-star-runner.mjs": "813d9932d2a7c3276171a5a0107a87e4529fa0bc",
+      "tests/git-delivery.test.mjs": "a89f10d5d8c9d7696b42f8ed0c3c1ba7de9204d6"
+    }
+  },
+  "truth_boundaries": [
+    "This binds the Git index commit artifact to the validation receipt for run-owned files; it does not make the working tree immutable after staging, and unrelated workspace files may still change.",
+    "Git records regular-file executability rather than full POSIX mode bits, so the index comparison intentionally verifies content plus Git-representable executable mode; full filesystem metadata remains governed by the workspace transaction layer.",
+    "OS-level validation sandboxing, arbitrary complex semantic synthesis, Windows descendant-tree equivalence, and crash-level filesystem atomicity remain unresolved.",
+    "No GitHub Actions are intentionally triggered or rerun, no force push is used, and no credential, payment, formal Release, or destructive/irreversible external action is performed."
+  ]
+}

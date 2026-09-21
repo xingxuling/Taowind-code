@@ -17,8 +17,24 @@ def _git_head(workspace):
  except Exception:return None
 
 
+def _canonical_source_text(workspace, rel):
+ head=_git_head(workspace)
+ if head:
+  try:
+   r=subprocess.run(['git','-C',str(workspace),'show',f'{head}:{rel}'],capture_output=True,text=True,timeout=5)
+  except Exception:
+   return None
+  return r.stdout if r.returncode==0 else None
+ path=workspace/rel
+ return _read(path) if path.exists() else None
+
+
+def _source_exists(workspace, rel):
+ return _canonical_source_text(workspace,rel) is not None
+
+
 def _source_has(workspace, rel, needles):
- text=_read(workspace/rel).lower()
+ text=(_canonical_source_text(workspace,rel) or '').lower()
  return bool(text) and all(str(x).lower() in text for x in needles)
 
 
@@ -194,11 +210,11 @@ def _truth_boundary_candidates(rows, limit=16):
 def _probe_workspace(workspace, four_mode_available):
  head=_git_head(workspace)
  closed={
-  'semantic-repo-graph': (workspace/'core'/'repo-graph.mjs').exists(),
-  'transactional-changeset': (workspace/'core'/'changesets.mjs').exists() and _source_has(workspace,'core/changesets.mjs',['rollback']),
-  'validation-repair': (workspace/'core'/'acceptance.mjs').exists() and (workspace/'core'/'north-star-runner.mjs').exists(),
-  'rcl-authority': (workspace/'core'/'rcl-authority.mjs').exists(),
-  'browser-observation': (workspace/'core'/'browser-observation.mjs').exists(),
+  'semantic-repo-graph': _source_exists(workspace,'core/repo-graph.mjs'),
+  'transactional-changeset': _source_exists(workspace,'core/changesets.mjs') and _source_has(workspace,'core/changesets.mjs',['rollback']),
+  'validation-repair': _source_exists(workspace,'core/acceptance.mjs') and _source_exists(workspace,'core/north-star-runner.mjs'),
+  'rcl-authority': _source_exists(workspace,'core/rcl-authority.mjs'),
+  'browser-observation': _source_exists(workspace,'core/browser-observation.mjs'),
   'four-mode-routing': bool(four_mode_available) and _source_has(workspace,'core/tasks.mjs',['north_star_burst','develop']),
   'fresh-main-observer': _source_has(workspace,'bridge/dwac_bridge.py',['workspace_observation','closed_capabilities','truth_boundaries']),
   'persistent-pty-runtime': _source_has(workspace,'core/terminal.mjs',['node-pty']) or _source_has(workspace,'core/terminal.mjs',['conpty']),

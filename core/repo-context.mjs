@@ -28,8 +28,8 @@ export function repositoryPathIndex(manifest,{maxPaths=800,maxBytes=48_000}={}){
 export function repositorySummary(manifest){
   const byExt={};for(const f of manifest)byExt[f.ext||'<none>']=(byExt[f.ext||'<none>']||0)+1;
   const index=repositoryPathIndex(manifest);
-  const extensionRows=Object.entries(byExt).sort((a,b)=>b[1]-a[1]);
-  const topLevels=[...new Set(manifest.filter(x=>!isCredentialLikePath(x.path)).map(x=>x.path.split('/')[0]))];
+  const extensionRows=Object.entries(byExt).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]));
+  const topLevels=[...new Set(manifest.filter(x=>!isCredentialLikePath(x.path)).map(x=>x.path.split('/')[0]))].sort((a,b)=>a.localeCompare(b));
   return {
     fileCount:manifest.length,
     manifestTruncated:manifest?.truncated===true,

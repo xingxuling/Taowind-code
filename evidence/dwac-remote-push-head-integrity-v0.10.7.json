@@ -1,0 +1,66 @@
+{
+  "protocol": "taowind-code.dwac-remote-push-head-integrity.evidence.v0.10.7",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "c90a2cb1c46046ccaeb85fdc8f2af3c74bf355fa",
+  "selected_bottleneck": "delivery-remote-push-head-integrity",
+  "selected_problem": "After the immutable local commit object was bound to validation, fresh-main inspection exposed a remote-delivery gap: gitPushBranch still pushed the moving local branch name. If the local branch advanced after the verified commit was captured but before remote delivery, an additional unvalidated commit could be published even though a verified head SHA already existed in the delivery protocol.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "c90a2cb1c46046ccaeb85fdc8f2af3c74bf355fa",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "updia_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "Fresh main exposed one narrow, deterministic, evidence-rich delivery bottleneck at the remote push boundary. The committed four-mode router therefore selects DEEP_DEVELOPMENT via its singular-central-bottleneck gate; no forced rotation was used.",
+    "claim_limit": "No hosted DWAC/UPDIA success receipt or fabricated numeric score is claimed."
+  },
+  "pre_fix_reproduction": {
+    "result": "REPRODUCED",
+    "sequence": [
+      "Create validated commit A on feature/provider and capture its SHA.",
+      "Advance the same local branch with unvalidated commit B.",
+      "Run the old non-force `git push --set-upstream origin feature/provider` sequence.",
+      "Observed the bare remote branch resolves to B rather than captured validated A."
+    ],
+    "consequence": "Remote delivery was bound to a moving branch ref rather than the verified immutable commit artifact."
+  },
+  "changes": [
+    "Remote push now requires an expectedHeadSha and resolves it to an existing local commit before any external side effect.",
+    "gitPushBranch pushes the exact resolved commit object with a non-force `<oid>:refs/heads/<branch>` refspec instead of pushing the moving local branch ref.",
+    "Missing, malformed, or locally unresolved expected heads fail closed before push with EXPECTED_HEAD_SHA_REQUIRED, EXPECTED_HEAD_SHA_INVALID, or EXPECTED_HEAD_SHA_NOT_FOUND.",
+    "gitRemoteDelivery propagates the exact push gate error and passes the same expectedHeadSha through to the already-existing PR merge head check.",
+    "After a successful exact-object push, local upstream tracking is configured separately when requested; this does not alter the pushed object."
+  ],
+  "validation": {
+    "commands": [
+      "node --check focused remote-delivery module surface",
+      "node --check focused github-remote-provider test surface",
+      "node --test focused github-remote-provider surface"
+    ],
+    "result": "PASS",
+    "tests": "3/3 focused remote-provider regressions PASS on the Linux verification host",
+    "reality_cases": [
+      "explicit approval is still required before any push",
+      "approved push without expectedHeadSha fails before remote ref creation",
+      "exact expected commit A is pushed even when local branch has advanced to B",
+      "existing mocked GitHub PR/merge token-redaction behavior remains passing"
+    ],
+    "branch_git_blobs": {
+      "core/git.mjs": "39a39309d316372bfffb0e8497e9f8097d8dbb6e",
+      "tests/github-remote-provider.test.mjs": "661ce8b64525fa8a60d41af2b4fcba056303a7bc"
+    },
+    "verification_scope_note": "The focused harness executed the exact changed push/remote-delivery logic against real local and bare Git repositories, plus the unchanged mocked GitHub API behavior. No network GitHub push and no GitHub Actions were used for verification."
+  },
+  "truth_boundaries": [
+    "This binds the source object of a non-force remote push to the expected validated local commit. It does not use force or force-with-lease and therefore still relies on the remote server to reject non-fast-forward history replacement.",
+    "If a remote branch advances concurrently, an exact-object non-force push may fail rather than overwrite remote history; this is intentional fail-safe behavior.",
+    "The local working branch may continue advancing after the expected commit is selected; those later local commits are not included in the bound push.",
+    "OS-level validation sandboxing, arbitrary complex semantic synthesis, Windows descendant-tree equivalence, and crash-level filesystem atomicity remain unresolved.",
+    "No GitHub Actions are intentionally triggered or rerun, no force push is used, and no credential, payment, formal Release, or destructive/irreversible external action is performed."
+  ]
+}

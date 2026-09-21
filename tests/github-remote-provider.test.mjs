@@ -9,17 +9,33 @@ import {gitRemoteDelivery,gitRemoteInfo,githubCreatePullRequest,githubMergePullR
 function git(cwd,args){const r=spawnSync('git',args,{cwd,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim()}
 function initRepo(dir){git(dir,['init']);git(dir,['config','user.name','Taowind Test']);git(dir,['config','user.email','taowind-test@example.invalid']);fs.writeFileSync(path.join(dir,'a.txt'),'a0\n');git(dir,['add','.']);git(dir,['commit','-m','base'])}
 
-test('remote delivery requires explicit approval and performs a non-force push when approved',async()=>{
+test('remote delivery requires explicit approval, expected head binding, and performs a non-force push when approved',async()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-remote-'));const repo=path.join(root,'repo');const bare=path.join(root,'remote.git');fs.mkdirSync(repo);
   try{
     initRepo(repo);git(root,['init','--bare',bare]);git(repo,['remote','add','origin',bare]);git(repo,['checkout','-b','feature/provider']);
-    fs.writeFileSync(path.join(repo,'a.txt'),'a1\n');git(repo,['add','a.txt']);git(repo,['commit','-m','feature']);
-    const denied=await gitRemoteDelivery(repo,{explicitApproval:false,push:true});
+    fs.writeFileSync(path.join(repo,'a.txt'),'a1\n');git(repo,['add','a.txt']);git(repo,['commit','-m','feature']);const expectedHeadSha=git(repo,['rev-parse','HEAD']);
+    const denied=await gitRemoteDelivery(repo,{explicitApproval:false,push:true,expectedHeadSha});
     assert.equal(denied.error,'EXPLICIT_APPROVAL_REQUIRED');
     assert.equal(spawnSync('git',['--git-dir',bare,'show-ref','--verify','refs/heads/feature/provider']).status,128);
-    const approved=await gitRemoteDelivery(repo,{explicitApproval:true,push:true});
-    assert.equal(approved.ok,true);assert.equal(approved.pushPerformed,true);
-    assert.equal(spawnSync('git',['--git-dir',bare,'show-ref','--verify','refs/heads/feature/provider']).status,0);
+    const unbound=await gitRemoteDelivery(repo,{explicitApproval:true,push:true});
+    assert.equal(unbound.error,'EXPECTED_HEAD_SHA_REQUIRED');assert.equal(unbound.pushPerformed,false);
+    assert.equal(spawnSync('git',['--git-dir',bare,'show-ref','--verify','refs/heads/feature/provider']).status,128);
+    const approved=await gitRemoteDelivery(repo,{explicitApproval:true,push:true,expectedHeadSha});
+    assert.equal(approved.ok,true);assert.equal(approved.pushPerformed,true);assert.equal(approved.push.pushedHead,expectedHeadSha);
+    assert.equal(git(root,['--git-dir',bare,'rev-parse','refs/heads/feature/provider']),expectedHeadSha);
+  }finally{fs.rmSync(root,{recursive:true,force:true})}
+});
+
+test('remote delivery pushes the expected validated commit even if the local branch advances afterwards',async()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-remote-binding-'));const repo=path.join(root,'repo');const bare=path.join(root,'remote.git');fs.mkdirSync(repo);
+  try{
+    initRepo(repo);git(root,['init','--bare',bare]);git(repo,['remote','add','origin',bare]);git(repo,['checkout','-b','feature/bound']);
+    fs.writeFileSync(path.join(repo,'a.txt'),'validated-a\n');git(repo,['add','a.txt']);git(repo,['commit','-m','validated']);const expectedHeadSha=git(repo,['rev-parse','HEAD']);
+    fs.writeFileSync(path.join(repo,'a.txt'),'unvalidated-b\n');git(repo,['add','a.txt']);git(repo,['commit','-m','unvalidated']);const localHead=git(repo,['rev-parse','HEAD']);assert.notEqual(localHead,expectedHeadSha);
+    const delivered=await gitRemoteDelivery(repo,{explicitApproval:true,push:true,expectedHeadSha});
+    assert.equal(delivered.ok,true);assert.equal(delivered.push.pushedHead,expectedHeadSha);
+    assert.equal(git(root,['--git-dir',bare,'rev-parse','refs/heads/feature/bound']),expectedHeadSha);
+    assert.equal(git(repo,['rev-parse','HEAD']),localHead);
   }finally{fs.rmSync(root,{recursive:true,force:true})}
 });
 

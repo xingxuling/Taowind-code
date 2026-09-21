@@ -33,6 +33,17 @@ function gitIndexEntry(cwd,path){
   if(!bytes.ok)return {path,error:'GIT_INDEX_BLOB_READ_FAILED',detail:clip(bytes.stderr)};
   return {path,exists:true,sha256:sha256(bytes.stdout),mode:match[1],oid:match[2]};
 }
+function gitCommitEntry(cwd,commit,path){
+  const listed=run(cwd,['ls-tree',commit,'--',path]);
+  if(!listed.ok)return {path,error:'GIT_COMMIT_TREE_READ_FAILED',detail:clip(listed.stderr)};
+  const line=listed.stdout.trim().split(/\r?\n/).find(Boolean);
+  if(!line)return {path,exists:false,sha256:null,mode:null,oid:null};
+  const match=line.match(/^(\d{6})\s+blob\s+([0-9a-f]+)\t/);
+  if(!match)return {path,error:'GIT_COMMIT_TREE_PARSE_FAILED',detail:clip(line)};
+  const bytes=runBytes(cwd,['cat-file','blob',match[2]]);
+  if(!bytes.ok)return {path,error:'GIT_COMMIT_BLOB_READ_FAILED',detail:clip(bytes.stderr)};
+  return {path,exists:true,sha256:sha256(bytes.stdout),mode:match[1],oid:match[2]};
+}
 export function checkGitIndexPostimage(cwd,paths=[],validatedPostimage=null){
   if(!Array.isArray(validatedPostimage))return {passed:false,checked:0,drift:[],hardGate:'GIT_INDEX_POSTIMAGE_RECEIPT_REQUIRED'};
   const expectedByPath=new Map(validatedPostimage.map(item=>[String(item?.path||''),item]));
@@ -59,6 +70,25 @@ export function checkGitIndexOwnership(cwd){
   if(!staged.ok)return {passed:false,checked:0,stagedPaths:[],hardGate:staged.error,detail:staged.detail};
   return {passed:staged.paths.length===0,checked:staged.paths.length,stagedPaths:staged.paths,hardGate:staged.paths.length?'GIT_INDEX_PREEXISTING_STAGED_CHANGES':'PASS'};
 }
+export function checkGitCommitPostimage(cwd,commit,parent,paths=[],validatedPostimage=null){
+  if(!Array.isArray(validatedPostimage))return {passed:false,checked:0,changedPaths:[],drift:[],hardGate:'GIT_COMMIT_POSTIMAGE_RECEIPT_REQUIRED'};
+  const selected=[...new Set((paths||[]).map(String).filter(Boolean))];const selectedSet=new Set(selected);
+  const changed=run(cwd,['diff-tree','--no-commit-id','--name-only','-r','-z',parent,commit]);
+  if(!changed.ok)return {passed:false,checked:0,changedPaths:[],drift:[{path:null,changed:['commit-diff'],detail:clip(changed.stderr)}],hardGate:'GIT_COMMIT_TREE_READ_FAILED'};
+  const changedPaths=changed.stdout.split('\0').filter(Boolean);const expectedByPath=new Map(validatedPostimage.map(item=>[String(item?.path||''),item]));
+  const drift=changedPaths.filter(path=>!selectedSet.has(path)).map(path=>({path,changed:['ownership']}));let checked=0;
+  for(const path of selected){
+    checked+=1;const expected=expectedByPath.get(path);const current=gitCommitEntry(cwd,commit,path);
+    if(!expected){drift.push({path,changed:['receipt'],expected:null,current});continue}
+    if(current.error){drift.push({path,changed:['commit'],expected,current});continue}
+    const changedFields=[];const expectedExists=expected.exists===true;
+    if(expectedExists!==current.exists)changedFields.push('exists');
+    if(expectedExists&&expected.sha256!==current.sha256)changedFields.push('sha256');
+    if(expectedExists){const mode=expectedGitMode(expected.mode);if(mode&&mode!==current.mode)changedFields.push('mode')}
+    if(changedFields.length)drift.push({path,changed:changedFields,expected:{exists:expectedExists,sha256:expected.sha256??null,mode:expectedGitMode(expected.mode)},current});
+  }
+  return {passed:drift.length===0,checked,changedPaths,drift,hardGate:drift.length?'GIT_COMMIT_POSTIMAGE_DRIFT':'PASS'};
+}
 export function parseGitHubRepository(remoteUrl){
   const raw=String(remoteUrl||'').trim();
   let match=raw.match(/^git@github\.com:([^/]+)\/(.+?)(?:\.git)?$/i);
@@ -81,14 +111,22 @@ export function gitLocalCommit(cwd,message,paths=[],validatedPostimage=null){
  const selected=[...new Set((paths||[]).map(String).filter(Boolean))]; if(!selected.length)throw new Error('COMMIT_PATHS_REQUIRED');
  const indexOwnership=checkGitIndexOwnership(cwd);
  if(!indexOwnership.passed)return {ok:false,error:indexOwnership.hardGate,indexOwnership,indexIntegrity:indexOwnership,paths:selected};
+ const parent=run(cwd,['rev-parse','HEAD']); if(!parent.ok)return {ok:false,error:'GIT_HEAD_REQUIRED',indexOwnership,paths:selected};
  const add=run(cwd,['add','-A','--',...selected]); if(!add.ok)return {ok:false,stage:add,indexOwnership,paths:selected};
  let indexIntegrity=null;
  if(validatedPostimage!==null){
    indexIntegrity=checkGitIndexPostimage(cwd,selected,validatedPostimage);
    if(!indexIntegrity.passed){const unstage=run(cwd,['reset','-q','--',...selected]);return {ok:false,error:indexIntegrity.hardGate,stage:add,unstage,indexOwnership,indexIntegrity,paths:selected}}
  }
- const commit=run(cwd,['commit','-m',msg],30_000); const head=run(cwd,['rev-parse','HEAD']);
- return {ok:commit.ok,stage:add,indexOwnership,indexIntegrity,commit,head:head.ok?head.stdout.trim():null,paths:selected,externalSideEffectPerformed:false,pushPerformed:false};
+ const commit=run(cwd,['commit','-m',msg],30_000); const head=run(cwd,['rev-parse','HEAD']);let commitIntegrity=null;
+ if(commit.ok&&head.ok&&validatedPostimage!==null){
+   commitIntegrity=checkGitCommitPostimage(cwd,head.stdout.trim(),parent.stdout.trim(),selected,validatedPostimage);
+   if(!commitIntegrity.passed){
+     const rollback=run(cwd,['reset','--mixed',parent.stdout.trim()]);const restoredHead=run(cwd,['rev-parse','HEAD']);
+     return {ok:false,error:commitIntegrity.hardGate,stage:add,indexOwnership,indexIntegrity,commit,commitIntegrity,rollback,createdHead:head.stdout.trim(),head:restoredHead.ok?restoredHead.stdout.trim():null,paths:selected,externalSideEffectPerformed:false,pushPerformed:false};
+   }
+ }
+ return {ok:commit.ok,stage:add,indexOwnership,indexIntegrity,commitIntegrity,commit,head:head.ok?head.stdout.trim():null,paths:selected,externalSideEffectPerformed:false,pushPerformed:false};
 }
 export function gitPushBranch(cwd,{remote='origin',branch=null,setUpstream=true}={}){
   const selected=String(branch||currentBranch(cwd)||'').trim();if(!selected)return {ok:false,pushPerformed:false,externalSideEffectPerformed:false,error:'BRANCH_REQUIRED'};

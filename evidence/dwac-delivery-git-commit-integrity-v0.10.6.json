@@ -1,0 +1,64 @@
+{
+  "protocol": "taowind-code.dwac-delivery-git-commit-integrity.evidence.v0.10.6",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "4f68d68c872695e32731152ee61c2311d321da8b",
+  "selected_bottleneck": "delivery-git-commit-object-integrity",
+  "selected_problem": "After preexisting-index ownership and pre-commit index-postimage checks were closed, fresh main still trusted the final `git commit` operation itself. Git hooks or a concurrent index mutation can change staged bytes or add unrelated paths after the index integrity check but before the immutable commit object is created, allowing a local delivery commit to diverge from the validation receipt.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "4f68d68c872695e32731152ee61c2311d321da8b",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "updia_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "The new main left one narrow, deterministic and central delivery artifact gap: the checked Git index was not yet bound to the immutable commit object. The committed four-mode router therefore routes this singular evidence-rich bottleneck to DEEP_DEVELOPMENT without forced rotation.",
+    "claim_limit": "No hosted DWAC/UPDIA success receipt or fabricated numeric score is claimed."
+  },
+  "pre_fix_reproduction": {
+    "result": "REPRODUCED",
+    "sequence": [
+      "Create and validate run-owned a.txt as `validated`.",
+      "Stage a.txt so the existing index-postimage check would pass.",
+      "Install an executable pre-commit hook that rewrites a.txt to `hook-mutated` and stages it.",
+      "Run ordinary git commit as current gitLocalCommit does.",
+      "Observed immutable HEAD:a.txt is `hook-mutated`, proving final commit bytes can diverge after the pre-commit integrity point."
+    ]
+  },
+  "changes": [
+    "gitLocalCommit now captures the parent HEAD before staging and, after a successful commit, verifies the immutable commit tree against the validation receipt.",
+    "The final commit check compares existence, SHA-256 content, Git-representable executable mode, and the complete changed-path ownership set between parent and new commit.",
+    "If hooks or concurrent staging alter run-owned bytes or introduce unrelated paths, delivery fails closed with GIT_COMMIT_POSTIMAGE_DRIFT.",
+    "Because the preexisting Git index was already required to be clean, a failed final-artifact check safely resets the local branch to its captured parent with `git reset --mixed`, preserving working-tree bytes while removing the rejected local commit and staged state.",
+    "Clean validated commits continue normally and now carry commitIntegrity evidence."
+  ],
+  "validation": {
+    "commands": [
+      "node --check focused core/git.mjs surface",
+      "node --check focused tests/git-delivery.test.mjs surface",
+      "node --test focused tests/git-delivery.test.mjs surface"
+    ],
+    "result": "PASS",
+    "tests": "7/7 focused Git delivery regressions PASS on the Linux verification host",
+    "new_reality_cases": [
+      "pre-commit hook mutates and stages run-owned bytes: rejected, HEAD restored to parent, index cleared, mutated working bytes preserved",
+      "pre-commit hook stages an unrelated path: rejected by commit ownership check, HEAD restored to parent, index cleared, working bytes preserved"
+    ],
+    "branch_git_blobs": {
+      "core/git.mjs": "52716ca6077271f0fc238611f679473748093b2b",
+      "tests/git-delivery.test.mjs": "a91589393a955b3cc077988678d0bba275848a80"
+    },
+    "verification_scope_note": "The local harness exercises the exact modified Git index/commit integrity functions and all seven repository Git-delivery regression cases. Unchanged GitHub remote API helpers were intentionally not executed and no Actions were used."
+  },
+  "truth_boundaries": [
+    "This binds the immutable local commit tree to the validation receipt and run-owned path set. Working-tree files may still be changed by hooks after the commit; those changes are not part of the accepted commit artifact and remain visible for later repair/revalidation.",
+    "The rollback uses a local mixed reset only after the earlier clean-index gate, so it does not claim to preserve arbitrary independently staged state appearing concurrently after that gate.",
+    "Git commit-tree verification covers Git-recorded file content and executable mode, not full filesystem metadata such as ownership, ACLs, xattrs, timestamps or hard-link topology.",
+    "OS-level validation sandboxing, arbitrary complex semantic synthesis, Windows descendant-tree equivalence, and crash-level filesystem atomicity remain unresolved.",
+    "No GitHub Actions are intentionally triggered or rerun, no force push is used, and no credential, payment, formal Release, or destructive/irreversible external action is performed."
+  ]
+}

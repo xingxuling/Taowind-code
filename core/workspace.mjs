@@ -76,7 +76,7 @@ export class WorkspaceService {
       const rel=String(raw||'').replaceAll('\\','/').replace(/^\.\//,'');
       if(!rel||isCredentialLikePath(rel))continue;
       const ext=path.extname(rel).toLowerCase(); if(ext&&!TEXT_EXT.has(ext))continue;
-      try{const ancestor=this.ancestorState(rel);if(!ancestor.ok)continue;const abs=safePath(this.root,rel);const st=fs.lstatSync(abs);if(st.isSymbolicLink()||!st.isFile()||st.size>80_000||total+st.size>maxBytes)continue;const content=fs.readFileSync(abs,'utf8');selected.push({path:rel,content});total+=Buffer.byteLength(content);}catch{}
+      try{const ancestor=this.ancestorState(rel);if(!ancestor.ok)continue;const abs=safePath(this.root,rel);const st=fs.lstatSync(abs);if(st.isSymbolicLink()||!st.isFile()||st.size>80_000)continue;const content=fs.readFileSync(abs,'utf8');const contentBytes=Buffer.byteLength(content);if(total+contentBytes>maxBytes)continue;selected.push({path:rel,content});total+=contentBytes;}catch{}
     }
     return {files:selected,totalBytes:total};
   }

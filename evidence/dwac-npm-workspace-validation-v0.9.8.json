@@ -1,0 +1,75 @@
+{
+  "protocol": "taowind-code.dwac-npm-workspace-validation.evidence.v0.9.8",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "36d1ad6052979ee6b069d97dd3b713ea31608940",
+  "selected_bottleneck": "npm-workspace-validation-coverage",
+  "selected_problem": "Fresh-main reality testing found validation inference only inspected the root package.json. An npm workspace could have a passing root check while a child workspace declared a failing test; inference returned only npm run check, allowing the root result to mask the child failure.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "36d1ad6052979ee6b069d97dd3b713ea31608940",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "candidate_scores": {
+      "npm-workspace-validation-coverage": 0.7856,
+      "validation-workspace-confinement": 0.6484,
+      "native-complex-changeset-synthesis": 0.6412,
+      "filesystem-crash-atomicity": 0.5254,
+      "windows-validation-process-tree-containment": 0.4512
+    },
+    "four_mode_signal": {
+      "breadth": 0.13,
+      "bottleneck_centrality": 0.94,
+      "evidence_density": 1.0,
+      "adjacent_work_count": 1,
+      "direction_stability": 0.98,
+      "urgency": 0.86,
+      "artifact_pressure": 0.12
+    },
+    "four_mode_scores": {
+      "WHOLE_ARTIFACT": 0.1165,
+      "DEEP_DEVELOPMENT": 0.9475,
+      "NORTH_STAR": 0.817,
+      "NORTH_STAR_BURST": 0.7875
+    },
+    "mode_route_basis": "The committed four-mode router selects DEEP_DEVELOPMENT through the singular evidence-rich central bottleneck gate; no forced mode rotation was used.",
+    "claim_limit": "No hosted DWAC success receipt is claimed. Selection/routing use committed DWAC source-contract replay over fresh canonical main while the provider remained transiently unavailable."
+  },
+  "pre_fix_reproduction": {
+    "workspace": "Root package.json declares npm workspaces and a passing check script; packages/app/package.json declares a failing test script.",
+    "observed": "inferValidationCommands returned only [npm run check], so child workspace test evidence was absent from acceptance."
+  },
+  "changes": [
+    "When a root package declares npm workspaces and at least one standard root validation script, inference composes root and workspace execution for the bounded standard validation categories check/test/lint/typecheck/build.",
+    "Each validation category remains one shell command by composing root --if-present and --workspaces --if-present execution, keeping the existing eight-command acceptance budget intact.",
+    "Non-workspace package inference retains its previous exact command form and ordering.",
+    "A regression proves a passing root check no longer masks a failing child workspace test."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/acceptance.mjs",
+      "node --check tests/acceptance-workspaces.test.mjs",
+      "node --test tests/acceptance-workspaces.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "1/1 focused regression PASS; 0 skipped",
+    "validation_note": "Focused local validation used the exact branch acceptance source with a compatible one-shot runCommand harness. The test executed real npm workspace commands: root check passed and the child workspace test exited non-zero, producing COMMAND_FAILED.",
+    "verified_git_blobs": {
+      "core/acceptance.mjs": "1322a663576091b759c17b608f1251c1ce062be5",
+      "tests/acceptance-workspaces.test.mjs": "0d39cd2520c660f7323ce75571cc9e90365a27cf"
+    }
+  },
+  "truth_boundaries": [
+    "This closes a concrete npm-workspaces masking path; it does not claim exhaustive monorepo discovery for pnpm, Yarn, nested Python projects or arbitrary build systems.",
+    "A workspace root with no standard root validation script still fails safe with NO_VALIDATION_EVIDENCE rather than guessing that no-op workspace commands are meaningful evidence.",
+    "The current validation execution budget remains eight commands.",
+    "OS-level filesystem/network sandboxing, Windows descendant-tree equivalence, arbitrary complex semantic synthesis and crash-level filesystem atomicity remain unresolved.",
+    "No GitHub Actions were intentionally triggered or rerun, no force push was used, and no credential, payment, formal Release or destructive/irreversible external action was performed."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "24344f134b770f2542084d7adac9e4806fc9781b",
+  "bottleneck": "workspace-read-invalid-utf8-corruption",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "The direct WorkspaceService.read path still used permissive UTF-8 decoding after contextBundle had become strict, so /api/file could present synthesized replacement characters for malformed repository bytes.",
+  "pre_fix_reproduction": "Reading a .js file containing 0xff returned a string instead of failing closed.",
+  "change": "Reuse the strict UTF-8 decoder for direct text reads and normalize malformed text to FILE_NOT_READABLE.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "5/5 PASS",
+    "new_regressions": 1
+  },
+  "truth_boundary": "Binary access remains available through readBytes; this change only tightens the text-read contract.",
+  "github_actions": "not requested"
+}

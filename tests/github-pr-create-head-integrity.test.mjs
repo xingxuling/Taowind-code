@@ -13,7 +13,7 @@ test('GitHub PR creation rejects a response whose created PR head is not the exp
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-pr-head-mismatch-'));
   try{
     const expectedHeadSha=initRepo(dir);const moved='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
-    const fetchImpl=async()=>({ok:true,status:201,text:async()=>JSON.stringify({number:62,html_url:'https://github.com/acme/demo/pull/62',state:'open',head:{sha:moved}})});
+    const fetchImpl=async(url,init)=>init.method==='GET'?{ok:true,status:200,text:async()=>JSON.stringify({object:{sha:expectedHeadSha}})}:{ok:true,status:201,text:async()=>JSON.stringify({number:62,html_url:'https://github.com/acme/demo/pull/62',state:'open',head:{sha:moved}})};
     const result=await githubCreatePullRequest(dir,{title:'feat: head bound',expectedHeadSha,env:{GITHUB_TOKEN:'test-token'},fetchImpl});
     assert.equal(result.ok,false);assert.equal(result.prPerformed,true);assert.equal(result.externalSideEffectPerformed,true);assert.equal(result.number,62);assert.equal(result.expectedHeadSha,expectedHeadSha);assert.equal(result.headSha,moved);assert.equal(result.error,'PR_CREATE_HEAD_MISMATCH');
   }finally{fs.rmSync(dir,{recursive:true,force:true})}
@@ -23,7 +23,7 @@ test('GitHub PR creation accepts a response bound to the expected validated comm
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-pr-head-match-'));
   try{
     const expectedHeadSha=initRepo(dir);
-    const fetchImpl=async()=>({ok:true,status:201,text:async()=>JSON.stringify({number:63,html_url:'https://github.com/acme/demo/pull/63',state:'open',head:{sha:expectedHeadSha}})});
+    const fetchImpl=async(url,init)=>init.method==='GET'?{ok:true,status:200,text:async()=>JSON.stringify({object:{sha:expectedHeadSha}})}:{ok:true,status:201,text:async()=>JSON.stringify({number:63,html_url:'https://github.com/acme/demo/pull/63',state:'open',head:{sha:expectedHeadSha}})};
     const result=await githubCreatePullRequest(dir,{title:'feat: head bound',expectedHeadSha,env:{GITHUB_TOKEN:'test-token'},fetchImpl});
     assert.equal(result.ok,true);assert.equal(result.prPerformed,true);assert.equal(result.number,63);assert.equal(result.expectedHeadSha,expectedHeadSha);assert.equal(result.headSha,expectedHeadSha);assert.equal(result.error,null);
   }finally{fs.rmSync(dir,{recursive:true,force:true})}
@@ -33,8 +33,18 @@ test('remote delivery forwards expected head binding into PR creation',async()=>
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-pr-head-forward-'));
   try{
     const expectedHeadSha=initRepo(dir);const moved='bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
-    const fetchImpl=async()=>({ok:true,status:201,text:async()=>JSON.stringify({number:64,html_url:'https://github.com/acme/demo/pull/64',state:'open',head:{sha:moved}})});
+    const fetchImpl=async(url,init)=>init.method==='GET'?{ok:true,status:200,text:async()=>JSON.stringify({object:{sha:expectedHeadSha}})}:{ok:true,status:201,text:async()=>JSON.stringify({number:64,html_url:'https://github.com/acme/demo/pull/64',state:'open',head:{sha:moved}})};
     const result=await gitRemoteDelivery(dir,{explicitApproval:true,push:false,createPullRequest:true,expectedHeadSha,title:'feat: head bound',env:{GITHUB_TOKEN:'test-token'},fetchImpl});
     assert.equal(result.ok,false);assert.equal(result.prPerformed,true);assert.equal(result.externalSideEffectPerformed,true);assert.equal(result.pullRequest.error,'PR_CREATE_HEAD_MISMATCH');
+  }finally{fs.rmSync(dir,{recursive:true,force:true})}
+});
+
+test('GitHub PR creation fails before POST when the remote branch already drifted from the validated head',async()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-pr-head-preflight-drift-'));
+  try{
+    const expectedHeadSha=initRepo(dir);const moved='cccccccccccccccccccccccccccccccccccccccc';let calls=0;let posts=0;
+    const fetchImpl=async(url,init)=>{calls+=1;if(init.method==='POST')posts+=1;return {ok:true,status:200,text:async()=>JSON.stringify({object:{sha:moved}})}};
+    const result=await githubCreatePullRequest(dir,{title:'feat: preflight',expectedHeadSha,env:{GITHUB_TOKEN:'test-token'},fetchImpl});
+    assert.equal(result.ok,false);assert.equal(result.prPerformed,false);assert.equal(result.externalSideEffectPerformed,false);assert.equal(result.remoteHeadSha,moved);assert.equal(result.error,'PR_CREATE_HEAD_DRIFT');assert.equal(calls,1);assert.equal(posts,0);
   }finally{fs.rmSync(dir,{recursive:true,force:true})}
 });

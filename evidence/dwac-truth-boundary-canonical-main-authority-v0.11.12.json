@@ -1,0 +1,37 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "0f71bd96e95cfe0fe7f0ef28cda20ae8adef79df",
+  "selected_bottleneck": "truth-boundary-canonical-main-authority",
+  "selected_problem": "Fresh-main diagnosis still reads truth-boundary row content from the mutable working tree. Untracked evidence can introduce a higher-severity candidate, and dirty edits to tracked evidence can replace the committed row, even while workspace_observation.head reports canonical main. This lets non-main workspace state steer the autonomous bottleneck choice instead of the requested latest-main reality.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "Fresh main exposes a single narrow provenance defect in the truth-boundary observation input: candidate content can come from uncommitted workspace evidence even though the cycle is defined against canonical main. It is directly reproducible, highly central to trustworthy autonomous routing, and locally verifiable without prescribing product form or architecture, so source-contract replay routes to DEEP_DEVELOPMENT without forced mode rotation."
+  },
+  "changes": [
+    "Truth-boundary evidence content is now read from `HEAD:<source>` rather than mutable working-tree bytes.",
+    "Untracked evidence files absent from HEAD cannot become canonical-main truth-boundary candidates.",
+    "Dirty edits to tracked evidence cannot replace the committed canonical row before commit; committed newer-to-older `resolves` causality remains intact."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED against the prior main logic: focused test 0/2 PASS. An untracked `UNRESOLVED` row outranked the committed `MISSING` row, and a dirty edit to tracked evidence replaced the committed candidate with `UNRESOLVED: dirty replacement claim`.",
+    "python_compile": "PASS",
+    "test_syntax": "PASS",
+    "focused_command": "node --test tests/truth-boundary-canonical-main-authority.test.mjs",
+    "focused_result": "2/2 PASS, 0 skipped",
+    "regression_command": "node --test tests/truth-boundary-resolution-causality.test.mjs tests/truth-boundary-resolution-commit-authority.test.mjs tests/truth-boundary-canonical-main-authority.test.mjs",
+    "regression_result": "6/6 PASS, 0 skipped",
+    "blob_match": {
+      "bridge/dwac_bridge.py": "21aa3da30191ab7bc0cd07c21e0c4e5b24a8f3e1",
+      "tests/truth-boundary-canonical-main-authority.test.mjs": "1f7cc7aabb4168725c6a873b58f4b91ec4e264e0"
+    }
+  },
+  "truth_boundaries": [
+    "This binds truth-boundary candidate content to canonical HEAD, but other workspace-observation signals such as source-based closed-capability probes still inspect working-tree files.",
+    "Committed evidence authenticity is Git provenance, not cryptographic proof that a semantic closure claim is correct.",
+    "A committed evidence file deleted only in the dirty working tree may still be omitted from enumeration because evidence path discovery currently begins from the working-tree directory; canonical evidence-file enumeration remains a separate unresolved edge.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

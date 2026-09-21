@@ -14,3 +14,13 @@ test('federation selects bounded candidate with validation over unsafe or plan-o
  ],{goal:'implement semantic repository graph with tests',manifest:[{path:'core/semantic-repo-graph.mjs'}]});
  assert.equal(result.winner.provider,'impl');assert.equal(result.consensus.candidateCount,3);assert.equal(result.consensus.validCount,1);
 });
+
+test('federation exposes no winner when every candidate lacks executable validation evidence',()=>{
+ const result=selectFederatedProposal([
+  {provider:'dwac-native',role:'implementation',proposal:{summary:'code-only candidate',changes:[{op:'write',path:'core/a.mjs',content:'export const x=1;'}],validation_commands:[]}},
+  {provider:'dwac-native',role:'architecture',proposal:{summary:'plan only',changes:[],validation_commands:[]}},
+ ],{goal:'change core/a safely',manifest:[{path:'core/a.mjs'}]});
+ assert.equal(result.consensus.validCount,0);
+ assert.equal(result.winner,null);
+ assert.equal(result.ranked.length,2);
+});

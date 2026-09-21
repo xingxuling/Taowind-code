@@ -71,7 +71,8 @@ export class WorkspaceService {
   }
   contextBundle(paths,{maxBytes=220_000,maxFiles=32}={}){
     const selected=[]; let total=0;
-    for(const raw of [...new Set(paths||[])].slice(0,maxFiles)){
+    for(const raw of [...new Set(paths||[])]){
+      if(selected.length>=maxFiles)break;
       const rel=String(raw||'').replaceAll('\\','/').replace(/^\.\//,'');
       if(!rel||isCredentialLikePath(rel))continue;
       const ext=path.extname(rel).toLowerCase(); if(ext&&!TEXT_EXT.has(ext))continue;

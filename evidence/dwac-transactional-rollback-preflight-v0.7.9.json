@@ -1,0 +1,92 @@
+{
+  "protocol": "taowind-code.dwac-transactional-rollback-preflight.evidence.v0.7.9",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "a4e3cf99b087334d092f30b631260024781758fc",
+  "selected_bottleneck": "transactional-rollback-atomicity",
+  "selected_problem": "Fresh-main inspection exposed the rollback-side twin of the just-closed apply defect: ChangesetStore.rollback checked a path and immediately restored it before checking the next path. A conflict on a later rollback path could therefore happen after an earlier path had already been restored, leaving a partially rolled-back workspace while the changeset remained APPLIED.",
+  "development_modes": [
+    "DEEP_DEVELOPMENT"
+  ],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "a4e3cf99b087334d092f30b631260024781758fc",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "north_star_candidate_score": 0.8332,
+    "north_star_candidate_inputs": {
+      "expected_goal_gain": 0.95,
+      "reuse_gain": 0.94,
+      "autonomy_gain": 0.91,
+      "evidence_gain": 0.99,
+      "implementation_cost": 0.16,
+      "regression_risk": 0.15
+    },
+    "four_mode_signal": {
+      "breadth": 0.12,
+      "bottleneck_centrality": 0.96,
+      "evidence_density": 0.99,
+      "adjacent_work_count": 1,
+      "direction_stability": 0.9,
+      "urgency": 0.78,
+      "artifact_pressure": 0.18
+    },
+    "four_mode_scores": {
+      "WHOLE_ARTIFACT": 0.125,
+      "DEEP_DEVELOPMENT": 0.957,
+      "NORTH_STAR": 0.7865,
+      "NORTH_STAR_BURST": 0.7435
+    },
+    "claim_limit": "No hosted DWAC success receipt is claimed. The committed DWAC North Star and four-mode router source contracts were replayed against fresh canonical code evidence; the rollback-side partial-mutation defect is narrow, central, evidence-rich, and directly adjacent to the previous apply-side closure."
+  },
+  "code_reality": [
+    "core/changesets.mjs rollback iterated reversed changes, checked each postimage, and restored that path immediately.",
+    "If a later rollback path had diverged after apply, an earlier path could already have been restored before ROLLBACK_CONFLICT was raised.",
+    "tests/changesets.test.mjs covered a single-file rollback conflict but did not prove all-path rollback preflight before the first restore.",
+    "The existing postimage hashes, WorkspaceService stat/write/remove operations, reverse rollback order, and receipt model are reused; no new transaction architecture is introduced."
+  ],
+  "changes": [
+    "ChangesetStore.rollback now preflights every rollback path against the expected applied postimage before performing the first restore.",
+    "Only after all rollback preflight checks pass does the existing reverse restore loop run.",
+    "A regression test edits the later-checked rollback path after apply and proves ROLLBACK_CONFLICT leaves every earlier path in its applied state and the changeset APPLIED."
+  ],
+  "verification": [
+    {
+      "command": "node --check core/changesets.mjs",
+      "status": "PASS"
+    },
+    {
+      "command": "node --test tests/changesets.test.mjs",
+      "status": "PASS",
+      "tests": 5,
+      "passed": 5,
+      "failed": 0
+    },
+    {
+      "check": "regression-before-fix",
+      "status": "FAIL_AS_EXPECTED",
+      "evidence": "With only the new regression test added to the previous main implementation, b.txt was restored to old-b before a.txt raised ROLLBACK_CONFLICT."
+    },
+    {
+      "check": "validated-local-content-git-blob-sha1",
+      "status": "PASS",
+      "changesets_blob_sha1": "e2a1e9d1dc6675749b268f3d7676bde18a4ec284",
+      "test_blob_sha1": "75704d2973edcfb02e586770eee306d026e5963c"
+    },
+    {
+      "check": "github-actions-intent",
+      "status": "NOT_TRIGGERED_BY_DESIGN",
+      "commit_messages": "[skip ci] [skip actions]"
+    }
+  ],
+  "truth_boundaries": [
+    "This closes deterministic postimage-conflict partial rollback; it does not claim filesystem-level crash atomicity or compensation for arbitrary I/O failures during restoration.",
+    "Arbitrary complex repository synthesis remains UNRESOLVED and was not declared solved by this transaction-layer repair.",
+    "No GitHub Actions are intentionally triggered or rerun, no force push is used, and no credential, payment, formal Release, destructive, or irreversible external action is authorized."
+  ]
+}

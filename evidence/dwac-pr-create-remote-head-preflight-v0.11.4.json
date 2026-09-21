@@ -1,0 +1,30 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "538532dac15f43cc07c1da09d646e708fee8c109",
+  "selected_bottleneck": "delivery-pr-create-remote-head-preflight",
+  "selected_problem": "After direct PR creation was hard-gated to an expected validated local commit, fresh main could still POST a pull request when the remote head had already drifted before PR creation; the mismatch was only detected from the created PR response, after an avoidable external side effect.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "changes": [
+    "githubCreatePullRequest now reads the remote branch ref before POST and binds that observed head to expectedHeadSha.",
+    "Pre-existing remote drift fails closed with PR_CREATE_HEAD_DRIFT before any PR-create POST side effect.",
+    "Malformed or failed preflight receipts fail closed before PR creation.",
+    "The existing post-create PR response head check remains active to detect races that occur after preflight."
+  ],
+  "validation": {
+    "node_check": "PASS",
+    "command": "node --test tests/github-pr-create-receipt-integrity.test.mjs tests/github-remote-provider.test.mjs tests/github-pr-create-head-integrity.test.mjs",
+    "result": "10/10 PASS, 0 skipped",
+    "verified_blobs": {
+      "core/git.mjs": "28f1f0a0709363ee021876c0e03fe79366fd0303",
+      "tests/github-pr-create-receipt-integrity.test.mjs": "2891f7705ffc40b1ca51b7be0b9fd4e9842e490f",
+      "tests/github-remote-provider.test.mjs": "2229a32fb9cb21f47b7cc294fb25d9ae7bd8d1a2",
+      "tests/github-pr-create-head-integrity.test.mjs": "7b133c229f098803e51d376b69da0478fbb8cc53"
+    }
+  },
+  "truth_boundaries": [
+    "This prevents a PR-create side effect when remote drift is already observable before POST.",
+    "The preflight GET and PR-create POST are not one atomic GitHub operation; a remote branch can still move after preflight. The retained post-create head receipt check detects such a race but cannot erase an already-created wrong PR.",
+    "No claim of external-service compare-and-create atomicity is made."
+  ]
+}

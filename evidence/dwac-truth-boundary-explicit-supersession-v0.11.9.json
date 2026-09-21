@@ -1,0 +1,38 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "a3171eb0a3a1e11e4ac1f4fe7518b544a571339f",
+  "selected_bottleneck": "truth-boundary-explicit-supersession",
+  "selected_problem": "Fresh-main truth-boundary discovery can re-promote an older UNRESOLVED row after newer main-line evidence has already closed that exact boundary, because revision freshness orders evidence but carries no explicit row-level closure relation. After PR #69 closed the direct-merge expected-base gap recorded by PR #68, the current bridge can still treat PR #68 truth_boundaries[0] as actionable.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "WHOLE_ARTIFACT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "Fresh revision ordering exposes a portfolio of historical truth boundaries in one diagnosis domain; the stale closed row is itself evidence that boundary history lacks a closure relation, while the wider unresolved portfolio keeps artifact pressure high. The committed four-mode router therefore routes this source-contract replay to WHOLE_ARTIFACT without forced mode rotation."
+  },
+  "resolves": [
+    {
+      "source": "evidence/dwac-remote-merge-base-preflight-v0.11.7.json",
+      "path": "truth_boundaries[0]",
+      "reason": "Closed by PR #69 / canonical main a3171eb0a3a1e11e4ac1f4fe7518b544a571339f: direct and canonical GitHub merge entry points now require or derive expected base identity before a valid merge can proceed."
+    }
+  ],
+  "changes": [
+    "Evidence files may now carry explicit `resolves` references keyed by stable source path plus boundary path; no product feature list or semantic guesswork is introduced.",
+    "A resolution is applied only while scanning older evidence, so historical resolution records cannot erase a newer boundary revision.",
+    "Resolved historical rows are removed before the 96-row observation budget and before candidate severity ranking, preventing closed work from consuming diagnosis capacity.",
+    "PR #68's obsolete direct-merge-base UNRESOLVED row is explicitly resolved by this evidence because PR #69 closed that exact gap."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED: the unpatched bridge selected `UNRESOLVED: legacy direct merge base binding is missing` even though a newer committed evidence file explicitly resolved that exact source/path.",
+    "python_compile": "PASS",
+    "test_syntax": "PASS",
+    "command": "node --test tests/truth-boundary-resolution-ledger.test.mjs",
+    "result": "2/2 PASS, 0 skipped"
+  },
+  "truth_boundaries": [
+    "Explicit resolution references suppress only older boundary rows identified by source plus path; no semantic inference or hard-coded implementation roadmap is introduced.",
+    "A committed resolution record is provenance for diagnosis state, not proof that arbitrary uncited historical boundaries are closed.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

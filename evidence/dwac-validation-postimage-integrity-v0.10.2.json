@@ -1,0 +1,51 @@
+{
+  "protocol": "taowind-code.dwac-validation-postimage-integrity.evidence.v0.10.2",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "46325f9723efbfecedc3741f3b4f5b680851f252",
+  "selected_bottleneck": "validation-postimage-integrity",
+  "selected_problem": "Fresh-main inspection found NorthStarRunner marked a validation as READY_FOR_DELIVERY solely from command/browser acceptance. A validation command could mutate a path belonging to the applied changesets, exit successfully, and leave delivery eligible even though the protected postimage no longer matched the applied transaction receipt and rollback could become conflicted.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "46325f9723efbfecedc3741f3b4f5b680851f252",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "Fresh-main inspection isolated one evidence-rich central validation/delivery integrity gap in the existing engineering loop. The committed four-mode router's singular-bottleneck gate routes the replay to DEEP_DEVELOPMENT; no forced rotation was used.",
+    "claim_limit": "No hosted DWAC success receipt or fabricated numeric DWAC score is claimed."
+  },
+  "pre_fix_reproduction": {
+    "source_observation": "NorthStarRunner.validate used runAcceptance(...).passed directly to choose READY_FOR_DELIVERY versus REPAIR_REQUIRED, without re-checking the applied changeset paths after validation execution.",
+    "consequence": "A successful validator that rewrites a protected path could make unreceipted bytes or metadata eligible for delivery and invalidate rollback optimistic-concurrency assumptions."
+  },
+  "changes": [
+    "Added a bounded validation postimage snapshot over the union of paths recorded by the run's changesets, capturing existence, type, content SHA-256, object identity, and regular-file mode.",
+    "After command/browser acceptance, the same protected paths are re-observed; any drift is recorded and an otherwise passing validation is converted to VALIDATION_POSTIMAGE_DRIFT / REPAIR_REQUIRED.",
+    "Validation evidence now carries the postimage-integrity receipt so delivery eligibility is traceable to both behavioral acceptance and unchanged applied code reality.",
+    "The postimage comparison and gating rule are isolated in a small directly tested helper; unchanged paths pass, content mutation fails, and mode-only mutation fails on POSIX."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/validation-integrity.mjs",
+      "node --check tests/validation-postimage-integrity.test.mjs",
+      "node --test tests/validation-postimage-integrity.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "3/3 focused validation-integrity regressions PASS; 0 skipped on the Linux verification host",
+    "verified_git_blobs": {
+      "core/north-star-runner.mjs": "8f27b012dd7ae1ddbb2659039f6c35c3cbf53401",
+      "core/validation-integrity.mjs": "8a1c58bebd310c8350fadff4dd328f7f3931beab",
+      "tests/validation-postimage-integrity.test.mjs": "a39c0011799188c776a8d6dd1d9c6d4dce547f2f"
+    }
+  },
+  "truth_boundaries": [
+    "This protects paths represented by the run's applied changesets from validator-induced drift becoming deliverable; it does not sandbox validation or prohibit side effects on unrelated workspace paths, external files, processes, or the network.",
+    "Detected drift is failed closed and recorded; this patch does not automatically restore validator side effects, because silently mutating the workspace during validation cleanup would require a separate sovereignty and recovery design.",
+    "OS-level validation sandboxing, arbitrary complex semantic synthesis, Windows descendant-tree equivalence, and crash-level filesystem atomicity remain unresolved.",
+    "No GitHub Actions are intentionally triggered or rerun, no force push is used, and no credential, payment, formal Release, or destructive/irreversible external action is performed."
+  ]
+}

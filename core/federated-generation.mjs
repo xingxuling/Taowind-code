@@ -3,6 +3,7 @@ import {isCredentialLikePath} from './repo-context.mjs';
 
 const BLOCKED_SEGMENTS=new Set(['.git','node_modules','.next','dist','build','runtime-data','.venv']);
 const MAX_EXECUTABLE_VALIDATION_COMMANDS=8;
+const compareText=(a,b)=>a<b?-1:a>b?1:0;
 function normalizeRel(p){
   if(typeof p!=='string'||!p.trim())return null;
   const norm=path.posix.normalize(p.replaceAll('\\','/'));
@@ -95,7 +96,7 @@ export function scoreProposal(p,{goal='',manifest=[],consensus=null}={}){
 export function selectFederatedProposal(candidates,{goal='',manifest=[]}={}){
   const normalized=(candidates||[]).map((x,i)=>normalizeProposal(x.proposal??x,{provider:x.provider||`candidate-${i+1}`,role:x.role||'implementation'}));
   const signals=consensusSignals(normalized);
-  const ranked=normalized.map(p=>({...p,evaluation:scoreProposal(p,{goal,manifest,consensus:signals})})).sort((a,b)=>b.evaluation.score-a.evaluation.score||a.provider.localeCompare(b.provider)||a.role.localeCompare(b.role));
+  const ranked=normalized.map(p=>({...p,evaluation:scoreProposal(p,{goal,manifest,consensus:signals})})).sort((a,b)=>b.evaluation.score-a.evaluation.score||compareText(a.provider,b.provider)||compareText(a.role,b.role));
   const contextRequests=[...new Set(ranked.flatMap(p=>p.needs_more_context||[]))].slice(0,32);
   const winner=ranked.find(executableProposal)||null;
   const conflictedPaths=[...signals.pathVariants.entries()].filter(([,variants])=>variants.size>1).map(([path])=>path).sort();

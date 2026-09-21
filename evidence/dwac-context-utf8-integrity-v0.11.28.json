@@ -1,0 +1,18 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "f0e1886d2a1fb35b21211d8c1051511850786f12",
+  "bottleneck": "context-invalid-utf8-corruption",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "contextBundle decoded allowed text-extension files with Buffer utf8 conversion, which silently replaced malformed byte sequences with U+FFFD and presented synthesized text to cognition as repository reality.",
+  "pre_fix_reproduction": "A broken.js file containing invalid UTF-8 bytes was admitted into context with replacement characters instead of being rejected.",
+  "change": "Decode candidate context bytes with a fatal UTF-8 TextDecoder and skip malformed text inside the existing fail-closed contextBundle path.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "4/4 PASS",
+    "tests": ["context-invalid-utf8.test.mjs", "manifest-file-budget.test.mjs", "manifest-truncation-evidence.test.mjs"]
+  },
+  "truth_boundary": "This proves UTF-8 decoding integrity only. It does not detect semantically binary data that happens to be valid UTF-8 or validate source-language syntax.",
+  "github_actions": "not requested"
+}

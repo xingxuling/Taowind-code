@@ -35,10 +35,10 @@ export class WorkspaceService {
       .map(x=>{const child=path.posix.join(rel==='.'?'':rel.replaceAll('\\','/'),x.name);return {name:x.name,path:child,type:x.isDirectory()?'dir':'file',children:x.isDirectory()&&depth<5?this.tree(child,depth+1):undefined};});
   }
   read(rel){
-    const abs=safePath(this.root,rel); const st=fs.statSync(abs); if(!st.isFile()||st.size>2_000_000) throw new Error('FILE_NOT_READABLE'); try{return UTF8_DECODER.decode(fs.readFileSync(abs));}catch{throw new Error('FILE_NOT_READABLE')}
+    const abs=safePath(this.root,rel); const st=fs.lstatSync(abs); if(st.isSymbolicLink()||!st.isFile()||st.size>2_000_000) throw new Error('FILE_NOT_READABLE'); try{return UTF8_DECODER.decode(fs.readFileSync(abs));}catch{throw new Error('FILE_NOT_READABLE')}
   }
   readBytes(rel,maxBytes=2_000_000){
-    const abs=safePath(this.root,rel); const st=fs.statSync(abs); if(!st.isFile()||st.size>maxBytes) throw new Error('FILE_NOT_READABLE'); return fs.readFileSync(abs);
+    const abs=safePath(this.root,rel); const st=fs.lstatSync(abs); if(st.isSymbolicLink()||!st.isFile()||st.size>maxBytes) throw new Error('FILE_NOT_READABLE'); return fs.readFileSync(abs);
   }
   ancestorState(rel){
     const abs=safePath(this.root,rel),parent=path.dirname(abs);

@@ -1,0 +1,18 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "8cafd73f138122df5bf64b30a603e1ea0579e770",
+  "bottleneck": "semantic-relative-dynamic-import-coverage",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "The semantic import parser observed static import and require calls but not JavaScript dynamic import('./module'), so real lazy-loaded dependencies were absent from the repository graph.",
+  "pre_fix_reproduction": "src/main.js using import('./lazy.js') produced no imports edge to src/lazy.js.",
+  "change": "Extend the existing import pattern to recognize literal relative dynamic import() calls without changing graph architecture or non-relative package resolution.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "8/8 PASS",
+    "new_regressions": 1
+  },
+  "truth_boundary": "Only literal relative dynamic imports are covered. Computed import expressions and complete language/package resolution remain outside this change.",
+  "github_actions": "not requested"
+}

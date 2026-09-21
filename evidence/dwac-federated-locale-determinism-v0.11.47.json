@@ -1,0 +1,26 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "fresh_main": "ecb72656abac50f220c05be31725c72d4b98bc40",
+  "selected_bottleneck": "federated-proposal-host-locale-determinism",
+  "selected_problem": "Fresh main ranked equal-scored federated proposals using default-locale String.localeCompare on provider and role. Equivalent proposals could therefore select different winners on hosts with different default locales.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "route_basis": "After workspace, repository-context, and semantic ranking locale dependence were closed, the same directly reproducible host bias remained at the proposal winner boundary. The fix preserves the existing scoring and consensus architecture.",
+  "pre_fix_reproduction": {
+    "providers": ["ä", "z"],
+    "equal_scores": true,
+    "en_US_winner": "ä",
+    "sv_SE_winner": "z"
+  },
+  "change": "Replace default-locale provider/role tie-breakers with deterministic code-unit lexical comparison.",
+  "validation": {
+    "pre_fix_logic_reproduction": "FAIL_AS_EXPECTED",
+    "candidate_test": "federated-locale-determinism.test.mjs",
+    "github_actions": 0
+  },
+  "truth_boundary": "This closes host-locale dependence only for equal-scored federated proposal provider/role tie-breakers. It does not claim optimal proposal scoring, consensus correctness for all adversarial cases, parser-grade repository semantics, or arbitrary complex repository synthesis.",
+  "hosted_dwac_runtime": "TEMPORARY_502",
+  "execution_mode": "DWAC_SOURCE_CONTRACT_REPLAY",
+  "github_actions_requested": false
+}

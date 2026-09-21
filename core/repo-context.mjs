@@ -1,6 +1,6 @@
 import path from 'node:path';
 const IMPORTANT=[/^README/i,/package\.json$/,/pyproject\.toml$/,/Cargo\.toml$/,/go\.mod$/,/build\.gradle/i,/settings\.gradle/i,/tsconfig/i,/vite\.config/i,/src\//,/app\//,/server\//,/core\//,/test/i];
-const SECRET_PATH=/(^|\/)(?:\.env(?:\.[^\/]*)?|credentials?(?:\.[^\/]*)?|secrets?(?:\.[^\/]*)?|id_(?:rsa|ed25519)|[^\/]+\.(?:pem|key|p12|pfx))$/i;
+const SECRET_PATH=/(^|\/)(?:\.env(?:\.[^\/]*)?|credentials?(?:\.[^\/]*)?|secrets?(?:\.[^\/]*)?|id_(?:rsa|ed25519)|[^\/]+\.(?:pem|key|p12|pfx))(?=\/|$)/i;
 const priority=x=>IMPORTANT.some(r=>r.test(x.path))?1:0;
 export function isCredentialLikePath(value){const normalized=String(value||'').replaceAll('\\','/').replace(/^\.\//,'');return !!normalized&&SECRET_PATH.test(normalized)}
 export function selectContextPaths(manifest,{maxFiles=28}={}){

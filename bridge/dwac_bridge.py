@@ -80,7 +80,6 @@ def _truth_boundaries(workspace, limit=96):
   try:data=json.loads(file.read_text(encoding='utf-8'))
   except Exception:continue
   source=str(file.relative_to(workspace)).replace('\\','/')
-  if isinstance(data,dict):resolved.update(_resolution_refs(data.get('resolves')))
   file_rows=[];stack=[('',data)]
   while stack and len(file_rows)<limit:
    path,value=stack.pop()
@@ -98,6 +97,7 @@ def _truth_boundaries(workspace, limit=96):
    if (row['source'],row['path']) in resolved:continue
    rows.append(row)
    if len(rows)>=limit:return rows
+  if isinstance(data,dict):resolved.update(_resolution_refs(data.get('resolves')))
  return rows[:limit]
 
 

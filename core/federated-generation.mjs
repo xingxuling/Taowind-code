@@ -1,6 +1,7 @@
 import path from 'node:path';
 
 const BLOCKED_SEGMENTS=new Set(['.git','node_modules','.next','dist','build','runtime-data','.venv']);
+const MAX_EXECUTABLE_VALIDATION_COMMANDS=8;
 const SECRET_CONTEXT_PATH=/(^|\/)(?:\.env(?:\.[^\/]*)?|credentials?(?:\.[^\/]*)?|secrets?(?:\.[^\/]*)?|id_(?:rsa|ed25519)|[^\/]+\.(?:pem|key|p12|pfx))$/i;
 function normalizeRel(p){
   if(typeof p!=='string'||!p.trim())return null;
@@ -33,14 +34,16 @@ export function normalizeProposal(raw,{provider='unknown',role='implementation'}
   const context=[...new Set((Array.isArray(raw?.needs_more_context)?raw.needs_more_context:[]).map(normalizeContextRel).filter(Boolean))].slice(0,32);
   const risks=(Array.isArray(raw?.risks)?raw.risks:[]).map(String).slice(0,20);
   for(const rel of normalized.ambiguousPaths){if(risks.length<20)risks.push(`AMBIGUOUS_CHANGE_PATH:${rel}`)}
-  return {provider,role,summary:String(raw?.summary||''),changes:normalized.changes,validation_commands:validation,risks,needs_more_context:context,ambiguous_paths:normalized.ambiguousPaths};
+  const validationOverflow=validation.length>MAX_EXECUTABLE_VALIDATION_COMMANDS;if(validationOverflow&&risks.length<20)risks.push(`VALIDATION_COMMAND_BUDGET_EXCEEDED:${validation.length}>${MAX_EXECUTABLE_VALIDATION_COMMANDS}`);
+  return {provider,role,summary:String(raw?.summary||''),changes:normalized.changes,validation_commands:validation,risks,needs_more_context:context,ambiguous_paths:normalized.ambiguousPaths,validation_overflow:validationOverflow};
 }
 function goalTokens(goal){return [...new Set(String(goal||'').toLowerCase().match(/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu)||[])]}
 function proposalText(p){return `${p.summary} ${p.changes.map(c=>`${c.path} ${c.op==='write'?c.content.slice(0,800):''}`).join(' ')}`.toLowerCase()}
 function changeFingerprint(change){return JSON.stringify([change.op,change.path,change.op==='write'?change.content:'',change.expectedSha256||''])}
 function proposalOrigin(proposal){return `${proposal.provider||'unknown'}:${proposal.role||'implementation'}`}
+function executableProposal(p){return !!(p?.changes?.length&&p.validation_commands?.length&&!p.validation_overflow&&!p.ambiguous_paths?.length)}
 function consensusSignals(proposals){
-  const executable=(proposals||[]).filter(p=>p.changes.length&&p.validation_commands.length&&!p.ambiguous_paths?.length);
+  const executable=(proposals||[]).filter(executableProposal);
   const exactSupport=new Map(),pathVariants=new Map();
   for(const proposal of executable){
     const origin=proposalOrigin(proposal);const seenExact=new Set(),seenPaths=new Set();
@@ -94,8 +97,8 @@ export function selectFederatedProposal(candidates,{goal='',manifest=[]}={}){
   const signals=consensusSignals(normalized);
   const ranked=normalized.map(p=>({...p,evaluation:scoreProposal(p,{goal,manifest,consensus:signals})})).sort((a,b)=>b.evaluation.score-a.evaluation.score||a.provider.localeCompare(b.provider)||a.role.localeCompare(b.role));
   const contextRequests=[...new Set(ranked.flatMap(p=>p.needs_more_context||[]))].slice(0,32);
-  const winner=ranked.find(x=>x.changes.length&&x.validation_commands.length&&!x.ambiguous_paths?.length)||null;
+  const winner=ranked.find(executableProposal)||null;
   const conflictedPaths=[...signals.pathVariants.entries()].filter(([,variants])=>variants.size>1).map(([path])=>path).sort();
   const exactAgreementCount=[...signals.exactSupport.values()].filter(origins=>origins.size>1).length;
-  return {protocol:'taowind.federated-changeset-selection.v0.8',winner,ranked,contextRequests,consensus:{candidateCount:ranked.length,validCount:ranked.filter(x=>x.changes.length&&x.validation_commands.length&&!x.ambiguous_paths?.length).length,providers:[...new Set(ranked.map(x=>x.provider))],executableCount:signals.executableCount,independentOriginCount:signals.independentOrigins,exactAgreementCount,conflictedPathCount:conflictedPaths.length,conflictedPaths:conflictedPaths.slice(0,16)}};
+  return {protocol:'taowind.federated-changeset-selection.v0.8',winner,ranked,contextRequests,consensus:{candidateCount:ranked.length,validCount:ranked.filter(executableProposal).length,providers:[...new Set(ranked.map(x=>x.provider))],executableCount:signals.executableCount,independentOriginCount:signals.independentOrigins,exactAgreementCount,conflictedPathCount:conflictedPaths.length,conflictedPaths:conflictedPaths.slice(0,16)}};
 }

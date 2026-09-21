@@ -45,12 +45,12 @@ test('GitHub pull request merge requires and sends the expected head SHA without
     initRepo(dir);git(dir,['checkout','-b','feature/api']);git(dir,['remote','add','origin','https://secret-user:secret-pass@github.com/acme/demo.git']);
     const info=gitRemoteInfo(dir,{env:{GITHUB_TOKEN:'top-secret-token'}});
     assert.equal(info.repository,'acme/demo');assert.doesNotMatch(info.remoteUrl,/secret-user|secret-pass/);assert.equal(info.githubApiReady,true);
-    const expectedHeadSha=git(dir,['rev-parse','HEAD']);const mergeSha='deadbeefdeadbeefdeadbeefdeadbeefdeadbeef';const calls=[];const fetchImpl=async(url,init)=>{calls.push({url,init});const isMerge=/\/merge$/.test(url);return {ok:true,status:isMerge?200:201,text:async()=>JSON.stringify(isMerge?{merged:true,sha:mergeSha,message:'merged'}:{number:42,html_url:'https://github.com/acme/demo/pull/42',state:'open',head:{sha:expectedHeadSha}})}};
+    const expectedHeadSha=git(dir,['rev-parse','HEAD']);const mergeSha='deadbeefdeadbeefdeadbeefdeadbeefdeadbeef';const calls=[];const fetchImpl=async(url,init)=>{calls.push({url,init});if(init.method==='GET')return {ok:true,status:200,text:async()=>JSON.stringify({object:{sha:expectedHeadSha}})};const isMerge=/\/merge$/.test(url);return {ok:true,status:isMerge?200:201,text:async()=>JSON.stringify(isMerge?{merged:true,sha:mergeSha,message:'merged'}:{number:42,html_url:'https://github.com/acme/demo/pull/42',state:'open',head:{sha:expectedHeadSha}})}};
     const env={GITHUB_TOKEN:'top-secret-token'};
     const pr=await githubCreatePullRequest(dir,{title:'feat: remote delivery',expectedHeadSha,env,fetchImpl});assert.equal(pr.ok,true);assert.equal(pr.number,42);
-    const unbound=await githubMergePullRequest(dir,{number:42,env,fetchImpl});assert.equal(unbound.ok,false);assert.equal(unbound.error,'EXPECTED_HEAD_SHA_REQUIRED');assert.equal(calls.length,1);
-    const malformed=await githubMergePullRequest(dir,{number:42,expectedHeadSha:'deadbeef',env,fetchImpl});assert.equal(malformed.ok,false);assert.equal(malformed.error,'EXPECTED_HEAD_SHA_INVALID');assert.equal(calls.length,1);
+    const unbound=await githubMergePullRequest(dir,{number:42,env,fetchImpl});assert.equal(unbound.ok,false);assert.equal(unbound.error,'EXPECTED_HEAD_SHA_REQUIRED');assert.equal(calls.length,2);
+    const malformed=await githubMergePullRequest(dir,{number:42,expectedHeadSha:'deadbeef',env,fetchImpl});assert.equal(malformed.ok,false);assert.equal(malformed.error,'EXPECTED_HEAD_SHA_INVALID');assert.equal(calls.length,2);
     const merged=await githubMergePullRequest(dir,{number:42,expectedHeadSha,env,fetchImpl});assert.equal(merged.ok,true);assert.equal(merged.sha,mergeSha);assert.equal(merged.expectedHeadSha,expectedHeadSha);
-    assert.equal(calls.length,2);assert.equal(JSON.parse(calls[1].init.body).sha,expectedHeadSha);assert.match(calls[0].init.headers.authorization,/top-secret-token/);assert.doesNotMatch(JSON.stringify({pr,unbound,malformed,merged,info}),/top-secret-token|secret-pass/);
+    assert.equal(calls.length,3);assert.equal(JSON.parse(calls[2].init.body).sha,expectedHeadSha);assert.match(calls[0].init.headers.authorization,/top-secret-token/);assert.doesNotMatch(JSON.stringify({pr,unbound,malformed,merged,info}),/top-secret-token|secret-pass/);
   }finally{fs.rmSync(dir,{recursive:true,force:true})}
 });

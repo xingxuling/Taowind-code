@@ -16,8 +16,13 @@ export function compareValidationPostimage(workspace,snapshot){
   }
   return {passed:drift.length===0,checked:Array.isArray(snapshot)?snapshot.length:0,drift};
 }
-export function enforceValidationPostimage(result,postimageIntegrity){
-  const guarded={...(result||{}),postimageIntegrity};
-  if(result?.passed===true&&postimageIntegrity?.passed===false)return {...guarded,status:'FAILED',passed:false,hardGate:'VALIDATION_POSTIMAGE_DRIFT'};
+export function enforceValidationPostimage(result,postimageIntegrity,validatedPostimage=null){
+  const guarded={...(result||{}),postimageIntegrity,validatedPostimage:Array.isArray(validatedPostimage)?validatedPostimage:null};
+  if(result?.passed===true&&postimageIntegrity?.passed===false)return {...guarded,status:'FAILED',passed:false,hardGate:'VALIDATION_POSTIMAGE_DRIFT',validatedPostimage:null};
   return guarded;
+}
+export function checkDeliveryPostimage(workspace,validatedPostimage){
+  if(!Array.isArray(validatedPostimage))return {passed:false,checked:0,drift:[],hardGate:'DELIVERY_POSTIMAGE_RECEIPT_REQUIRED'};
+  const integrity=compareValidationPostimage(workspace,validatedPostimage);
+  return {...integrity,hardGate:integrity.passed?'PASS':'DELIVERY_POSTVALIDATION_DRIFT'};
 }

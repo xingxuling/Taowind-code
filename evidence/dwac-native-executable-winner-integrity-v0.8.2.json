@@ -1,0 +1,56 @@
+{
+  "protocol": "taowind-code.dwac-native-executable-winner-integrity.evidence.v0.8.2",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "55973c5f1794604ba7c6939d0b08e31afa3a7074",
+  "selected_bottleneck": "native-complex-changeset-synthesis",
+  "selected_problem": "Fresh canonical-main inspection found an executable-winner integrity defect inside the unresolved native complex changeset synthesis path: selectFederatedProposal reported validCount=0 when every candidate lacked the required changes+validation evidence, but still fell back to ranked[0] as winner. NorthStarRunner.synthesize only rejected a missing proposal or empty changes, so a code-only candidate with no validation commands could reach transactional staging even though the federation itself classified it as non-executable.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "55973c5f1794604ba7c6939d0b08e31afa3a7074",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "residual_priority_from_v0_8_1": {
+      "native-complex-changeset-synthesis": 0.7006,
+      "filesystem-crash-atomicity": 0.6828
+    },
+    "mode_route_basis": "The fresh defect is a singular, central, directly reproduced, evidence-rich integrity bottleneck; the checked-in four-mode router's deterministic narrow-bottleneck gate therefore routes DEEP_DEVELOPMENT.",
+    "claim_limit": "No hosted DWAC success receipt is claimed. The committed DWAC North Star and four-mode router source contracts were replayed against fresh canonical code evidence after the hosted Developer Execution Runtime returned transient HTTP 502."
+  },
+  "pre_fix_reproduction": {
+    "scenario": "all federation candidates are non-executable because they lack validation evidence",
+    "expected": "validCount=0 and winner=null",
+    "observed_on_canonical_base": "validCount=0 but winner was the highest-ranked non-executable candidate",
+    "result": "EXPECTED_FAILURE"
+  },
+  "changes": [
+    "Federation winner selection now fails closed: if no candidate contains normalized repository changes, at least one validation command, and no ambiguous path, winner is null instead of ranked[0].",
+    "The existing NorthStarRunner unresolved-cognition path can therefore stop at WAITING_PROVIDER rather than staging a candidate that federation itself considers non-executable.",
+    "Selection protocol advances from taowind.federated-changeset-selection.v0.7 to v0.8; scoring, consensus, context recovery, RCL authority, transactional staging, validation, rollback and GitHub delivery boundaries remain unchanged."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/federated-generation.mjs",
+      "node --test tests/federated-generation.test.mjs tests/federated-consensus.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "19/19 PASS",
+    "verified_git_blobs": {
+      "core/federated-generation.mjs": "93e8d59420c57c0efd2f489261acaf28a1eef9a1",
+      "tests/federated-generation.test.mjs": "02e9e411ba425b59d00d5a1038f5cc057e2858c8",
+      "tests/federated-consensus.test.mjs": "06c7311cc43ed931e5851438826c165133598927"
+    }
+  },
+  "truth_boundaries": [
+    "Arbitrary complex repository semantic synthesis remains UNRESOLVED. This cycle only closes the escape hatch that could label a non-executable candidate as the federation winner.",
+    "Filesystem crash-level atomicity for arbitrary I/O or process failure remains unresolved.",
+    "No new model, provider, product form, interface shape, feature roadmap or hard-coded task-to-mode mapping was introduced.",
+    "No GitHub Actions were intentionally triggered or rerun, no force push was used, and no credential, payment, formal Release or destructive/irreversible external action was performed."
+  ]
+}

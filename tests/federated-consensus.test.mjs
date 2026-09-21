@@ -13,7 +13,7 @@ test('exact independent cross-role agreement boosts the agreeing native proposal
     validated('export const value=1;\n','architecture'),
     validated('export const value=2;\n','verifier'),
   ],{goal:'implement consensus target',manifest:['src/target.mjs']});
-  assert.equal(out.protocol,'taowind.federated-changeset-selection.v0.7');
+  assert.equal(out.protocol,'taowind.federated-changeset-selection.v0.8');
   assert.equal(out.winner.proposal,undefined);
   assert.equal(out.winner.changes[0].content,'export const value=1;\n');
   assert.equal(out.winner.evaluation.agreedChanges,1);

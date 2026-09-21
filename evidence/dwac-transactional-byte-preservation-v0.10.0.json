@@ -1,0 +1,52 @@
+{
+  "protocol": "taowind-code.dwac-transactional-byte-preservation.evidence.v0.10.0",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "cd382c03e323ad0a155c440d53af0df023796648",
+  "selected_bottleneck": "transactional-byte-preservation",
+  "selected_problem": "Fresh-main reproduction found staged preimages are captured as raw bytes but apply/rollback decoded them through UTF-8 text before writing. A non-UTF8 regular file could therefore be changed and then rolled back to different bytes, violating byte-exact reversibility.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "cd382c03e323ad0a155c440d53af0df023796648",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "Fresh-main reproduction isolated one evidence-rich central transactional reversibility bottleneck. The committed four-mode router's singular-bottleneck gate therefore routes the replay to DEEP_DEVELOPMENT; no forced rotation was used.",
+    "claim_limit": "No hosted DWAC success receipt or fabricated numeric DWAC score is claimed."
+  },
+  "pre_fix_reproduction": {
+    "fixture": "Existing asset.bin bytes ff fe 00 80 41 c3 28, then stage text replacement, apply, rollback.",
+    "observed": "Rollback produced 15 bytes with UTF-8 replacement sequences instead of the original 7 bytes."
+  },
+  "changes": [
+    "WorkspaceService.write now preserves Buffer/Uint8Array inputs byte-exactly while retaining UTF-8 semantics for string inputs.",
+    "Transactional apply and rollback write decoded changeset payload buffers directly instead of converting through UTF-8 text.",
+    "Added a focused regression proving non-UTF8 preimage bytes are restored exactly."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/workspace.mjs",
+      "node --check core/changesets.mjs",
+      "node --check tests/changesets-binary-rollback.test.mjs",
+      "node --test tests/changesets-binary-rollback.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "1/1 focused regression PASS; 0 skipped",
+    "pre_fix_observation": "Focused fresh-main reproduction failed byte equality; 7 original bytes became 15 replacement-sequence bytes.",
+    "verified_git_blobs": {
+      "core/workspace.mjs": "1daf3584a739ea1f68d80f12d204d257b7d35313",
+      "core/changesets.mjs": "ef8b4e79c5d2f75091e134fac1abf9cb54b4f7bd",
+      "tests/changesets-binary-rollback.test.mjs": "e2904b741235dc10b0ed6e97681c458fbac10def"
+    }
+  },
+  "truth_boundaries": [
+    "This closes deterministic byte corruption caused by UTF-8 round-tripping of staged binary preimages; it does not claim crash-level filesystem atomicity.",
+    "Agent-authored write payloads are still text-oriented at stage input; this change is about preserving stored changeset bytes and rollback fidelity.",
+    "OS-level validation sandboxing, arbitrary complex semantic synthesis, Windows descendant-tree equivalence, and crash-level filesystem atomicity remain unresolved.",
+    "No GitHub Actions are intentionally triggered or rerun, no force push is used, and no credential, payment, formal Release, or destructive/irreversible external action is performed."
+  ]
+}

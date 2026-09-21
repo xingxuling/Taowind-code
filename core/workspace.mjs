@@ -20,6 +20,20 @@ function atomicWrite(file,content,{mode=null}={}){
   fs.renameSync(tmp,file);
 }
 function objectIdentity(st){return st&&st.ino?`${st.dev}:${st.ino}`:null}
+function credentialLikeIdentities(root){
+  const identities=new Set();
+  const walk=(dir,rel='')=>{
+    for(const e of fs.readdirSync(dir,{withFileTypes:true})){
+      if(HIDDEN.has(e.name))continue;
+      const childRel=rel?`${rel}/${e.name}`:e.name;
+      const child=path.join(dir,e.name);
+      if(e.isDirectory()){walk(child,childRel);continue;}
+      if(!e.isFile()||!isCredentialLikePath(childRel))continue;
+      try{const identity=objectIdentity(fs.lstatSync(child));if(identity)identities.add(identity);}catch{}
+    }
+  };
+  walk(root);return identities;
+}
 
 export class WorkspaceService {
   constructor(root){
@@ -74,14 +88,14 @@ export class WorkspaceService {
     walk(this.root); out.truncated=truncated; out.maxFiles=maxFiles; return out;
   }
   contextBundle(paths,{maxBytes=220_000,maxFiles=32}={}){
-    const selected=[]; const seenPaths=new Set(); const seenIdentities=new Set(); let total=0;
+    const selected=[]; const seenPaths=new Set(); const seenIdentities=new Set(); let blockedIdentities=null; let total=0;
     for(const raw of paths||[]){
       if(selected.length>=maxFiles)break;
       const rel=path.posix.normalize(String(raw||'').replaceAll('\\','/')).replace(/^\.\//,'');
       if(!rel||rel==='.'||seenPaths.has(rel))continue; seenPaths.add(rel);
       if(isCredentialLikePath(rel))continue;
       const ext=path.extname(rel).toLowerCase(); if(ext&&!TEXT_EXT.has(ext))continue;
-      try{const ancestor=this.ancestorState(rel);if(!ancestor.ok)continue;const abs=safePath(this.root,rel);const st=fs.lstatSync(abs);if(st.isSymbolicLink()||!st.isFile()||st.size>80_000)continue;const identity=objectIdentity(st);if(identity&&seenIdentities.has(identity))continue;const bytes=fs.readFileSync(abs);const content=UTF8_DECODER.decode(bytes);const contentBytes=bytes.length;if(total+contentBytes>maxBytes)continue;selected.push({path:rel,content});total+=contentBytes;if(identity)seenIdentities.add(identity);}catch{}
+      try{const ancestor=this.ancestorState(rel);if(!ancestor.ok)continue;const abs=safePath(this.root,rel);const st=fs.lstatSync(abs);if(st.isSymbolicLink()||!st.isFile()||st.size>80_000)continue;const identity=objectIdentity(st);if(identity&&seenIdentities.has(identity))continue;if(identity&&st.nlink>1){blockedIdentities??=credentialLikeIdentities(this.root);if(blockedIdentities.has(identity))continue;}const bytes=fs.readFileSync(abs);const content=UTF8_DECODER.decode(bytes);const contentBytes=bytes.length;if(total+contentBytes>maxBytes)continue;selected.push({path:rel,content});total+=contentBytes;if(identity)seenIdentities.add(identity);}catch{}
     }
     return {files:selected,totalBytes:total};
   }

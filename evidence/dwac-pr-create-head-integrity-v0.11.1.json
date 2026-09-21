@@ -1,0 +1,59 @@
+{
+  "protocol": "taowind-code.dwac-pr-create-head-integrity.evidence.v0.11.1",
+  "status": "SOURCE_IMPLEMENTED_TARGETED_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "89f0ba2b064871e33c264acdcf8679369f3cc3a5",
+  "selected_bottleneck": "delivery-pr-create-head-integrity",
+  "selected_problem": "Fresh main made PR creation receipts addressable by a durable PR number, but the create step still posted only a branch name and did not bind the returned PR head to the exact validated commit. If the remote branch moved after exact-object push but before PR creation, the provider could accept a PR whose head no longer matched the validated candidate; the later merge expected-head gate would reject it, but PR-create itself would already have been falsely reported as a correct delivery step.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "89f0ba2b064871e33c264acdcf8679369f3cc3a5",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "The new main left one narrow, deterministic and central artifact-binding gap at PR creation: the returned remote PR head was not checked against the already validated local commit. The singular evidence-rich bottleneck gate routes this replay to DEEP_DEVELOPMENT without forced mode rotation.",
+    "claim_limit": "No hosted DWAC success receipt or fabricated numeric routing score is claimed."
+  },
+  "pre_fix_reproduction": {
+    "result": "SOURCE_REALITY_CONFIRMED",
+    "observation": "gitRemoteDelivery pushed the exact expected commit, then called githubCreatePullRequest without expectedHeadSha; githubCreatePullRequest accepted any positive PR-number receipt and never inspected `response.head.sha`.",
+    "consequence": "A remote branch move between push and PR POST could yield a newly-created PR for a different head while the provider still reported the PR-create step as successful."
+  },
+  "changes": [
+    "githubCreatePullRequest now accepts an optional expectedHeadSha binding, resolves it to a concrete local commit before any GitHub PR-create side effect, and fails closed if that expected commit is invalid or unavailable.",
+    "When an expected head is supplied, a successful PR-create receipt must report `head.sha` equal to the resolved expected commit; mismatch fails with PR_CREATE_HEAD_MISMATCH.",
+    "If GitHub may already have created a mismatched PR, `prPerformed=true`, `externalSideEffectPerformed=true`, and the returned PR number/head are preserved so the external side effect remains traceable rather than being erased.",
+    "gitRemoteDelivery now forwards its already-authoritative expectedHeadSha into PR creation, binding the normal provider path from exact-object push through PR receipt."
+  ],
+  "validation": {
+    "result": "PASS",
+    "commands": [
+      "node --check exact candidate core/git.mjs",
+      "node --check exact candidate tests/github-pr-create-head-integrity.test.mjs",
+      "node --test exact candidate PR receipt + PR head focused tests"
+    ],
+    "tests": "5/5 PASS across 3 new head-binding cases plus the 2 previous PR-receipt cases",
+    "cases": [
+      "created PR head differs from expected validated commit: rejected while preserving PR side-effect truth",
+      "created PR head equals expected validated commit: accepted",
+      "gitRemoteDelivery forwards expectedHeadSha to PR creation and rejects a moved head",
+      "previous missing-PR-number receipt regression remains passing",
+      "previous valid-PR-number receipt regression remains passing"
+    ],
+    "branch_git_blobs": {
+      "core/git.mjs": "32be9b182415b8a4fac60792ddc504480fbc8459",
+      "tests/github-pr-create-head-integrity.test.mjs": "f98e1492230ebb329c246b85a21c942dc0bfec49"
+    },
+    "verification_note": "The candidate core blob and new focused test blob were byte-identical to the locally executed files; the combined focused harness passed 5/5. No GitHub Actions were used."
+  },
+  "truth_boundaries": [
+    "This verifies the PR head after GitHub creates the PR; GitHub's create-PR endpoint still has no caller-supplied atomic expected-head-SHA precondition, so a moved branch may still cause an unwanted PR side effect before the mismatch is observed.",
+    "The later merge expected-head precondition prevents the mismatched PR head from being silently merged.",
+    "The GitHub merge endpoint still lacks a caller-supplied expected-base-SHA precondition, so base movement remains a separate unresolved integration-boundary problem.",
+    "OS-level validation sandboxing, arbitrary complex semantic synthesis, Windows descendant-tree equivalence, and crash-level filesystem atomicity remain unresolved.",
+    "No force push, repository-rule bypass, credential exposure, payment, formal Release, or destructive/irreversible external action is introduced."
+  ]
+}

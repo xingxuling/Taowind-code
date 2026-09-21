@@ -1,0 +1,18 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "b067bbcafcb9ab0c234aca3df96e0d9871979cca",
+  "bottleneck": "strict-utf8-bom-byte-text-preservation",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "The newly introduced strict TextDecoder default stripped a leading UTF-8 BOM, changing repository text relative to the previous byte-to-string behavior even though the bytes were valid.",
+  "pre_fix_reproduction": "A BOM-prefixed bom.js decoded with first code point U+0061 instead of U+FEFF in both read() and contextBundle().",
+  "change": "Set TextDecoder ignoreBOM=true so strict UTF-8 validation rejects malformed bytes while preserving an explicit BOM code point and raw byte accounting.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "6/6 PASS",
+    "new_regressions": 1
+  },
+  "truth_boundary": "This preserves UTF-8 BOM semantics only; no claim is made for automatic transcoding of UTF-16 or legacy encodings.",
+  "github_actions": "not requested"
+}

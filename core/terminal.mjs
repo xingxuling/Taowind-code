@@ -34,18 +34,22 @@ function signalCommandTree(child,signal,{containProcessTree=false,platform=proce
  if(containProcessTree&&platform!=='win32'){try{process.kill(-child.pid,signal);return true}catch{}}
  try{return child.kill(signal)}catch{return false}
 }
+function commandTreeAlive(child,{containProcessTree=false,platform=process.platform}={}){
+ if(!child?.pid)return false;if(!(containProcessTree&&platform!=='win32'))return false;try{process.kill(-child.pid,0);return true}catch(error){return error?.code!=='ESRCH'}
+}
 
 export async function runCommand(cwd,command,{mode='workspace',timeoutMs=60_000,env={},inheritProcessEnv=true,isolatedShell=false,containProcessTree=false,maxStdoutChars=240000,maxStderrChars=120000,maxOutputChars=0}={}){
  const raw=String(command||'').trim(); const allowed=isCommandAllowed(raw,{mode}); if(!allowed.ok)throw errorWithCode(allowed.reason);
  const stdoutCap=clampInt(maxStdoutChars,240000,1024,2_000_000);const stderrCap=clampInt(maxStderrChars,120000,1024,1_000_000);const outputCap=clampInt(maxOutputChars,0,0,20_000_000);
  const {shell,args}=shellInvocation(raw,{isolatedShell});const detached=containProcessTree&&process.platform!=='win32';
- return await new Promise(resolve=>{let out='',err='',timedOut=false,outputLimitExceeded=false,hardKill=null,kill=null,stdoutDroppedChars=0,stderrDroppedChars=0,outputCharsObserved=0;const started=Date.now();const child=spawn(shell,args,{cwd,env:normalizedEnv(env,inheritProcessEnv),windowsHide:true,detached});
+ return await new Promise(resolve=>{let out='',err='',timedOut=false,outputLimitExceeded=false,hardKill=null,kill=null,stdoutDroppedChars=0,stderrDroppedChars=0,outputCharsObserved=0,closeSeen=false,closeCode=-1,resolved=false;const started=Date.now();const child=spawn(shell,args,{cwd,env:normalizedEnv(env,inheritProcessEnv),windowsHide:true,detached});
+ const finalize=()=>{if(resolved)return;resolved=true;clearTimeout(kill);if(hardKill){clearTimeout(hardKill);hardKill=null}resolve({command:raw,code:closeCode,stdout:out,stderr:err,timedOut,outputLimitExceeded,stdoutTruncated:stdoutDroppedChars>0,stderrTruncated:stderrDroppedChars>0,stdoutDroppedChars,stderrDroppedChars,outputCharsObserved,durationMs:Date.now()-started})};
  const appendErr=chunk=>{const next=appendTail(err,chunk,stderrCap);err=next.value;stderrDroppedChars+=next.dropped;outputCharsObserved+=next.observed};
- const scheduleHardKill=()=>{if(detached&&!hardKill){hardKill=setTimeout(()=>signalCommandTree(child,'SIGKILL',{containProcessTree:true}),750);hardKill.unref?.()}};
+ const scheduleHardKill=()=>{if(detached&&!hardKill){hardKill=setTimeout(()=>{signalCommandTree(child,'SIGKILL',{containProcessTree:true});hardKill=null;if(closeSeen)finalize()},750)}};
  const stopTree=marker=>{if(marker)appendErr(marker);signalCommandTree(child,'SIGTERM',{containProcessTree});scheduleHardKill()};
  const account=(kind,chunk)=>{const next=appendTail(kind==='stdout'?out:err,chunk,kind==='stdout'?stdoutCap:stderrCap);if(kind==='stdout'){out=next.value;stdoutDroppedChars+=next.dropped}else{err=next.value;stderrDroppedChars+=next.dropped}outputCharsObserved+=next.observed;if(outputCap>0&&!outputLimitExceeded&&outputCharsObserved>outputCap){outputLimitExceeded=true;if(kill)clearTimeout(kill);stopTree('\n[OUTPUT_LIMIT]')}};
  kill=setTimeout(()=>{timedOut=true;stopTree('\n[TIMEOUT]')},timeoutMs);
- child.stdout.on('data',d=>account('stdout',d));child.stderr.on('data',d=>account('stderr',d));child.on('close',code=>{clearTimeout(kill);if(hardKill)clearTimeout(hardKill);resolve({command:raw,code:code??-1,stdout:out,stderr:err,timedOut,outputLimitExceeded,stdoutTruncated:stdoutDroppedChars>0,stderrTruncated:stderrDroppedChars>0,stdoutDroppedChars,stderrDroppedChars,outputCharsObserved,durationMs:Date.now()-started})})})
+ child.stdout.on('data',d=>account('stdout',d));child.stderr.on('data',d=>account('stderr',d));child.on('close',code=>{closeSeen=true;closeCode=code??-1;clearTimeout(kill);if(hardKill&&(timedOut||outputLimitExceeded)&&commandTreeAlive(child,{containProcessTree}))return;finalize()})})
 }
 
 let nativePtyPromise=null;

@@ -1,0 +1,78 @@
+{
+  "protocol": "taowind-code.dwac-validation-termination-barrier.evidence.v0.9.4",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "e4c2eba9968aecb48987c69f5118e15085a27193",
+  "selected_bottleneck": "validation-termination-completion-barrier",
+  "selected_problem": "Fresh-main reality testing found the POSIX timeout process-tree fallback could be cancelled when the shell closed before its stubborn descendant. A descendant that ignored SIGTERM/SIGHUP and redirected inherited stdio let runCommand return a timed-out receipt while the descendant remained alive and performed a late filesystem write.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "e4c2eba9968aecb48987c69f5118e15085a27193",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "candidate_scores": {
+      "validation-termination-completion-barrier": 0.836,
+      "validation-workspace-confinement": 0.6884,
+      "native-complex-changeset-synthesis": 0.6712,
+      "filesystem-crash-atomicity": 0.5846,
+      "windows-validation-process-tree-containment": 0.578
+    },
+    "four_mode_signal": {
+      "breadth": 0.12,
+      "bottleneck_centrality": 0.99,
+      "evidence_density": 1.0,
+      "adjacent_work_count": 1,
+      "direction_stability": 0.98,
+      "urgency": 0.96,
+      "artifact_pressure": 0.10
+    },
+    "four_mode_scores": {
+      "WHOLE_ARTIFACT": 0.091,
+      "DEEP_DEVELOPMENT": 0.9765,
+      "NORTH_STAR": 0.797,
+      "NORTH_STAR_BURST": 0.81
+    },
+    "mode_route_basis": "The committed four-mode router selects DEEP_DEVELOPMENT through the singular evidence-rich central bottleneck gate; no mode rotation was forced.",
+    "claim_limit": "No hosted DWAC success receipt is claimed. Selection/routing use committed DWAC source-contract replay over fresh canonical main while the provider remained transiently unavailable."
+  },
+  "pre_fix_reproduction": {
+    "scenario": "A background Node descendant installs SIGTERM/SIGHUP handlers, redirects stdout/stderr away from the shell pipes, writes a ready marker, schedules a late filesystem write, while the shell waits. runCommand uses containProcessTree=true and timeoutMs=400.",
+    "observed": "The shell closed around 419ms after timeout, runCommand returned immediately and cleared the scheduled SIGKILL fallback; the stubborn descendant survived and wrote late.txt roughly one second after start."
+  },
+  "changes": [
+    "runCommand can probe whether its POSIX process group still exists after the shell close event.",
+    "When a timeout/output-limit stop is active and the contained process group is still alive, the command receipt is held instead of cancelling the SIGKILL fallback.",
+    "The bounded SIGKILL fallback now completes the containment barrier before a closed-shell receipt is resolved.",
+    "If the process group is already gone, runCommand still resolves without waiting for the grace timer.",
+    "Persistent interactive terminal semantics remain unchanged.",
+    "A focused regression proves a stubborn descendant cannot perform a late write after runCommand returns its timed-out receipt."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/terminal.mjs",
+      "node --test tests/acceptance.test.mjs tests/terminal-pty.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "15/15 PASS; 0 skipped on the POSIX validation host",
+    "verified_git_blobs": {
+      "core/terminal.mjs": "b6718a2ed610d1a5b6d742ecd8df87e6b4760e88",
+      "tests/terminal-pty.test.mjs": "b7721798c238c5da09b77243b55ab8cde8433f5d",
+      "core/acceptance.mjs": "2d390a2e59542a9d2bd07a87d1c37f93b94e6152",
+      "tests/acceptance.test.mjs": "8a2243ee28039cdbb4dd654c941c5e4a1325a858"
+    }
+  },
+  "truth_boundaries": [
+    "The completion barrier is reality-verified for POSIX process-group containment; equivalent Windows descendant-tree containment remains unresolved.",
+    "The grace interval is bounded and may delay a timed-out receipt while stubborn descendants are being force-terminated; this is intentional to preserve the no-late-effects containment claim.",
+    "This is not an OS-level filesystem/network sandbox and does not prevent effects that occur before timeout/termination begins.",
+    "Arbitrary complex repository semantic synthesis remains UNRESOLVED.",
+    "Filesystem crash-level atomicity for arbitrary I/O/process failure remains unresolved.",
+    "No GitHub Actions were intentionally triggered or rerun, no force push was used, and no credential, payment, formal Release or destructive/irreversible external action was performed."
+  ]
+}

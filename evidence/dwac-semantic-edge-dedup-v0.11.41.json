@@ -1,0 +1,24 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "afd477c775e10dfd593d884444ad92761c40dffd",
+  "selected_bottleneck": "semantic-duplicate-import-relation-integrity",
+  "selected_problem": "Full parser-grade module semantics remain UNRESOLVED. Fresh-main inspection found a narrower directly falsifiable graph-integrity defect: two distinct relative import spellings that resolve to the same repository target produced duplicate imports edges, inflating graph edge counts and repeating the same semantic relation.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "route_basis": "The latest actionable semantic truth boundary remains incomplete module semantics. Fresh code reality exposed one singular, local, evidence-dense relation-integrity defect that can be closed without selecting a new parser architecture or forcing mode rotation, so the four-mode contract narrows to DEEP_DEVELOPMENT."
+  },
+  "pre_fix_reproduction": "With src/foo.js present, src/main.js importing both './foo' and './foo.js' produced two identical {from:src/main.js,to:src/foo.js,type:imports} graph edges and stats.edges=2 for one dependency relation.",
+  "change": "Treat semantic graph edges as relations with stable type/from/to identity. Reuse one local edge-admission helper for import and test edges so repeated or differently spelled imports that resolve to the same target cannot duplicate the relation.",
+  "validation": {
+    "node_check": "PASS",
+    "pre_fix_reproduction": "EXPECTED FAILURE reproduced: duplicate relation emitted twice",
+    "focused_tests": "11/11 PASS; 0 skipped",
+    "new_regressions": 1
+  },
+  "truth_boundary": "This closes duplicate relation inflation in the current lightweight graph only. Full Node/TypeScript/bundler/package resolution, configured aliases and extension priorities, non-relative imports, and parser-grade syntax semantics remain UNRESOLVED.",
+  "github_actions": "not requested"
+}

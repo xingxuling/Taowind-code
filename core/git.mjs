@@ -62,8 +62,10 @@ async function preflightPullRequestBase(cwd,{number,remote='origin',expectedBase
 }
 
 export async function githubMergePullRequest(cwd,options={}){
+  const expectedHead=String(options.expectedHeadSha||'').trim();
+  if(!expectedHead||!/^[0-9a-f]{40,64}$/i.test(expectedHead))return baseGit.githubMergePullRequest(cwd,options);
   const expectedBase=String(options.expectedBaseSha||'').trim();
-  if(!expectedBase)return baseGit.githubMergePullRequest(cwd,options);
+  if(!expectedBase)return {ok:false,mergePerformed:false,externalSideEffectPerformed:false,error:'EXPECTED_BASE_SHA_REQUIRED',number:Number(options.number)||null,expectedHeadSha:expectedHead,expectedBaseSha:null};
   const preflight=await preflightPullRequestBase(cwd,{...options,expectedBaseSha:expectedBase});
   if(!preflight.ok)return {...preflight,mergePerformed:false};
   const merged=await baseGit.githubMergePullRequest(cwd,options);

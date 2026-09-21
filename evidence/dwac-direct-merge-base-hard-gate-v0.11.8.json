@@ -1,0 +1,30 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "b95693f6dbf30bb48b3bad766954e98a34c955dd",
+  "selected_bottleneck": "delivery-direct-merge-base-hard-gate",
+  "selected_problem": "After the canonical gitRemoteDelivery path became base-bound, the exported githubMergePullRequest helper still delegated valid-head calls with no expectedBaseSha to the legacy head-only merge. A direct caller could therefore bypass the new base-integrity protection.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "WHOLE_ARTIFACT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "Fresh evidence made the direct-helper bypass the highest-priority actionable truth boundary while the wider equal-severity portfolio kept artifact pressure high; no artificial mode rotation was introduced."
+  },
+  "changes": [
+    "githubMergePullRequest now preserves the existing expected-head validation order, then requires expectedBaseSha before any GitHub request for a valid-head merge.",
+    "Direct merge calls with a valid expected head but no expected base fail closed with EXPECTED_BASE_SHA_REQUIRED and no external side effect.",
+    "Existing merge receipt tests now bind a base SHA and exercise the new PR-base preflight before the merge PUT.",
+    "The remote-provider regression suite now proves missing-base rejection, expected-base receipt preservation, and continued credential redaction."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED: the fresh-main direct helper accepted a valid expected head with no expected base and immediately issued PUT /pulls/10/merge, returning ok=true.",
+    "node_checks": "PASS: core/git.mjs, core/git-base.mjs and three focused test files",
+    "command": "node --test tests/github-merge-receipt-integrity.test.mjs tests/github-remote-provider.test.mjs tests/github-remote-merge-base-gate.test.mjs",
+    "result": "9/9 PASS, 0 skipped"
+  },
+  "truth_boundaries": [
+    "Direct and canonical remote merge entry points now both require or derive a base identity before a valid merge can proceed.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so a base change between the final read and merge PUT cannot be eliminated by client-side checks alone.",
+    "No force push, repository-rule bypass, credential exposure, payment, formal Release, or destructive/irreversible action is introduced."
+  ]
+}

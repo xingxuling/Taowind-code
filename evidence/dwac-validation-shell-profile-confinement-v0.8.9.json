@@ -1,0 +1,76 @@
+{
+  "protocol": "taowind-code.dwac-validation-shell-profile-confinement.evidence.v0.8.9",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "4895dd238a0527364c679064ab0774a025e04837",
+  "selected_bottleneck": "validation-shell-profile-confinement",
+  "selected_problem": "Fresh-main inspection found that acceptance validation now strips ambient process variables, but POSIX runCommand still launched /bin/bash -lc. A login shell can source user-level startup profiles before the validation command, reintroducing ambient configuration, secrets or side effects outside the explicit validation environment.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "4895dd238a0527364c679064ab0774a025e04837",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "candidate_scores": {
+      "validation-shell-profile-confinement": 0.8232,
+      "validation-workspace-confinement": 0.7378,
+      "native-complex-changeset-synthesis": 0.734,
+      "filesystem-crash-atomicity": 0.5896
+    },
+    "four_mode_signal": {
+      "breadth": 0.18,
+      "bottleneck_centrality": 0.97,
+      "evidence_density": 1.0,
+      "adjacent_work_count": 3,
+      "direction_stability": 0.95,
+      "urgency": 0.90,
+      "artifact_pressure": 0.20
+    },
+    "four_mode_scores": {
+      "WHOLE_ARTIFACT": 0.157,
+      "DEEP_DEVELOPMENT": 0.9565,
+      "NORTH_STAR": 0.7925,
+      "NORTH_STAR_BURST": 0.8375
+    },
+    "mode_route_basis": "The committed four-mode router selects DEEP_DEVELOPMENT through the singular evidence-rich bottleneck gate; no mode rotation was forced.",
+    "claim_limit": "No hosted DWAC success receipt is claimed. Selection/routing come from committed DWAC source-contract replay over the fresh canonical main while the hosted Developer Execution Runtime remained transiently unavailable."
+  },
+  "pre_fix_reproduction": {
+    "posix_login_profile_injection": "PASS reproduced on the validation host against the canonical-base source: a temporary login profile exported TAOWIND_PROFILE_SECRET=profile-loaded; runAcceptance executed through /bin/bash -lc and the validation child printed profile-loaded despite inheritProcessEnv=false."
+  },
+  "changes": [
+    "runCommand now exposes a bounded isolatedShell option while preserving the previous login-shell behavior for existing callers by default.",
+    "POSIX isolatedShell invocation uses /bin/bash --noprofile --norc -c; Windows remains on powershell.exe -NoProfile -Command.",
+    "runAcceptance explicitly requests isolatedShell=true in addition to the existing minimal environment and inheritProcessEnv=false controls.",
+    "Persistent interactive terminal behavior is unchanged; the isolation is scoped to one-shot autonomous acceptance validation.",
+    "A focused regression test locks the isolated POSIX invocation contract."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/terminal.mjs",
+      "node --check core/acceptance.mjs",
+      "node --test tests/acceptance.test.mjs tests/terminal-pty.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "9/9 PASS; 0 skipped on validation host",
+    "post_fix_witness": "With the same temporary login profile witness, runAcceptance returned missing rather than profile-loaded.",
+    "verified_git_blobs": {
+      "core/terminal.mjs": "bbc13679a443ef32b8bc577ab49d9775ca940081",
+      "core/acceptance.mjs": "b6db04abb5886e8228331e31763a9a305ffe9ffa",
+      "tests/acceptance.test.mjs": "1dffbdf68a34d8affd7fb960f68f5b1383f6298f",
+      "tests/terminal-pty.test.mjs": "196b99f5ac9a8ca07a5e622f592124b44687641a"
+    }
+  },
+  "truth_boundaries": [
+    "This closes POSIX login/profile startup injection for acceptance validation; it is not an OS-level sandbox.",
+    "Validation commands can still access filesystem paths permitted to the Taowind Code process, including absolute paths outside the workspace; full workspace confinement remains unresolved.",
+    "The validation environment still intentionally exposes a small set of execution variables and may require evidence-driven compatibility adjustments for some toolchains.",
+    "Arbitrary complex repository semantic synthesis remains UNRESOLVED.",
+    "Filesystem crash-level atomicity for arbitrary I/O/process failure remains unresolved.",
+    "No GitHub Actions were intentionally triggered or rerun, no force push was used, and no credential, payment, formal Release or destructive/irreversible external action was performed."
+  ]
+}

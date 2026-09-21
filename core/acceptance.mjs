@@ -19,7 +19,7 @@ function normalizeBrowserChecks(checks){return (Array.isArray(checks)?checks:[])
 export async function runAcceptance(workspace,commands,{mode='workspace',browserObserver=null,browserChecks=[],browserRequired=false}={}){
   const chosen=(Array.isArray(commands)&&commands.length?commands:inferValidationCommands(workspace)).map(String).filter(Boolean).slice(0,8);const checks=normalizeBrowserChecks(browserChecks);
   if(!chosen.length&&!checks.length&&!browserRequired)return {status:'NO_VALIDATION_EVIDENCE',passed:false,commands:[],results:[],browser:{required:false,checks:[],results:[]},hardGate:'VALIDATION_EVIDENCE_REQUIRED'};
-  const validationEnv=buildValidationEnvironment();const results=[];for(const command of chosen){const r=await runCommand(workspace,command,{mode,timeoutMs:120_000,env:validationEnv,inheritProcessEnv:false});results.push(r);if(r.code!==0)break}
+  const validationEnv=buildValidationEnvironment();const results=[];for(const command of chosen){const r=await runCommand(workspace,command,{mode,timeoutMs:120_000,env:validationEnv,inheritProcessEnv:false,isolatedShell:true});results.push(r);if(r.code!==0)break}
   const commandsPassed=!chosen.length||(results.length===chosen.length&&results.every(x=>x.code===0&&!x.timedOut));
   if(!commandsPassed)return {status:'FAILED',passed:false,commands:chosen,results,browser:{required:browserRequired,checks,results:[]},hardGate:'COMMAND_FAILED'};
   if(browserRequired&&!checks.length)return {status:'FAILED',passed:false,commands:chosen,results,browser:{required:true,checks:[],results:[],blocker:'BROWSER_TARGET_REQUIRED'},hardGate:'BROWSER_TARGET_REQUIRED'};

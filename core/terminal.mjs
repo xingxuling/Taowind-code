@@ -8,7 +8,7 @@ const MODE_RANK={read_only:0,workspace:1,full_access:2};
 
 function errorWithCode(code,message=code){return Object.assign(new Error(message),{code});}
 function clampInt(value,fallback,min,max){const n=Number(value);return Number.isFinite(n)?Math.max(min,Math.min(max,Math.trunc(n))):fallback;}
-function normalizedEnv(env={}){return Object.fromEntries(Object.entries({...process.env,...env}).filter(([,v])=>v!==undefined&&v!==null).map(([k,v])=>[k,String(v)]));}
+function normalizedEnv(env={},inheritProcessEnv=true){const base=inheritProcessEnv?process.env:{};return Object.fromEntries(Object.entries({...base,...env}).filter(([,v])=>v!==undefined&&v!==null).map(([k,v])=>[k,String(v)]));}
 function effectiveMode(sessionMode,currentMode){const a=MODE_RANK[sessionMode]??MODE_RANK.workspace;const b=MODE_RANK[currentMode]??MODE_RANK.workspace;const rank=Math.min(a,b);return Object.keys(MODE_RANK).find(k=>MODE_RANK[k]===rank)||'workspace';}
 function defaultShell(platform=process.platform){if(platform==='win32')return process.env.TAOWIND_PTY_SHELL||'powershell.exe';return process.env.TAOWIND_PTY_SHELL||process.env.SHELL||'/bin/bash';}
 
@@ -26,10 +26,10 @@ export function isTerminalInputAllowed(input,{mode='workspace'}={}){
   return {ok:true};
 }
 
-export async function runCommand(cwd,command,{mode='workspace',timeoutMs=60_000,env={}}={}){
+export async function runCommand(cwd,command,{mode='workspace',timeoutMs=60_000,env={},inheritProcessEnv=true}={}){
  const raw=String(command||'').trim(); const allowed=isCommandAllowed(raw,{mode}); if(!allowed.ok)throw errorWithCode(allowed.reason);
  const shell=process.platform==='win32'?'powershell.exe':'/bin/bash'; const args=process.platform==='win32'?['-NoProfile','-Command',raw]:['-lc',raw];
- return await new Promise(resolve=>{let out='',err='',timedOut=false;const started=Date.now();const child=spawn(shell,args,{cwd,env:normalizedEnv(env),windowsHide:true});const kill=setTimeout(()=>{timedOut=true;child.kill('SIGTERM');err+='\n[TIMEOUT]';},timeoutMs);
+ return await new Promise(resolve=>{let out='',err='',timedOut=false;const started=Date.now();const child=spawn(shell,args,{cwd,env:normalizedEnv(env,inheritProcessEnv),windowsHide:true});const kill=setTimeout(()=>{timedOut=true;child.kill('SIGTERM');err+='\n[TIMEOUT]';},timeoutMs);
  child.stdout.on('data',d=>out+=d);child.stderr.on('data',d=>err+=d);child.on('close',code=>{clearTimeout(kill);resolve({command:raw,code:code??-1,stdout:out.slice(-240000),stderr:err.slice(-120000),timedOut,durationMs:Date.now()-started})})})
 }
 

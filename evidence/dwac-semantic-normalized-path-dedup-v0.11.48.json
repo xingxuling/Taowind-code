@@ -1,0 +1,24 @@
+{
+  "version": "0.11.48",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "2061301e91706b8c711e0c907a658a196c40a42a",
+  "selected_bottleneck": "semantic-normalized-path-node-dedup-integrity",
+  "selected_problem": "Full parser-grade module semantics remain UNRESOLVED. Fresh-main inspection found a narrower directly falsifiable graph-integrity defect: buildSemanticRepoGraph normalized byPath for import resolution but still emitted nodes from unnormalized input docs, so lexical slash aliases could duplicate one semantic file in ranking, stats, and context budgets.",
+  "mode_route": ["DEEP_DEVELOPMENT"],
+  "sovereignty_gate": "AUTONOMOUS",
+  "pre_fix_reality": {
+    "case": ["src/a.js", "src\\a.js", "src/b.js"],
+    "observed_stats_files": 3,
+    "expected_unique_semantic_files": 2,
+    "new_regression": "FAIL as expected before fix"
+  },
+  "change": "Normalize slash path identity before semantic node construction and build graph nodes from normalized byPath values.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "4/4 PASS",
+    "skipped": 0,
+    "new_regressions": 1,
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This closes duplicate semantic node inflation for lexical slash aliases under the existing path model. Conflicting contents supplied for the same normalized path remain governed by the existing last-write Map behavior; dot-segment aliases, complete parser-grade module resolution, and arbitrary complex repository synthesis remain unresolved."
+}

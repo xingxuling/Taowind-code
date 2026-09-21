@@ -40,8 +40,10 @@ function relatedByStem(a,b){
 }
 
 export function buildSemanticRepoGraph(files,{goal=''}={}){
-  const docs=(files||[]).filter(x=>x&&typeof x.path==='string'&&typeof x.content==='string');
-  const byPath=new Map(docs.map(x=>[x.path.replaceAll('\\','/'),x]));
+  const inputDocs=(files||[]).filter(x=>x&&typeof x.path==='string'&&typeof x.content==='string');
+  const byPath=new Map();
+  for(const file of inputDocs){const normalizedPath=file.path.replaceAll('\\','/');byPath.set(normalizedPath,{...file,path:normalizedPath});}
+  const docs=[...byPath.values()];
   const nodes=[];const edges=[];const edgeKeys=new Set();
   const addEdge=edge=>{const key=`${edge.type}\n${edge.from}\n${edge.to}`;if(edgeKeys.has(key))return false;edgeKeys.add(key);edges.push(edge);return true};
   for(const file of docs){

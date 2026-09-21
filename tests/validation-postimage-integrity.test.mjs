@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {WorkspaceService} from '../core/workspace.mjs';
-import {captureValidationPostimage,compareValidationPostimage,enforceValidationPostimage} from '../core/validation-integrity.mjs';
+import {captureValidationPostimage,compareValidationPostimage,enforceValidationPostimage,checkDeliveryPostimage} from '../core/validation-integrity.mjs';
 
 function fixture(){const root=fs.mkdtempSync(path.join(os.tmpdir(),'twc-validation-integrity-'));fs.writeFileSync(path.join(root,'a.txt'),'applied\n');return {root,workspace:new WorkspaceService(root)}}
 
@@ -19,8 +19,8 @@ test('validation postimage integrity detects content mutation of a protected pat
   fs.writeFileSync(path.join(f.root,'a.txt'),'validator mutation\n');
   const integrity=compareValidationPostimage(f.workspace,snapshot);
   assert.equal(integrity.passed,false);assert.equal(integrity.drift.length,1);assert.equal(integrity.drift[0].path,'a.txt');assert.equal(integrity.drift[0].changed.includes('sha256'),true);
-  const guarded=enforceValidationPostimage({status:'PASSED',passed:true,hardGate:'PASS',results:[],browser:{results:[]}},integrity);
-  assert.equal(guarded.passed,false);assert.equal(guarded.status,'FAILED');assert.equal(guarded.hardGate,'VALIDATION_POSTIMAGE_DRIFT');
+  const guarded=enforceValidationPostimage({status:'PASSED',passed:true,hardGate:'PASS',results:[],browser:{results:[]}},integrity,snapshot);
+  assert.equal(guarded.passed,false);assert.equal(guarded.status,'FAILED');assert.equal(guarded.hardGate,'VALIDATION_POSTIMAGE_DRIFT');assert.equal(guarded.validatedPostimage,null);
 });
 
 test('validation postimage integrity detects mode-only mutation on POSIX',t=>{
@@ -29,4 +29,18 @@ test('validation postimage integrity detects mode-only mutation on POSIX',t=>{
   fs.chmodSync(path.join(f.root,'a.txt'),0o600);
   const result=compareValidationPostimage(f.workspace,snapshot);
   assert.equal(result.passed,false);assert.equal(result.drift[0].changed.includes('mode'),true);
+});
+
+test('delivery postimage recheck fails when a validated protected path changes afterwards',()=>{
+  const f=fixture(),snapshot=captureValidationPostimage(f.workspace,['a.txt']);
+  const integrity=compareValidationPostimage(f.workspace,snapshot);const validated=enforceValidationPostimage({status:'PASSED',passed:true,hardGate:'PASS'},integrity,snapshot);
+  assert.deepEqual(validated.validatedPostimage,snapshot);assert.equal(checkDeliveryPostimage(f.workspace,validated.validatedPostimage).passed,true);
+  fs.writeFileSync(path.join(f.root,'a.txt'),'human after validation\n');
+  const delivery=checkDeliveryPostimage(f.workspace,validated.validatedPostimage);
+  assert.equal(delivery.passed,false);assert.equal(delivery.hardGate,'DELIVERY_POSTVALIDATION_DRIFT');assert.equal(delivery.drift[0].path,'a.txt');
+});
+
+test('delivery postimage recheck fails closed when validation receipt is missing',()=>{
+  const f=fixture(),delivery=checkDeliveryPostimage(f.workspace,null);
+  assert.equal(delivery.passed,false);assert.equal(delivery.hardGate,'DELIVERY_POSTIMAGE_RECEIPT_REQUIRED');
 });

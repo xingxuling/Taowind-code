@@ -94,8 +94,8 @@ export function selectFederatedProposal(candidates,{goal='',manifest=[]}={}){
   const signals=consensusSignals(normalized);
   const ranked=normalized.map(p=>({...p,evaluation:scoreProposal(p,{goal,manifest,consensus:signals})})).sort((a,b)=>b.evaluation.score-a.evaluation.score||a.provider.localeCompare(b.provider)||a.role.localeCompare(b.role));
   const contextRequests=[...new Set(ranked.flatMap(p=>p.needs_more_context||[]))].slice(0,32);
-  const winner=ranked.find(x=>x.changes.length&&x.validation_commands.length&&!x.ambiguous_paths?.length)||ranked[0]||null;
+  const winner=ranked.find(x=>x.changes.length&&x.validation_commands.length&&!x.ambiguous_paths?.length)||null;
   const conflictedPaths=[...signals.pathVariants.entries()].filter(([,variants])=>variants.size>1).map(([path])=>path).sort();
   const exactAgreementCount=[...signals.exactSupport.values()].filter(origins=>origins.size>1).length;
-  return {protocol:'taowind.federated-changeset-selection.v0.7',winner,ranked,contextRequests,consensus:{candidateCount:ranked.length,validCount:ranked.filter(x=>x.changes.length&&x.validation_commands.length&&!x.ambiguous_paths?.length).length,providers:[...new Set(ranked.map(x=>x.provider))],executableCount:signals.executableCount,independentOriginCount:signals.independentOrigins,exactAgreementCount,conflictedPathCount:conflictedPaths.length,conflictedPaths:conflictedPaths.slice(0,16)}};
+  return {protocol:'taowind.federated-changeset-selection.v0.8',winner,ranked,contextRequests,consensus:{candidateCount:ranked.length,validCount:ranked.filter(x=>x.changes.length&&x.validation_commands.length&&!x.ambiguous_paths?.length).length,providers:[...new Set(ranked.map(x=>x.provider))],executableCount:signals.executableCount,independentOriginCount:signals.independentOrigins,exactAgreementCount,conflictedPathCount:conflictedPaths.length,conflictedPaths:conflictedPaths.slice(0,16)}};
 }

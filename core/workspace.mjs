@@ -74,14 +74,14 @@ export class WorkspaceService {
     walk(this.root); out.truncated=truncated; out.maxFiles=maxFiles; return out;
   }
   contextBundle(paths,{maxBytes=220_000,maxFiles=32}={}){
-    const selected=[]; const seenPaths=new Set(); let total=0;
+    const selected=[]; const seenPaths=new Set(); const seenIdentities=new Set(); let total=0;
     for(const raw of paths||[]){
       if(selected.length>=maxFiles)break;
       const rel=path.posix.normalize(String(raw||'').replaceAll('\\','/')).replace(/^\.\//,'');
       if(!rel||rel==='.'||seenPaths.has(rel))continue; seenPaths.add(rel);
       if(isCredentialLikePath(rel))continue;
       const ext=path.extname(rel).toLowerCase(); if(ext&&!TEXT_EXT.has(ext))continue;
-      try{const ancestor=this.ancestorState(rel);if(!ancestor.ok)continue;const abs=safePath(this.root,rel);const st=fs.lstatSync(abs);if(st.isSymbolicLink()||!st.isFile()||st.size>80_000)continue;const bytes=fs.readFileSync(abs);const content=UTF8_DECODER.decode(bytes);const contentBytes=bytes.length;if(total+contentBytes>maxBytes)continue;selected.push({path:rel,content});total+=contentBytes;}catch{}
+      try{const ancestor=this.ancestorState(rel);if(!ancestor.ok)continue;const abs=safePath(this.root,rel);const st=fs.lstatSync(abs);if(st.isSymbolicLink()||!st.isFile()||st.size>80_000)continue;const identity=objectIdentity(st);if(identity&&seenIdentities.has(identity))continue;const bytes=fs.readFileSync(abs);const content=UTF8_DECODER.decode(bytes);const contentBytes=bytes.length;if(total+contentBytes>maxBytes)continue;selected.push({path:rel,content});total+=contentBytes;if(identity)seenIdentities.add(identity);}catch{}
     }
     return {files:selected,totalBytes:total};
   }

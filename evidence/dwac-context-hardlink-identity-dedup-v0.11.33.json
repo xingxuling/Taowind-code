@@ -1,0 +1,19 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "dc6e8ff385611fdfcf95b931fa3bbe60d4a9dfbc",
+  "bottleneck": "context-bundle-hardlink-identity-dedup-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main still allowed two distinct repository paths that are hard links to the same underlying file identity to enter contextBundle independently, duplicating identical cognition input and consuming bounded file/byte budget twice.",
+  "pre_fix_reproduction": "A temporary workspace containing src/a.js and hard-linked src/alias.js returned both files from contextBundle(['src/a.js','src/alias.js']); the focused regression failed before the change because two paths were admitted.",
+  "change": "Reuse the workspace's existing dev:ino objectIdentity helper during context admission. After existing path, credential, extension, ancestor, symlink and file checks, skip an already-admitted stable file identity; preserve current behavior on hosts that do not expose a stable identity.",
+  "validation": {
+    "node_check": "PASS",
+    "pre_fix_reproduction": "EXPECTED FAILURE reproduced: both hard-link paths admitted",
+    "focused_tests": "11/11 PASS; 0 skipped on the current POSIX verification host",
+    "new_regressions": 1
+  },
+  "truth_boundary": "This closes duplicate cognition input for hard-link aliases only when the host exposes a stable file identity. It does not claim globally optimal semantic-context selection, exhaustive large-repository observation, parser-grade module resolution, or cross-host identity equivalence.",
+  "github_actions": "not requested"
+}

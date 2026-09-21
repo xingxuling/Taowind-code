@@ -154,7 +154,8 @@ export async function githubCreatePullRequest(cwd,{remote='origin',base='main',h
   if(!ctx.token)return {ok:false,prPerformed:false,externalSideEffectPerformed:false,error:'GITHUB_TOKEN_REQUIRED',repository:ctx.repository};
   if(!selectedHead||!selectedTitle)return {ok:false,prPerformed:false,externalSideEffectPerformed:false,error:!selectedHead?'PR_HEAD_REQUIRED':'PR_TITLE_REQUIRED',repository:ctx.repository};
   const result=await apiJson(fetchImpl,`https://api.github.com/repos/${ctx.repository}/pulls`,{method:'POST',headers:{accept:'application/vnd.github+json',authorization:`Bearer ${ctx.token}`,'content-type':'application/json','x-github-api-version':'2022-11-28'},body:JSON.stringify({title:selectedTitle,head:selectedHead,base:String(base||'main'),body:String(body||''),draft:draft===true})});
-  return {ok:result.ok,prPerformed:result.ok,externalSideEffectPerformed:result.ok,repository:ctx.repository,number:result.data?.number||null,url:result.data?.html_url||null,state:result.data?.state||null,status:result.status,error:result.error};
+  const prNumber=Number(result.data?.number);const receiptValid=result.ok&&Number.isInteger(prNumber)&&prNumber>0;const error=!result.ok?result.error:!receiptValid?'PR_CREATE_RECEIPT_INVALID':null;
+  return {ok:receiptValid,prPerformed:result.ok,externalSideEffectPerformed:result.ok,repository:ctx.repository,number:receiptValid?prNumber:null,url:result.data?.html_url||null,state:result.data?.state||null,status:result.status,error};
 }
 export async function githubMergePullRequest(cwd,{number,remote='origin',mergeMethod='squash',expectedHeadSha=null,token=null,env=process.env,fetchImpl=globalThis.fetch}={}){
   const ctx=apiContext(cwd,{remote,token,env});const prNumber=Number(number);const expected=String(expectedHeadSha||'').trim();

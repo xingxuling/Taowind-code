@@ -21,9 +21,12 @@ function normalizeImport(from,spec){
   return base.replace(/^\.\//,'');
 }
 function resolveImportTarget(nodePaths,imp){
-  const rank=p=>p===imp?0:p.startsWith(`${imp}.`)?1:2;
+  const directExt=p=>{if(!p.startsWith(`${imp}.`))return false;const suffix=p.slice(imp.length+1);return !!suffix&&!suffix.includes('.')&&!suffix.includes('/')};
+  const indexPrefix=`${imp}/index.`;
+  const indexExt=p=>{if(!p.startsWith(indexPrefix))return false;const suffix=p.slice(indexPrefix.length);return !!suffix&&!suffix.includes('.')&&!suffix.includes('/')};
+  const rank=p=>p===imp?0:directExt(p)?1:2;
   return nodePaths
-    .filter(p=>p===imp||p.startsWith(`${imp}.`)||p.startsWith(`${imp}/index.`))
+    .filter(p=>p===imp||directExt(p)||indexExt(p))
     .sort((a,b)=>rank(a)-rank(b)||a.length-b.length||a.localeCompare(b))[0]||null;
 }
 function isTestFile(p){return /(^|\/)(test|tests|__tests__)(\/|$)|\.(test|spec)\.[^.]+$/i.test(p)}

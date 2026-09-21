@@ -1,0 +1,54 @@
+{
+  "protocol": "taowind-code.dwac-npm-workspace-child-validation.evidence.v0.9.9",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "df12009d04c8d01e6ab31cd1f421d399f7a5422e",
+  "selected_bottleneck": "npm-workspace-child-only-validation-coverage",
+  "selected_problem": "Fresh-main reality testing found the npm workspace inference still returned no validation evidence when the root package declared workspaces but no standard root validation script, even if a child workspace declared a failing standard test script.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "df12009d04c8d01e6ab31cd1f421d399f7a5422e",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "Fresh-main reproduction isolated one evidence-rich central acceptance bottleneck. The committed four-mode router's singular-bottleneck gate therefore routes the replay to DEEP_DEVELOPMENT; no forced rotation was used.",
+    "claim_limit": "No hosted DWAC success receipt or fabricated numeric DWAC score is claimed. Selection and routing use committed DWAC source-contract replay over fresh canonical main while the provider remains transiently unavailable."
+  },
+  "pre_fix_reproduction": {
+    "workspace": "Root package.json declares workspaces=['packages/*'] and no standard validation scripts; packages/app/package.json declares a failing test script.",
+    "observed": "The exact fresh-main packageValidationCommands contract returned [], so inferred acceptance produced no child validation command and stopped at VALIDATION_EVIDENCE_REQUIRED instead of observing the real failing workspace test."
+  },
+  "changes": [
+    "When the root package already has a standard validation script, existing bounded root + workspaces behavior is preserved unchanged.",
+    "When the root has no standard validation script, inference asks npm itself for workspace package scripts with `npm pkg get scripts --workspaces --json`, reusing npm's own workspace resolution instead of reimplementing workspace glob semantics.",
+    "The npm metadata probe receives the same minimal validation environment used by autonomous acceptance so parent secrets are not inherited into the discovery subprocess.",
+    "Only standard validation categories actually present in child workspaces become inferred commands; an empty workspace still yields no validation evidence rather than converting no-op --if-present commands into a false PASS.",
+    "Focused regressions prove a child-only failing test is executed and that a workspace with no standard validation scripts remains fail-closed."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/acceptance.mjs",
+      "node --check tests/acceptance-workspaces.test.mjs",
+      "node --test tests/acceptance-workspaces.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "3/3 focused workspace regressions PASS; 0 skipped",
+    "pre_fix_observation": "Fresh-main contract reproduction returned commands=[] for the child-only failing-test fixture.",
+    "validation_note": "Focused local validation used the exact candidate acceptance source with a compatible one-shot runCommand harness. Real npm workspace metadata discovery and real npm workspace test execution were exercised.",
+    "verified_git_blobs": {
+      "core/acceptance.mjs": "72fcf3b684843aadcf6fe6b49ce592f2848001c1",
+      "tests/acceptance-workspaces.test.mjs": "57347de83876f2f16a3ffd20440f61f0d1dcd8fc"
+    }
+  },
+  "truth_boundaries": [
+    "This closes the concrete child-only npm-workspace validation gap; it does not claim exhaustive monorepo validation discovery for pnpm, Yarn, nested Python projects or arbitrary build graphs.",
+    "Workspace metadata discovery depends on a functioning npm executable; discovery failure remains fail-closed as no inferred validation evidence.",
+    "The current validation execution budget remains eight commands.",
+    "OS-level filesystem/network sandboxing, Windows descendant-tree equivalence, arbitrary complex semantic synthesis and crash-level filesystem atomicity remain unresolved.",
+    "No GitHub Actions are intentionally triggered or rerun, no force push is used, and no credential, payment, formal Release or destructive/irreversible external action is performed."
+  ]
+}

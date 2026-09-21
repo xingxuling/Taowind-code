@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {spawnSync} from 'node:child_process';
 import {runCommand} from './terminal.mjs';
 
 const VALIDATION_ENV_KEYS=new Set(['PATH','PATHEXT','SYSTEMROOT','COMSPEC','WINDIR','HOME','USERPROFILE','TMPDIR','TMP','TEMP','LANG','LC_ALL','TERM','COLORTERM','CI']);
@@ -10,16 +11,22 @@ export function buildValidationEnvironment(source=process.env){
   const out={};for(const [key,value] of Object.entries(source||{})){const upper=String(key).toUpperCase();if((VALIDATION_ENV_KEYS.has(upper)||upper.startsWith('LC_'))&&value!==undefined&&value!==null)out[key]=String(value)}return out;
 }
 function hasNpmWorkspaces(pkg){const ws=pkg?.workspaces;return (Array.isArray(ws)&&ws.length>0)||(ws&&typeof ws==='object'&&Array.isArray(ws.packages)&&ws.packages.length>0)}
-function packageValidationCommands(pkg){
+function npmWorkspaceValidationNames(workspace){
+  const npm=process.platform==='win32'?'npm.cmd':'npm';
+  const result=spawnSync(npm,['pkg','get','scripts','--workspaces','--json'],{cwd:workspace,encoding:'utf8',timeout:5_000,maxBuffer:1024*1024,windowsHide:true,env:buildValidationEnvironment()});
+  if(result.status!==0||!result.stdout)return [];
+  try{const packages=JSON.parse(result.stdout);const found=new Set();for(const scripts of Object.values(packages||{})){if(!scripts||typeof scripts!=='object')continue;for(const name of PACKAGE_VALIDATION_SCRIPTS)if(scripts[name])found.add(name)}return PACKAGE_VALIDATION_SCRIPTS.filter(name=>found.has(name))}catch{return []}
+}
+function packageValidationCommands(workspace,pkg){
   const scripts=pkg?.scripts||{};const names=PACKAGE_VALIDATION_SCRIPTS.filter(name=>scripts[name]);
   if(!hasNpmWorkspaces(pkg))return names.map(name=>`npm run ${name}`);
-  if(!names.length)return [];
-  return PACKAGE_VALIDATION_SCRIPTS.map(name=>`npm run ${name} --if-present && npm run ${name} --workspaces --if-present`);
+  if(names.length)return PACKAGE_VALIDATION_SCRIPTS.map(name=>`npm run ${name} --if-present && npm run ${name} --workspaces --if-present`);
+  const workspaceNames=npmWorkspaceValidationNames(workspace);return workspaceNames.map(name=>`npm run ${name} --if-present && npm run ${name} --workspaces --if-present`);
 }
 
 export function inferValidationCommands(workspace){
   const out=[];const pkgPath=path.join(workspace,'package.json');
-  if(fs.existsSync(pkgPath)){try{const pkg=JSON.parse(fs.readFileSync(pkgPath,'utf8'));out.push(...packageValidationCommands(pkg))}catch{}}
+  if(fs.existsSync(pkgPath)){try{const pkg=JSON.parse(fs.readFileSync(pkgPath,'utf8'));out.push(...packageValidationCommands(workspace,pkg))}catch{}}
   const pyproject=path.join(workspace,'pyproject.toml');if(fs.existsSync(pyproject)&&!out.includes('python -m pytest -q'))out.push('python -m pytest -q');
   return out.slice(0,MAX_VALIDATION_COMMANDS);
 }

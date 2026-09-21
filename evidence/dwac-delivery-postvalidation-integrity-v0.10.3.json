@@ -1,0 +1,51 @@
+{
+  "protocol": "taowind-code.dwac-delivery-postvalidation-integrity.evidence.v0.10.3",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "1865d2c5c3de31f3267652e72e9c3ceaf6c99fd3",
+  "selected_bottleneck": "delivery-postvalidation-integrity",
+  "selected_problem": "After validation-postimage integrity was closed, fresh-main inspection exposed a time-of-check/time-of-use gap: READY_FOR_DELIVERY could remain true after a protected changeset path was edited between successful validation and delivery. gitLocalCommit would then stage the current path, allowing unvalidated bytes or metadata to be committed.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "1865d2c5c3de31f3267652e72e9c3ceaf6c99fd3",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "The new main reduced the next evidence-rich central bottleneck to a narrow delivery TOCTOU integrity gap. The committed four-mode router's singular-bottleneck gate routes the replay to DEEP_DEVELOPMENT; no forced rotation was used.",
+    "claim_limit": "No hosted DWAC success receipt or fabricated numeric DWAC score is claimed."
+  },
+  "pre_fix_reproduction": {
+    "source_observation": "NorthStarRunner.delivery required READY_FOR_DELIVERY but did not compare current protected paths with the code reality that had passed validation; gitLocalCommit stages the current selected paths.",
+    "consequence": "A content, identity, or mode edit after validation but before delivery could be committed without corresponding validation evidence."
+  },
+  "changes": [
+    "Successful validation now persists the exact protected postimage snapshot that was observed and accepted; failed postimage validation does not retain a deliverable receipt.",
+    "Delivery rechecks current protected path state against the persisted validated postimage before preview or commit authorization.",
+    "Missing validation postimage receipts fail closed with DELIVERY_POSTIMAGE_RECEIPT_REQUIRED; drift after validation fails closed with DELIVERY_POSTVALIDATION_DRIFT and moves the run to REPAIR_REQUIRED.",
+    "Delivery evidence records the postvalidation integrity receipt so the commit eligibility decision is traceable."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/validation-integrity.mjs",
+      "node --check tests/validation-postimage-integrity.test.mjs",
+      "node --test tests/validation-postimage-integrity.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "5/5 focused integrity regressions PASS; 0 skipped on the Linux verification host",
+    "verified_git_blobs": {
+      "core/north-star-runner.mjs": "41bdfd320ed1ba3024c3f4f640ecb0e7283ef2b8",
+      "core/validation-integrity.mjs": "e2f1232a04c3cdc7e176bfc683c5c22f7287d83c",
+      "tests/validation-postimage-integrity.test.mjs": "f483fd8bc9bf1de06a0f609f7d7fb8ca815e9db1"
+    }
+  },
+  "truth_boundaries": [
+    "This closes delivery eligibility drift for the protected paths represented by the run's changesets; it does not make validation an OS-level sandbox or prohibit unrelated side effects.",
+    "A detected postvalidation edit is failed closed and requires revalidation or repair; the system does not silently overwrite the user's intervening edit.",
+    "OS-level validation sandboxing, arbitrary complex semantic synthesis, Windows descendant-tree equivalence, and crash-level filesystem atomicity remain unresolved.",
+    "No GitHub Actions are intentionally triggered or rerun, no force push is used, and no credential, payment, formal Release, or destructive/irreversible external action is performed."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "1b344a107eb39dc87d3e0bbf5f62777b2597505a",
+  "selected_bottleneck": "truth-boundary-revision-freshness",
+  "selected_problem": "Open-ended DWAC diagnosis observed historical evidence files in reverse filename order and applied a 96-row budget before considering Git revision freshness, so lexically later stale boundaries could starve newer main-line evidence and distort the next autonomous bottleneck selection.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "single evidence-rich high-centrality autonomy diagnosis defect"
+  },
+  "changes": [
+    "bridge/dwac_bridge.py now orders committed evidence files by their most recent Git revision before applying the truth-boundary row budget.",
+    "Evidence files absent from Git history remain observable and are placed ahead of committed history using deterministic mtime/path ordering.",
+    "Non-Git workspaces keep the prior deterministic reverse-filename fallback rather than claiming unavailable revision provenance.",
+    "A focused regression reproduces stale lexicographic starvation with 96 historical boundaries and proves that the newest committed boundary becomes visible and selected after the fix."
+  ],
+  "validation": {
+    "python_compile": "PASS",
+    "pre_fix_regression": "FAIL_AS_EXPECTED: selected historical boundary 0 MISSING instead of newest revision boundary",
+    "command": "node --test tests/truth-boundary-freshness.test.mjs",
+    "result": "1/1 PASS, 0 skipped"
+  },
+  "truth_boundaries": [
+    "Git commit history is used as revision provenance only when the workspace provides it; non-Git workspaces retain the deterministic legacy fallback.",
+    "Tracked files modified after their last commit retain committed revision position; files absent from Git history are treated as current local evidence and ordered ahead by mtime/path.",
+    "This change fixes evidence observation freshness and does not claim that historical truth boundaries are semantically obsolete merely because they are older."
+  ]
+}

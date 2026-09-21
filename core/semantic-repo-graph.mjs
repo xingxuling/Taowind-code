@@ -25,9 +25,11 @@ function resolveImportTarget(nodePaths,imp){
   const indexPrefix=`${imp}/index.`;
   const indexExt=p=>{if(!p.startsWith(indexPrefix))return false;const suffix=p.slice(indexPrefix.length);return !!suffix&&!suffix.includes('.')&&!suffix.includes('/')};
   const rank=p=>p===imp?0:directExt(p)?1:2;
-  return nodePaths
-    .filter(p=>p===imp||directExt(p)||indexExt(p))
-    .sort((a,b)=>rank(a)-rank(b)||a.length-b.length||a.localeCompare(b))[0]||null;
+  const candidates=nodePaths.filter(p=>p===imp||directExt(p)||indexExt(p));
+  if(!candidates.length)return null;
+  const bestRank=Math.min(...candidates.map(rank));
+  const best=candidates.filter(p=>rank(p)===bestRank);
+  return best.length===1?best[0]:null;
 }
 function isTestFile(p){return /(^|\/)(test|tests|__tests__)(\/|$)|\.(test|spec)\.[^.]+$/i.test(p)}
 function isEntryLike(p){return /(^|\/)(index|main|app|server|cli)\.[^.]+$/i.test(p)||/^(package\.json|pyproject\.toml|Cargo\.toml|go\.mod)$/i.test(p)}

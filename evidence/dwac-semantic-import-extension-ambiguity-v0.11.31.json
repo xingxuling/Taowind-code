@@ -1,0 +1,18 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "ec24add544fe3ea77511c3ed0d47b28f12fdf321",
+  "bottleneck": "semantic-extensionless-import-equal-rank-ambiguity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Extensionless relative imports still chose one candidate lexically when multiple direct extension-bearing files were equally plausible, so repository ordering rules could fabricate a dependency edge not justified by the observed code.",
+  "pre_fix_reproduction": "src/main.ts importing ./foo with both src/foo.js and src/foo.ts produced an imports edge to src/foo.js even though this heuristic does not model the project's runtime or compiler extension-priority rules.",
+  "change": "Keep the existing exact/direct/index ranking, but require the best rank to have exactly one candidate. Equal-rank ambiguity now fails closed instead of inventing a dependency edge.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "10/10 PASS",
+    "new_regressions": 1
+  },
+  "truth_boundary": "This improves integrity of the lightweight relative-import heuristic only. Full Node/TypeScript/bundler/package resolution, configured extension priorities, aliases and non-relative imports remain unresolved.",
+  "github_actions": "not requested"
+}

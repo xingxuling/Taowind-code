@@ -1,0 +1,35 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "f467a14033beb46c7c639449e2cca32f6a5cb2a0",
+  "selected_bottleneck": "manifest-truncation-observation-integrity",
+  "selected_problem": "Arbitrary complex repository synthesis remains UNRESOLVED. Fresh-main inspection found that WorkspaceService.manifest stops at its file budget but exposes only an Array, while repositorySummary reports the observed array length as fileCount and totalManifestPaths with no indication that the repository may contain additional unseen files. Large repositories can therefore present a bounded partial observation as if it were complete repository reality.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "The fresh canonical main exposes one narrow repository-observation truth defect with a deterministic budget-boundary reproduction. Source-contract replay therefore narrows it to DEEP_DEVELOPMENT without prescribing a new repository-index architecture or forcing mode rotation."
+  },
+  "changes": [
+    "Manifest traversal now distinguishes an exact budget-sized repository from a repository that contains at least one additional eligible file beyond maxFiles.",
+    "The returned manifest array carries bounded-observation metadata (`truncated` and `maxFiles`) without changing existing array iteration semantics.",
+    "repositorySummary and contextRecovery propagate manifest truncation so cognition can distinguish a complete manifest from a lower-bound observation."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED against fresh main: both a 3-file repository observed with maxFiles=2 and an exactly-2-file repository exposed no truncation state; downstream repositorySummary had no way to distinguish them.",
+    "node_check": "PASS",
+    "focused_command": "node --test tests/manifest-truncation-evidence.test.mjs tests/manifest-file-budget.test.mjs",
+    "focused_result": "3/3 PASS, 0 skipped",
+    "blob_match": {
+      "core/workspace.mjs": "552534e2c6b70fdeedb59713be36168f71884cde",
+      "core/repo-context.mjs": "616171d544989d6b3f980a4e2721c97485569287",
+      "tests/manifest-truncation-evidence.test.mjs": "14613769a0b460109cfc5b4b7ae36c0d4f22de49"
+    }
+  },
+  "truth_boundaries": [
+    "Arbitrary complex repository synthesis remains UNRESOLVED. This makes bounded-manifest incompleteness explicit; it does not make the default 2000-file observation semantically sufficient for large repositories.",
+    "fileCount remains the number of observed manifest entries; when manifestTruncated=true it is a lower bound rather than an exact repository file count.",
+    "Fair or goal-aware coverage beyond the manifest cap remains a separate selection-quality question.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

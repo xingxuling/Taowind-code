@@ -30,6 +30,7 @@ export function repositorySummary(manifest){
   const index=repositoryPathIndex(manifest);
   return {
     fileCount:manifest.length,
+    manifestTruncated:manifest?.truncated===true,
     extensions:Object.entries(byExt).sort((a,b)=>b[1]-a[1]).slice(0,16),
     topLevel:[...new Set(manifest.filter(x=>!isCredentialLikePath(x.path)).map(x=>x.path.split('/')[0]))].slice(0,80),
     contextRecovery:{
@@ -37,7 +38,8 @@ export function repositorySummary(manifest){
       exactPathHints:index.paths,
       indexedPaths:index.totalPaths,
       totalManifestPaths:manifest.length,
-      truncated:index.truncated,
+      manifestTruncated:manifest?.truncated===true,
+      truncated:index.truncated||manifest?.truncated===true,
       approxJsonBytes:index.approxJsonBytes,
       rule:'If required file content is absent from files, request exact paths from exactPathHints via needs_more_context; do not guess unseen file content. Credential-like paths are intentionally absent.'
     }

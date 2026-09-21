@@ -1,0 +1,54 @@
+{
+  "protocol": "taowind-code.dwac-transactional-symlink-target-integrity.evidence.v0.8.3",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "1c4f0bbc05ca88f231fdacb5c67e738531200f6d",
+  "selected_bottleneck": "transactional-symlink-target-integrity",
+  "selected_problem": "Fresh canonical-main inspection found that WorkspaceService.stat followed an existing in-workspace symlink with fs.statSync and reported the referent as a regular file. ChangesetStore.stage therefore accepted the symlink target and snapshotted only referent bytes. A later write atomically renamed a new regular file over the symlink path, while rollback could only restore the captured bytes as another regular file, permanently losing the original symlink identity despite the reversible-delivery contract.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "1c4f0bbc05ca88f231fdacb5c67e738531200f6d",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "The defect is singular, central to rollbackable self-modification, directly reproduced, and evidence-rich; the committed four-mode router's narrow-bottleneck gate routes DEEP_DEVELOPMENT rather than forcing mode rotation.",
+    "claim_limit": "No hosted DWAC success receipt is claimed. The committed DWAC North Star and four-mode router source contracts were replayed against fresh canonical code evidence after the hosted Developer Execution Runtime remained transiently unavailable."
+  },
+  "pre_fix_reproduction": {
+    "scenario": "create target.txt and an in-workspace link.txt symlink to it, then stage a write to link.txt",
+    "expected": "UNSUPPORTED_CHANGE_TARGET:link.txt before a changeset document is persisted",
+    "observed_on_canonical_base": "the stage call succeeded because fs.statSync followed the symlink and classified its referent as a regular file",
+    "result": "EXPECTED_FAILURE"
+  },
+  "changes": [
+    "WorkspaceService.stat now uses lstat identity for an existing target before content hashing.",
+    "Existing symlinks are surfaced as type=symlink with no referent-content hash, so the existing ChangesetStore.stage non-file target gate rejects them before persistence.",
+    "Regular-file hashing, directory rejection, canonical paths, preimage checks, apply/rollback preflight and workspace symlink-escape protection remain intact.",
+    "The regression test skips only when the host cannot create a symlink due to platform permissions; on the validation host it executed and passed."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/workspace.mjs",
+      "node --check core/changesets.mjs",
+      "node --test tests/changesets.test.mjs tests/path-boundary.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "10/10 PASS; 0 skipped on validation host",
+    "verified_git_blobs": {
+      "core/workspace.mjs": "15ba946809c2087147f0f5381101ccc59cf7c6d1",
+      "tests/changesets.test.mjs": "e0fa6b386332415c7a966b2c0b04c8b76c68d27c",
+      "tests/path-boundary.test.mjs": "9e2b77b5f093873ec0845a46e223979c4ae38e52"
+    }
+  },
+  "truth_boundaries": [
+    "This closes the existing in-workspace symlink identity-loss case by rejecting that unsupported transactional target. It does not add symlink-preserving mutation or rollback semantics.",
+    "Arbitrary complex repository semantic synthesis remains UNRESOLVED, and filesystem crash-level atomicity for arbitrary I/O/process failure remains unresolved.",
+    "No new product form, feature roadmap, provider architecture or hard-coded task-to-mode mapping was introduced.",
+    "No GitHub Actions were intentionally triggered or rerun, no force push was used, and no credential, payment, formal Release or destructive/irreversible external action was performed."
+  ]
+}

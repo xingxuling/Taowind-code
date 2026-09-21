@@ -35,7 +35,9 @@ export class WorkspaceService {
   stat(rel){
     const abs=safePath(this.root,rel);
     if(!fs.existsSync(abs)) return {path:rel,exists:false,sha256:null,size:0};
-    const st=fs.statSync(abs); if(!st.isFile()) return {path:rel,exists:true,type:'dir',sha256:null,size:st.size};
+    const st=fs.lstatSync(abs);
+    if(st.isSymbolicLink()) return {path:rel,exists:true,type:'symlink',sha256:null,size:st.size};
+    if(!st.isFile()) return {path:rel,exists:true,type:'dir',sha256:null,size:st.size};
     const bytes=fs.readFileSync(abs); return {path:rel,exists:true,type:'file',sha256:sha256Buffer(bytes),size:bytes.length};
   }
   write(rel,content){

@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 const compareText=(a,b)=>a<b?-1:a>b?1:0;
-const normalizeGraphPath=value=>String(value).replaceAll('\\','/').split('/').filter(segment=>segment!=='.').join('/');
+const normalizeGraphPath=value=>String(value).replaceAll('\\','/').replace(/\/{2,}/g,'/').split('/').filter(segment=>segment!=='.').join('/');
 const TOKEN_RE=/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu;
 const IMPORT_PATTERNS=[
   /(?:import\s+[^'"\n]*?from\s*|export\s+[^'"\n]*?from\s*|import\s*\(\s*|import\s*|require\s*\()\s*['"]([^'"]+)['"]/g,

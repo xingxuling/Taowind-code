@@ -1,0 +1,27 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "fresh_main": "ea53bc789cf9afae271b59c2682a98ad02205092",
+  "selected_bottleneck": "semantic-neighborhood-order-determinism",
+  "selected_problem": "Fresh main bounded semantic context selection admitted import/test neighbors in graph.edges enumeration order. Equivalent repository file sets with only input enumeration reversed could select different neighbors under maxFiles=2.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "route_basis": "The defect is singular, local, reality-reproduced, and can be closed by reusing the graph's existing ranked node order; no parser architecture, product form, development order, or forced mode rotation is selected manually.",
+  "pre_fix_reproduction": {
+    "goal": "targetFeature",
+    "maxFiles": 2,
+    "forward": ["src/target.js", "src/a.js"],
+    "reverse": ["src/target.js", "src/b.js"]
+  },
+  "change": "Build a unique neighbor set and admit neighbors by the graph's existing ranked-node order, with a lexical path fallback only for paths absent from that rank map.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "12/12 PASS",
+    "skipped": 0,
+    "new_regressions": 1
+  },
+  "truth_boundary": "This removes edge-enumeration-order bias inside the already-observed semantic graph. It does not expand bounded manifest/seed coverage or claim parser-grade Node/TypeScript/bundler/package semantics, globally optimal large-repository context selection, or arbitrary complex repository synthesis.",
+  "hosted_dwac_runtime": "TEMPORARY_502",
+  "execution_mode": "DWAC_SOURCE_CONTRACT_REPLAY",
+  "github_actions": "not requested"
+}

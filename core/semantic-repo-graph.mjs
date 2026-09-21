@@ -73,11 +73,15 @@ export function buildSemanticRepoGraph(files,{goal=''}={}){
 export function selectSemanticContext(graph,{maxFiles=28,maxBytes=220000}={}){
   const selected=[];const seen=new Set();let bytes=0;
   const byPath=new Map(graph.nodes.map(n=>[n.path,n]));
+  const rankByPath=new Map(graph.nodes.map((n,index)=>[n.path,index]));
   const add=n=>{if(!n||seen.has(n.path)||n.size>80000||bytes+n.size>maxBytes||selected.length>=maxFiles)return false;seen.add(n.path);selected.push(n.path);bytes+=n.size;return true};
   for(const n of graph.nodes){
     add(n);
     if(!seen.has(n.path))continue;
-    for(const e of graph.edges){if(e.from===n.path)add(byPath.get(e.to));else if(e.to===n.path)add(byPath.get(e.from))}
+    const neighborPaths=new Set();
+    for(const e of graph.edges){if(e.from===n.path)neighborPaths.add(e.to);else if(e.to===n.path)neighborPaths.add(e.from)}
+    const neighbors=[...neighborPaths].sort((a,b)=>(rankByPath.get(a)??Number.MAX_SAFE_INTEGER)-(rankByPath.get(b)??Number.MAX_SAFE_INTEGER)||a.localeCompare(b));
+    for(const neighborPath of neighbors)add(byPath.get(neighborPath));
   }
   return {paths:selected,totalBytes:bytes,reason:'goal lexical relevance + symbol/entry centrality + import/test neighborhood'};
 }

@@ -1,6 +1,7 @@
 import path from 'node:path';
 
 const compareText=(a,b)=>a<b?-1:a>b?1:0;
+const normalizeGraphPath=value=>String(value).replaceAll('\\','/').split('/').filter(segment=>segment!=='.').join('/');
 const TOKEN_RE=/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu;
 const IMPORT_PATTERNS=[
   /(?:import\s+[^'"\n]*?from\s*|export\s+[^'"\n]*?from\s*|import\s*\(\s*|import\s*|require\s*\()\s*['"]([^'"]+)['"]/g,
@@ -42,7 +43,7 @@ function relatedByStem(a,b){
 export function buildSemanticRepoGraph(files,{goal=''}={}){
   const inputDocs=(files||[]).filter(x=>x&&typeof x.path==='string'&&typeof x.content==='string');
   const byPath=new Map();
-  for(const file of inputDocs){const normalizedPath=file.path.replaceAll('\\','/');byPath.set(normalizedPath,{...file,path:normalizedPath});}
+  for(const file of inputDocs){const normalizedPath=normalizeGraphPath(file.path);byPath.set(normalizedPath,{...file,path:normalizedPath});}
   const docs=[...byPath.values()];
   const nodes=[];const edges=[];const edgeKeys=new Set();
   const addEdge=edge=>{const key=`${edge.type}\n${edge.from}\n${edge.to}`;if(edgeKeys.has(key))return false;edgeKeys.add(key);edges.push(edge);return true};

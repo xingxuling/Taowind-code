@@ -1,0 +1,78 @@
+{
+  "protocol": "taowind-code.dwac-transactional-object-identity.evidence.v0.8.7",
+  "status": "SOURCE_IMPLEMENTED_FOCUSED_LOCAL_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "a46e994906e1714c4866b032994b618c079dfac5",
+  "selected_bottleneck": "transactional-object-identity",
+  "selected_problem": "Fresh-main inspection and direct reproduction found that ChangesetStore optimistic-concurrency checks were content-addressed only. Replacing an existing file object with a different file containing identical bytes after staging preserved the same sha256, so apply accepted the replacement and overwrote it. The rollback side had the same sovereignty defect: replacing an applied file object with another object containing the same postimage bytes allowed rollback to overwrite the replacement.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "upstream_dwac_commit": "56f752c25ce09d885afa4b377a1a1b892e14f3a2",
+    "north_star_asset": "structural_generation/dwac_structural/north_star_self_development.py",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "a46e994906e1714c4866b032994b618c079dfac5",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "candidate_scores": {
+      "transactional-object-identity": 0.8324,
+      "native-complex-changeset-synthesis": 0.7764,
+      "validation-workspace-confinement": 0.7668,
+      "filesystem-crash-atomicity": 0.5968
+    },
+    "four_mode_signal": {
+      "breadth": 0.18,
+      "bottleneck_centrality": 0.98,
+      "evidence_density": 0.99,
+      "adjacent_work_count": 3,
+      "direction_stability": 0.92,
+      "urgency": 0.84,
+      "artifact_pressure": 0.30
+    },
+    "four_mode_scores": {
+      "WHOLE_ARTIFACT": 0.19,
+      "DEEP_DEVELOPMENT": 0.959,
+      "NORTH_STAR": 0.7855,
+      "NORTH_STAR_BURST": 0.8125
+    },
+    "mode_route_basis": "The committed four-mode router selects DEEP_DEVELOPMENT through the singular evidence-rich bottleneck gate; no mode rotation was forced.",
+    "claim_limit": "No hosted DWAC success receipt is claimed. Selection/routing come from committed source-contract replay over fresh-main evidence while the hosted Developer Execution Runtime remained transiently unavailable."
+  },
+  "pre_fix_reproduction": {
+    "apply_same_content_replacement": "EXPECTED FAILURE reproduced on canonical base: stage a.txt, atomically replace a.txt with a different file object containing the same preimage bytes, then apply; old code accepted it and overwrote the replacement.",
+    "rollback_same_content_replacement": "The same hash-only logic existed on rollback: a different replacement object with identical postimage bytes could satisfy rollback preflight and be overwritten."
+  },
+  "changes": [
+    "WorkspaceService.stat now reports a best-effort object identity derived from filesystem dev:ino when the platform exposes a non-zero inode value.",
+    "New changesets use protocol taowind-code.changeset.v0.3 and snapshot the preimage object identity alongside hash/size/content.",
+    "Apply preflight rejects an existing target whose object identity differs from the staged preimage even when bytes/hash are identical.",
+    "Apply receipts record post-apply object identity; rollback preflight uses that receipt to reject same-content replacement objects before the first restoration.",
+    "Compatibility is fail-soft for older changesets or platforms where identity is unavailable: identity comparison is enforced only when the stored expected identity is present; all existing hash, existence, type, ancestor and path boundaries remain active."
+  ],
+  "validation": {
+    "commands": [
+      "node --check core/workspace.mjs",
+      "node --check core/changesets.mjs",
+      "node --test tests/changesets.test.mjs tests/context-secret-boundary.test.mjs tests/repo-context-path-index.test.mjs tests/path-boundary.test.mjs"
+    ],
+    "result": "PASS",
+    "tests": "24/24 PASS; 0 skipped on validation host",
+    "verified_git_blobs": {
+      "core/workspace.mjs": "54a2bebdb836ccd6a8edd10c6849024a304a1485",
+      "core/changesets.mjs": "56ed8cc5c943de77c379c144ce47abcafc17ee03",
+      "tests/changesets.test.mjs": "8a64ab215588624a32d78e705ad345ef75f26261",
+      "core/repo-context.mjs": "f715c212971a5ce3cdbecdb2201a848c73fead15",
+      "tests/context-secret-boundary.test.mjs": "df7bea46f5a636f96d86dee2cdfbd678f16a2a73"
+    }
+  },
+  "truth_boundaries": [
+    "Filesystem object identity is best-effort and is only enforced when Node exposes a non-zero inode identity. This does not claim a portable cryptographic object identity across every filesystem/platform.",
+    "Ancestor directory inode replacement remains outside this focused target-object closure.",
+    "Filesystem crash-level atomicity for arbitrary I/O/process failure remains unresolved.",
+    "Validation workspace confinement remains a broader unresolved sovereignty boundary.",
+    "Arbitrary complex repository semantic synthesis remains UNRESOLVED.",
+    "No GitHub Actions were intentionally triggered or rerun, no force push was used, and no credential, payment, formal Release or destructive/irreversible external action was performed."
+  ]
+}

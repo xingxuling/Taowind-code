@@ -1,0 +1,34 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "319b885b0221263a01e12418dcfbbd4cff03d4d6",
+  "selected_bottleneck": "truth-boundary-resolution-causality",
+  "selected_problem": "A truth-boundary evidence revision can currently suppress its own boundary row by listing that same source/path in `resolves`, because the bridge applies a file's resolution references before evaluating the file's own boundary rows. That lets a single revision erase its own unresolved evidence without any newer closure provenance and can make diagnosis falsely report NO_ACTIONABLE_CANDIDATE.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "Fresh main exposes a single narrow, directly reproducible provenance defect in the truth-boundary ledger. The candidate is highly central to autonomous diagnosis, has dense local evidence, and does not require a product-shape or architecture decision, so source-contract replay routes this cycle to DEEP_DEVELOPMENT without forced mode rotation."
+  },
+  "changes": [
+    "Resolution references from the current evidence file are now added only after that file's own boundary rows have been evaluated.",
+    "Only resolution provenance already observed in newer revisions may suppress the current older revision's rows.",
+    "Newer evidence still resolves explicitly referenced older source/path rows exactly as before; no semantic closure inference or hard-coded roadmap is introduced."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED: an evidence file containing `resolves: [{source: 'evidence/self.json', path: 'truth_boundaries[0]'}]` plus `truth_boundaries: ['UNRESOLVED: same revision must stay visible']` caused the unpatched bridge to emit RuntimeError: NO_ACTIONABLE_CANDIDATE instead of exposing the boundary.",
+    "python_compile": "PASS",
+    "test_syntax": "PASS",
+    "command": "node --test tests/truth-boundary-resolution-causality.test.mjs",
+    "result": "2/2 PASS, 0 skipped",
+    "blob_match": {
+      "bridge/dwac_bridge.py": "b784a52f4e4cc8e173c1d11234a220beae86da63",
+      "tests/truth-boundary-resolution-causality.test.mjs": "d719d99aa3ae7453947e9e541ff805ad6bf9c46b"
+    }
+  },
+  "truth_boundaries": [
+    "Explicit source/path resolution remains committed provenance, not semantic proof that arbitrary uncited historical boundaries are closed.",
+    "This closes same-revision self-suppression only; it does not claim cryptographic authenticity for evidence files or protect against a malicious writer with repository write access.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

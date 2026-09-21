@@ -1,0 +1,58 @@
+{
+  "protocol": "taowind-code.dwac-pr-merge-receipt-integrity.evidence.v0.10.9",
+  "status": "SOURCE_IMPLEMENTED_TARGETED_VERIFIED",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "canonical_base": "beda278ba2759312bc468b7fc8d9e5c14e197403",
+  "selected_bottleneck": "delivery-pr-merge-receipt-integrity",
+  "selected_problem": "Fresh main bound GitHub merge requests to the expected validated PR head, but the provider still treated any successful HTTP response whose `merged` field was not explicitly false as a successful merge. A 2xx response with missing merge confirmation could therefore be reported as `mergePerformed=true` and `ok=true` with no immutable merge commit SHA, breaking verifiable and traceable delivery receipts.",
+  "development_modes": ["DEEP_DEVELOPMENT"],
+  "native_mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_provenance": {
+    "upstream_dwac_repository": "xingxuling/TaoX",
+    "four_mode_asset": "structural_generation/dwac_structural/four_mode_router.py",
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "fresh_main": "beda278ba2759312bc468b7fc8d9e5c14e197403",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "mode_route_basis": "After expected-head binding, one narrow evidence-rich central gap remained at the same remote merge boundary: provider success receipts were not strictly bound to GitHub's explicit merged confirmation plus an immutable merge commit identifier. The committed singular-bottleneck gate routes this replay to DEEP_DEVELOPMENT without forced mode rotation.",
+    "claim_limit": "No hosted DWAC success receipt or fabricated numeric routing score is claimed."
+  },
+  "pre_fix_reproduction": {
+    "result": "REPRODUCED",
+    "method": "source-exact focused harness for the pre-fix githubMergePullRequest return contract",
+    "observed": "A mocked HTTP 200 response with `{}` produced `ok=true`, `mergePerformed=true`, `externalSideEffectPerformed=true`, and `sha=null`.",
+    "consequence": "The provider could claim a completed remote merge without explicit GitHub merge confirmation or immutable merge-commit identity."
+  },
+  "changes": [
+    "githubMergePullRequest now accepts success only when GitHub explicitly returns `merged === true`.",
+    "A confirmed merge is considered a valid delivery receipt only when GitHub also returns a full 40- or 64-hex merge commit SHA.",
+    "Successful HTTP without explicit merge confirmation fails closed with PR_MERGE_NOT_CONFIRMED.",
+    "If GitHub explicitly reports a merge but omits or returns a malformed merge SHA, the provider preserves `mergePerformed=true` and `externalSideEffectPerformed=true` while returning `ok=false` with PR_MERGE_SHA_INVALID, so a performed side effect is never falsely erased from the receipt."
+  ],
+  "validation": {
+    "result": "PASS",
+    "commands": [
+      "node --check exact branch core/git.mjs",
+      "node --check exact branch tests/github-merge-receipt-integrity.test.mjs",
+      "node --test exact branch tests/github-merge-receipt-integrity.test.mjs"
+    ],
+    "tests": "3/3 PASS",
+    "cases": [
+      "HTTP 200 with no explicit `merged=true` fails closed and does not claim a merge side effect",
+      "`merged=true` with no immutable merge SHA preserves the performed-side-effect truth while rejecting the delivery receipt",
+      "`merged=true` with a full immutable merge SHA succeeds"
+    ],
+    "branch_git_blobs": {
+      "core/git.mjs": "d26379e31647a31bc309f14147f7f554d5f4a4a3",
+      "tests/github-merge-receipt-integrity.test.mjs": "b8a912c7ad6b55842148a293f45588247ac91cb0"
+    },
+    "verification_note": "The local verification files were byte-identical to the branch blobs above, confirmed with `git hash-object`. No GitHub Actions were used."
+  },
+  "truth_boundaries": [
+    "This closes false-positive provider merge receipts; it does not make GitHub's merge operation itself transactional with the caller's observation.",
+    "The current GitHub merge API still has no caller-supplied expected-base-SHA precondition, so base-branch movement between validation and merge remains a separate unresolved integration-boundary problem.",
+    "PR creation remains branch-name based and is not atomically conditioned on an expected remote head SHA; the later merge head precondition prevents silently merging a moved PR head but does not prevent creation of a PR whose head changed before creation.",
+    "OS-level validation sandboxing, arbitrary complex semantic synthesis, Windows descendant-tree equivalence, and crash-level filesystem atomicity remain unresolved.",
+    "No force push, repository-rule bypass, credential exposure, payment, formal Release, or destructive/irreversible external action is introduced."
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "53fe53b7b6f50e788ec38ed1a6ace568efc4e796",
+  "bottleneck": "repository-summary-extension-truncation-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "After the top-level summary truncation marker was closed, fresh main still silently bounded the repository extension histogram to 16 rows. With 17 observed extensions, repositorySummary.extensions returned only 16 with no field-specific marker, so the cognition summary could not distinguish a complete histogram from an incomplete bounded view.",
+  "decision_provenance": {
+    "execution": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "hosted_developer_execution_runtime": "TRANSIENT_HTTP_502",
+    "route_basis": "The newly exposed adjacent observation-integrity defect is singular, directly falsifiable, and requires only making an existing bounded summary honest about its own loss. The four-mode contract therefore resolves to DEEP_DEVELOPMENT without forced mode rotation."
+  },
+  "pre_fix_reproduction": "A synthetic manifest containing 17 distinct extensions produced extensions.length=16 while extensionsTruncated was absent. The new regression failed with undefined != true.",
+  "change": "Compute the already-existing sorted extension rows once, preserve the 16-row bounded histogram exactly, and expose extensionsTruncated when observed extension categories exceed that view.",
+  "validation": {
+    "node_check": "PASS",
+    "pre_fix_reproduction": "EXPECTED FAILURE reproduced: incomplete 16-of-17 extension view had no truncation marker",
+    "focused_tests": "5/5 PASS; 0 skipped",
+    "new_regressions": 1
+  },
+  "truth_boundary": "This only marks truncation of the observed extension histogram. It does not expand manifest coverage, infer extensions outside an already-truncated manifest, alter extension ranking policy, solve large-repository context selection, or solve arbitrary complex repository synthesis.",
+  "github_actions": "not requested"
+}

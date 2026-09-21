@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.evidence.v1",
+  "canonical_repo": "xingxuling/Taowind-code",
+  "base_main": "569146d8643c7b5193d6f39b8db7b1e06a295bcb",
+  "selected_bottleneck": "semantic-canonical-path-content-conflict-integrity",
+  "selected_problem": "Fresh-main semantic graph canonicalizes lexical path aliases but silently retained the last of conflicting contents for the same canonical path, making graph symbols and meaning depend on input order.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_basis": [
+    "The defect is narrow, directly falsifiable, and central to repository-reality integrity.",
+    "Existing Taowind Code consensus rules already establish that identical same-path variants may collapse while incompatible same-path variants fail closed, so this cycle reuses existing policy instead of inventing a new conflict architecture.",
+    "Hosted Developer Execution Runtime returned transient HTTP 502; this cycle uses DWAC_SOURCE_CONTRACT_REPLAY and does not claim a hosted DWAC success receipt."
+  ],
+  "change": "Before semantic node construction, canonical path aliases with identical content collapse deterministically; aliases with differing content raise SEMANTIC_PATH_CONTENT_CONFLICT with the canonical path instead of last-write-wins.",
+  "validation": {
+    "pre_fix_reproduction": "PASS: focused regression failed against fresh main because no exception was raised, reproducing silent last-write behavior.",
+    "syntax_check": "PASS",
+    "focused_tests": "2/2 PASS",
+    "skipped": 0,
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This closes silent order-dependent content selection when lexical aliases normalize to one semantic path. The conflict currently fails closed by raising an error; it does not add provenance arbitration, filesystem re-observation, case-folding identity, Unicode normalization policy, full parser-grade module resolution, or arbitrary complex repository synthesis."
+}

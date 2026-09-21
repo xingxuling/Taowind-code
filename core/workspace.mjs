@@ -6,7 +6,7 @@ import {sha256Buffer} from './hash.mjs';
 import {isCredentialLikePath} from './repo-context.mjs';
 
 const HIDDEN=new Set(['.git','node_modules','.next','dist','build','.venv','runtime-data']);
-const UTF8_DECODER=new TextDecoder('utf-8',{fatal:true});
+const UTF8_DECODER=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true});
 const TEXT_EXT=new Set(['.js','.mjs','.cjs','.ts','.tsx','.jsx','.json','.md','.txt','.css','.html','.yml','.yaml','.toml','.py','.rcl','.sh','.cmd','.ps1','.java','.kt','.kts','.go','.rs','.c','.h','.cpp','.hpp','.cs','.swift','.rb','.php','.vue','.svelte']);
 
 function fileMode(st){return st&&st.isFile()?st.mode&0o7777:null}

@@ -20,6 +20,12 @@ function normalizeImport(from,spec){
   const base=path.posix.normalize(path.posix.join(path.posix.dirname(from),spec));
   return base.replace(/^\.\//,'');
 }
+function resolveImportTarget(nodePaths,imp){
+  const rank=p=>p===imp?0:p.startsWith(`${imp}.`)?1:2;
+  return nodePaths
+    .filter(p=>p===imp||p.startsWith(`${imp}.`)||p.startsWith(`${imp}/index.`))
+    .sort((a,b)=>rank(a)-rank(b)||a.length-b.length||a.localeCompare(b))[0]||null;
+}
 function isTestFile(p){return /(^|\/)(test|tests|__tests__)(\/|$)|\.(test|spec)\.[^.]+$/i.test(p)}
 function isEntryLike(p){return /(^|\/)(index|main|app|server|cli)\.[^.]+$/i.test(p)||/^(package\.json|pyproject\.toml|Cargo\.toml|go\.mod)$/i.test(p)}
 function relatedByStem(a,b){
@@ -40,7 +46,7 @@ export function buildSemanticRepoGraph(files,{goal=''}={}){
   const nodePaths=[...byPath.keys()];
   for(const n of nodes){
     for(const imp of n.imports){
-      const hit=nodePaths.find(p=>p===imp||p.startsWith(`${imp}.`)||p.startsWith(`${imp}/index.`));
+      const hit=resolveImportTarget(nodePaths,imp);
       if(hit)edges.push({from:n.path,to:hit,type:'imports'});
     }
   }

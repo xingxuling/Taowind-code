@@ -41,7 +41,8 @@ function relatedByStem(a,b){
 export function buildSemanticRepoGraph(files,{goal=''}={}){
   const docs=(files||[]).filter(x=>x&&typeof x.path==='string'&&typeof x.content==='string');
   const byPath=new Map(docs.map(x=>[x.path.replaceAll('\\','/'),x]));
-  const nodes=[];const edges=[];
+  const nodes=[];const edges=[];const edgeKeys=new Set();
+  const addEdge=edge=>{const key=`${edge.type}\n${edge.from}\n${edge.to}`;if(edgeKeys.has(key))return false;edgeKeys.add(key);edges.push(edge);return true};
   for(const file of docs){
     const p=file.path.replaceAll('\\','/');
     const imports=[];for(const re of IMPORT_PATTERNS)for(const spec of collect(re,file.content)){const base=normalizeImport(p,spec);if(base)imports.push(base)}
@@ -52,11 +53,11 @@ export function buildSemanticRepoGraph(files,{goal=''}={}){
   for(const n of nodes){
     for(const imp of n.imports){
       const hit=resolveImportTarget(nodePaths,imp);
-      if(hit)edges.push({from:n.path,to:hit,type:'imports'});
+      if(hit)addEdge({from:n.path,to:hit,type:'imports'});
     }
   }
   const tests=nodes.filter(n=>n.isTest),nonTests=nodes.filter(n=>!n.isTest);
-  for(const t of tests){const matches=nonTests.filter(s=>relatedByStem(t.path,s.path));if(matches.length===1)edges.push({from:t.path,to:matches[0].path,type:'tests'});}
+  for(const t of tests){const matches=nonTests.filter(s=>relatedByStem(t.path,s.path));if(matches.length===1)addEdge({from:t.path,to:matches[0].path,type:'tests'});}
   const goalTokens=tokens(goal).filter(x=>x.length>2);
   const adjacency=new Map(nodes.map(n=>[n.path,new Set()]));
   for(const e of edges){adjacency.get(e.from)?.add(e.to);adjacency.get(e.to)?.add(e.from)}

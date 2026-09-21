@@ -128,10 +128,18 @@ export function gitLocalCommit(cwd,message,paths=[],validatedPostimage=null){
  }
  return {ok:commit.ok,stage:add,indexOwnership,indexIntegrity,commitIntegrity,commit,head:head.ok?head.stdout.trim():null,paths:selected,externalSideEffectPerformed:false,pushPerformed:false};
 }
-export function gitPushBranch(cwd,{remote='origin',branch=null,setUpstream=true}={}){
+function resolveExpectedCommit(cwd,value){
+  const raw=String(value||'').trim();
+  if(!/^[0-9a-f]{7,64}$/i.test(raw))return {ok:false,sha:null,error:raw?'EXPECTED_HEAD_SHA_INVALID':'EXPECTED_HEAD_SHA_REQUIRED'};
+  const resolved=run(cwd,['rev-parse','--verify',`${raw}^{commit}`]);
+  return resolved.ok?{ok:true,sha:resolved.stdout.trim(),error:null}:{ok:false,sha:null,error:'EXPECTED_HEAD_SHA_NOT_FOUND',detail:clip(resolved.stderr)};
+}
+export function gitPushBranch(cwd,{remote='origin',branch=null,setUpstream=true,expectedHeadSha=null}={}){
   const selected=String(branch||currentBranch(cwd)||'').trim();if(!selected)return {ok:false,pushPerformed:false,externalSideEffectPerformed:false,error:'BRANCH_REQUIRED'};
-  const args=['push'];if(setUpstream)args.push('--set-upstream');args.push(remote,selected);const pushed=run(cwd,args,60_000);
-  return {ok:pushed.ok,remote,branch:selected,pushPerformed:pushed.ok,externalSideEffectPerformed:pushed.ok,stdout:clip(pushed.stdout),stderr:clip(pushed.stderr),code:pushed.code};
+  const expected=resolveExpectedCommit(cwd,expectedHeadSha);if(!expected.ok)return {ok:false,remote,branch:selected,expectedHeadSha:String(expectedHeadSha||'').trim()||null,pushPerformed:false,externalSideEffectPerformed:false,error:expected.error,detail:expected.detail||null};
+  const refspec=`${expected.sha}:refs/heads/${selected}`;const pushed=run(cwd,['push',remote,refspec],60_000);
+  let upstream=null;if(pushed.ok&&setUpstream){const configured=run(cwd,['branch','--set-upstream-to',`${remote}/${selected}`,selected]);upstream={ok:configured.ok,stdout:clip(configured.stdout),stderr:clip(configured.stderr),code:configured.code}}
+  return {ok:pushed.ok,remote,branch:selected,expectedHeadSha:expected.sha,pushedHead:expected.sha,refspec,upstream,pushPerformed:pushed.ok,externalSideEffectPerformed:pushed.ok,stdout:clip(pushed.stdout),stderr:clip(pushed.stderr),code:pushed.code,error:pushed.ok?null:'PUSH_FAILED'};
 }
 async function apiJson(fetchImpl,url,init){
   if(typeof fetchImpl!=='function')return {ok:false,status:0,data:null,error:'FETCH_UNAVAILABLE'};
@@ -160,7 +168,7 @@ export async function githubMergePullRequest(cwd,{number,remote='origin',mergeMe
 export async function gitRemoteDelivery(cwd,{explicitApproval=false,push=true,createPullRequest=false,merge=false,remote='origin',branch=null,base='main',title='',body='',draft=false,prNumber=null,mergeMethod='squash',expectedHeadSha=null,token=null,env=process.env,fetchImpl=globalThis.fetch}={}){
   const result={ok:false,explicitApproval:explicitApproval===true,externalSideEffectPerformed:false,pushPerformed:false,prPerformed:false,mergePerformed:false};
   if(explicitApproval!==true)return {...result,error:'EXPLICIT_APPROVAL_REQUIRED'};
-  let pushResult=null;if(push){pushResult=gitPushBranch(cwd,{remote,branch});Object.assign(result,{push:pushResult,pushPerformed:pushResult.pushPerformed===true,externalSideEffectPerformed:pushResult.externalSideEffectPerformed===true});if(!pushResult.ok)return {...result,error:'PUSH_FAILED'}}
+  let pushResult=null;if(push){pushResult=gitPushBranch(cwd,{remote,branch,expectedHeadSha});Object.assign(result,{push:pushResult,pushPerformed:pushResult.pushPerformed===true,externalSideEffectPerformed:pushResult.externalSideEffectPerformed===true});if(!pushResult.ok)return {...result,error:pushResult.error||'PUSH_FAILED'}}
   let pr=null;if(createPullRequest){pr=await githubCreatePullRequest(cwd,{remote,base,head:branch,title,body,draft,token,env,fetchImpl});Object.assign(result,{pullRequest:pr,prPerformed:pr.prPerformed===true,externalSideEffectPerformed:result.externalSideEffectPerformed||pr.externalSideEffectPerformed===true});if(!pr.ok)return {...result,error:'PR_CREATE_FAILED'}}
   let mergeResult=null;if(merge){const number=prNumber||pr?.number;mergeResult=await githubMergePullRequest(cwd,{number,remote,mergeMethod,expectedHeadSha,token,env,fetchImpl});Object.assign(result,{merge:mergeResult,mergePerformed:mergeResult.mergePerformed===true,externalSideEffectPerformed:result.externalSideEffectPerformed||mergeResult.externalSideEffectPerformed===true});if(!mergeResult.ok)return {...result,error:'PR_MERGE_FAILED'}}
   return {...result,ok:true,error:null};

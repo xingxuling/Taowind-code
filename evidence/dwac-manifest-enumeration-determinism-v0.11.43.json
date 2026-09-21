@@ -1,0 +1,28 @@
+{
+  "protocol": "taowind.dwac.source-contract-replay.v1",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "fresh_main": "e8097871fb402fb275b526fccccd799894da7daf",
+  "selected_bottleneck": "manifest-enumeration-order-determinism",
+  "selected_problem": "Fresh main WorkspaceService.manifest consumed fs.readdirSync order directly. Under a bounded maxFiles cap, equivalent directory contents exposed in a different valid filesystem enumeration order produced a different observed manifest and therefore could change the semantic seed context.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "route_basis": "The defect is singular and reality-reproduced at the fresh-main observation boundary. Stable per-directory name ordering removes enumeration-order bias without choosing a new large-repository sampling architecture or forcing a mode rotation.",
+  "pre_fix_reproduction": {
+    "files": ["a.js", "b.js", "c.js"],
+    "maxFiles": 2,
+    "forward": ["a.js", "b.js"],
+    "reversed_directory_enumeration": ["c.js", "b.js"]
+  },
+  "change": "Sort each observed directory entry list by entry name before the existing recursive bounded manifest walk.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "4/4 PASS",
+    "skipped": 0,
+    "new_regressions": 1,
+    "covered_existing_regressions": ["manifest-file-budget", "manifest-truncation-evidence"]
+  },
+  "truth_boundary": "This makes the existing bounded depth-first manifest deterministic for equivalent directory contents. It does not claim exhaustive large-repository coverage, an optimal sampling policy, parser-grade module semantics, or arbitrary complex repository synthesis.",
+  "hosted_dwac_runtime": "TEMPORARY_502",
+  "execution_mode": "DWAC_SOURCE_CONTRACT_REPLAY",
+  "github_actions": "not requested"
+}

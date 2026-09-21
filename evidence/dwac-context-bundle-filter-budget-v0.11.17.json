@@ -1,0 +1,38 @@
+{
+  "protocol": "taowind-code.dwac.evidence.v1",
+  "fresh_main": "fa5d3b458bb5bd1aa06f89b0217617bf89e6761d",
+  "selected_bottleneck": "context-bundle-filter-budget-starvation",
+  "selected_problem": "Arbitrary complex repository synthesis remains UNRESOLVED. Fresh-main inspection found that `WorkspaceService.contextBundle` applies its `maxFiles` slice before credential, text-type, symlink, existence and size admission filters. Rejected paths therefore consume the file-count budget. A recovery request or semantic seed with 32 rejected paths before a valid source file can return an empty bundle even though readable in-policy repository context is available later in the same request, prematurely starving native synthesis of code reality.",
+  "sovereignty_gate": "AUTONOMOUS",
+  "mode": "DEEP_DEVELOPMENT",
+  "execution": {
+    "hosted_dwac_receipt": "UNAVAILABLE_TRANSIENT_UPSTREAM_502",
+    "decision_basis": "DWAC_SOURCE_CONTRACT_REPLAY",
+    "route_basis": "The new canonical main still exposes the native-complex-synthesis truth boundary. This is a single high-centrality context-acquisition defect with direct pre/post reproduction and no need to prescribe a new cognition architecture, so source-contract replay routes to DEEP_DEVELOPMENT without forced mode rotation."
+  },
+  "asset_reuse": [
+    "Reused the existing credential-path, text-extension, ancestor/symlink, workspace path and byte-budget admission policies inside `WorkspaceService.contextBundle`.",
+    "No new selector, provider, model, product form or cognition architecture was introduced."
+  ],
+  "changes": [
+    "`contextBundle` now iterates the deduplicated request set and stops only after `maxFiles` accepted files have been collected.",
+    "Rejected or unreadable paths no longer consume the accepted-file budget; byte limits and all existing safety filters remain unchanged.",
+    "Input order and deterministic first-accepted semantics are preserved."
+  ],
+  "validation": {
+    "pre_fix_reproduction": "REPRODUCED against fresh main: focused regression 0/1 PASS. Thirty-two nested credential-like paths consumed the `maxFiles=32` slice and prevented a later readable `src/main.js` from entering the bundle.",
+    "node_check": "PASS",
+    "focused_command": "node --test tests/context-bundle-filter-budget.test.mjs",
+    "focused_result": "1/1 PASS, 0 skipped",
+    "blob_match": {
+      "core/workspace.mjs": "934e37648a9589c8e903e80b38c085eb4fa0ff75",
+      "tests/context-bundle-filter-budget.test.mjs": "b4c6b1d76a2e8d0d0423b36e0bc4fac80796f321"
+    }
+  },
+  "truth_boundaries": [
+    "Arbitrary complex repository synthesis remains UNRESOLVED. This prevents rejected context requests from starving valid later files; it does not guarantee that the resulting bounded context is semantically sufficient for arbitrary software goals.",
+    "`maxFiles` is now an accepted-file budget, while `maxBytes` remains a hard total-content budget; a later file that cannot fit the remaining byte budget is still skipped rather than forcing eviction or reordering.",
+    "Initial semantic seed priority across many otherwise admissible files remains a separate selection-quality question; this change preserves caller order rather than prescribing a new ranking policy.",
+    "BLOCKED_EXTERNAL: GitHub's merge REST endpoint still lacks an atomic expected-base-SHA precondition, so external GET-to-PUT base races remain outside client-side elimination."
+  ]
+}

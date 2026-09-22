@@ -3,6 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {pathToFileURL} from 'node:url';
 
+const RECEIPT_PROTOCOL='taowind-code.rcl-authority-receipt.v0.1';
 const ACTIONS=Object.freeze({
   workspace_write:'authorize_workspace_write',
   shell_execute:'authorize_shell_execute',
@@ -22,6 +23,20 @@ function now(){return new Date().toISOString()}
 function sha256(value){return crypto.createHash('sha256').update(value).digest('hex')}
 function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const tmp=`${file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(value,null,2));fs.renameSync(tmp,file)}
 function escapeRe(value){return String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
+function objectOrNull(value){return value===null||value===undefined||(typeof value==='object'&&!Array.isArray(value))}
+function validAuthorityReceipt(receipt){
+  if(!receipt||typeof receipt!=='object'||Array.isArray(receipt))return false;
+  if(typeof receipt.id!=='string'||!/^auth-/.test(receipt.id))return false;
+  if(receipt.protocol!==RECEIPT_PROTOCOL||typeof receipt.at!=='string')return false;
+  if(typeof receipt.requestId!=='string'||!Object.prototype.hasOwnProperty.call(ACTIONS,receipt.action)||!Object.prototype.hasOwnProperty.call(MODES,receipt.approvalMode))return false;
+  if(receipt.workspace!==null&&receipt.workspace!==undefined&&typeof receipt.workspace!=='string')return false;
+  if(typeof receipt.allowed!=='boolean'||(receipt.reason!==null&&typeof receipt.reason!=='string'))return false;
+  if(receipt.policyDigest!==null&&typeof receipt.policyDigest!=='string')return false;
+  if(receipt.materializedDigest!==null&&receipt.materializedDigest!==undefined&&typeof receipt.materializedDigest!=='string')return false;
+  if(!objectOrNull(receipt.context)||!objectOrNull(receipt.rcl))return false;
+  if(receipt.metadata!==undefined&&(typeof receipt.metadata!=='object'||receipt.metadata===null||Array.isArray(receipt.metadata)))return false;
+  return true;
+}
 export function authorityContextForMode(mode='workspace',{workspaceBoundary=true,explicitApproval=false}={}){
   const base=MODES[mode];if(!base)throw Object.assign(new Error('INVALID_APPROVAL_MODE'),{code:'INVALID_APPROVAL_MODE'});
   return {...base,workspace_boundary:workspaceBoundary===true,explicit_approval:explicitApproval===true};
@@ -64,10 +79,10 @@ export class RclAuthorityGate{
     this.runtimePromise=import(pathToFileURL(entry).href).then(mod=>{if(typeof mod.runReality!=='function')throw Object.assign(new Error('RCL_RUN_REALITY_MISSING'),{code:'RCL_RUNTIME_INVALID'});return mod});return this.runtimePromise;
   }
   _receiptFile(id){return path.join(this.dir,`${id}.json`)}
-  _record(receipt){atomicJson(this._receiptFile(receipt.id),receipt);return receipt}
+  _record(receipt){if(!validAuthorityReceipt(receipt))throw Object.assign(new Error('INVALID_AUTHORITY_RECEIPT'),{code:'INVALID_AUTHORITY_RECEIPT'});atomicJson(this._receiptFile(receipt.id),receipt);return receipt}
   async decide(action,{approvalMode='workspace',workspaceBoundary=true,explicitApproval=false,requestId=null,workspace=null,metadata={}}={}){
     const id=`auth-${Date.now().toString(36)}-${crypto.randomBytes(5).toString('hex')}`;const at=now();let policy='';let policyDigest=null,context=null,materialized=null;
-    const base={id,protocol:'taowind-code.rcl-authority-receipt.v0.1',at,requestId:requestId||id,action,approvalMode,workspace,metadata,allowed:false,reason:null,policyDigest:null,materializedDigest:null,rcl:null};
+    const base={id,protocol:RECEIPT_PROTOCOL,at,requestId:requestId||id,action,approvalMode,workspace,metadata,allowed:false,reason:null,policyDigest:null,materializedDigest:null,rcl:null};
     try{
       policy=this._policy();policyDigest=sha256(policy);context=authorityContextForMode(approvalMode,{workspaceBoundary,explicitApproval});materialized=materializeAuthorityPolicy(policy,context,action);const runtime=await this._runtime();const result=await runtime.runReality(materialized);const transition=result.history?.at(-1);const expected=ACTIONS[action];
       const allowed=transition?.status==='realized'&&transition?.rule===expected&&transition?.authority?.needs?.length>0;

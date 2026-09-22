@@ -1,0 +1,21 @@
+{
+  "version":"0.12.08",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"378f7a94e7f0d0f277d498aa1222fb2de4d2e1fd",
+  "selected_bottleneck":"authority-receipt-write-contract-integrity（授权回执写入契约完整性）",
+  "selected_problem":"Fresh canonical-main inspection found that the checked-in RCL Authority Receipt v0.1 contract restricts action, approvalMode, requestId, workspace and metadata shapes, while RclAuthorityGate._record persisted whatever decide() assembled. Invalid action/mode or malformed envelope values could therefore create durable receipts that the repository's own published schema says are impossible.（最新规范主仓检查发现仓库内 RCL Authority Receipt v0.1 契约已经限制 action、approvalMode、requestId、workspace 与 metadata 的形状，但 RclAuthorityGate._record 会直接持久化 decide() 组装出的对象；未知动作/模式或畸形包络值因此可能生成与仓库公开 schema 自相矛盾的持久化回执。）",
+  "mode_route":["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate":"AUTONOMOUS（自主）",
+  "decision_provenance":{
+    "hosted_developer_execution_runtime":"TRANSIENT_HTTP_502",
+    "compute_router":"TRANSIENT_HTTP_502",
+    "route_basis":"This is a direct contract/runtime parity defect at a single durable write boundary. The published receipt schema already supplies the invariant, so closing it requires neither a new authority model nor a forced mode rotation.（这是单一持久化写入边界上的直接契约/运行时一致性缺陷；公开回执 schema 已经给出不变量，因此无需选择新的授权模型或强制轮换模式。）"
+  },
+  "verification":{
+    "focused_reality_replay":"6/6 PASS; one valid denied receipt remains accepted and five malformed envelope variants fail closed（6/6 通过；1 个合法拒绝回执保持可用，5 种畸形包络全部失败关闭）",
+    "focused_node_check":"PASS for the bounded replay script（有界重放脚本语法检查通过）",
+    "regression_added":"tests/rcl-authority-receipt-write-integrity.test.mjs",
+    "github_actions":"not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary":"This enforces the already-published v0.1 receipt envelope at persistence time. It does not authenticate receipt contents, add signatures, or choose a new external trust root.（本轮只在持久化时落实已经发布的 v0.1 回执包络契约；不认证回执内容、不增加签名，也不选择新的外部信任根。）"
+}

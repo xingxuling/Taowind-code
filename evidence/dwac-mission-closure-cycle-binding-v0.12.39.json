@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.39",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "7aa2d9884f76016701bae84d528df0d6a556eaf9",
+  "bottleneck": "mission-closure-cycle-binding",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main preserves cycle-ledger identity and append behavior, but a mission with completed cycles could still persist closure=null or a closure.runId pointing at a different run. The current supervisor always writes closure from the same run used for the newly appended final cycle record.",
+  "changes": [
+    "Require any mission with cycle > 0 to carry a closure object whose runId equals the latest durable cycle record runId.",
+    "Keep cycle-0 missions compatible with the existing null closure state.",
+    "Update the cycle-write regression and add focused durable tamper coverage for missing/mismatched closure binding."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: validMissionClosure accepted null or any syntactically-valid runId independently of the completed cycle ledger.",
+    "post_fix_contract_replay": "PASS: a matching latest-cycle closure is accepted; null or mismatched closure after a completed cycle fails closed.",
+    "focused_regression_contract": "tests/autonomous-mission-closure-cycle-binding.test.mjs covers real store writes and durable tampering; the prior cycle-write test is updated to preserve the writer's closure invariant.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle binds closure provenance to the latest completed cycle exactly as the current supervisor already writes it. It does not authenticate assessment contents or externally rewritten whole documents."
+}

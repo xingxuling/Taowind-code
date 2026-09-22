@@ -1,0 +1,29 @@
+{
+  "version": "0.11.63",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "0fd3aafc3de339cb958fdb434de44890ebd14d24",
+  "selected_bottleneck": "repository-summary-canonical-file-identity（仓库摘要规范文件身份完整性）",
+  "selected_problem": "After bounded context selection and exact-path indexing learned canonical lexical file identity, repositorySummary still counted lexical aliases as separate files and extensions. A manifest containing src/a.js plus equivalent spellings could report fileCount=4 while contextRecovery.indexedPaths=2, so the same code reality had contradictory summary counts.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "This is a fresh-main summary-integrity defect directly falsifiable after the previous path-identity merge.",
+    "The change reuses canonical lexical path identity and derives extension/top-level metadata from canonical paths; it does not select a new context or synthesis architecture.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502, so this cycle uses DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and does not claim a hosted DWAC success receipt."
+  ],
+  "pre_fix_reality": {
+    "canonical_files": ["src/a.js", "src/b.js"],
+    "reported_fileCount": 4,
+    "reported_extension_js_count": 4,
+    "contextRecovery_indexedPaths": 2,
+    "contextRecovery_totalManifestPaths": 4
+  },
+  "change": "repositorySummary now canonicalizes and deduplicates visible lexical file paths before fileCount, extension histogram, top-level hints and totalManifestPaths are computed. Extensions are derived from canonical paths rather than potentially conflicting duplicate manifest metadata.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "5/5 PASS, 0 skipped: new summary path-identity regression plus determinism, credential-metadata exclusion, extension truncation and top-level truncation regressions",
+    "new_regression": "tests/repository-summary-path-identity.test.mjs",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This closes lexical alias overcounting in repository summary metadata. It does not claim filesystem case/Unicode equivalence, conflicting physical-file provenance arbitration, exhaustive repository coverage, parser-grade module semantics, or arbitrary complex repository synthesis."
+}

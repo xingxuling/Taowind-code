@@ -1,0 +1,28 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.78",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "74ee56194d9c569d0672212a7c15106836f8cafb",
+  "bottleneck": "truth-boundary-auth-canonical-integrity",
+  "mode": "WHOLE_ARTIFACT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "After the first provenance consolidation, fresh-main replay still contains three current candidates that are different historical formulations of one surviving changeset authenticity problem: coordinated rewrite of the durable envelope, nested change semantics and matching receipts without an independent trust anchor. Their separate rows continue to inflate adjacent-work pressure even though they describe one unresolved trust boundary.",
+  "changes": [
+    "Promote one newest canonical authentication boundary and explicitly supersede the older v0.12.11, v0.12.13 and v0.12.76 formulations.",
+    "Preserve the complete surviving claim: structural and semantic self-consistency checks do not authenticate a coherently rewritten durable changeset plus matching receipts.",
+    "Do not choose credentials, signing keys, MACs, external trust roots, append-only logs, crash journals or another trust architecture in this provenance-only cycle."
+  ],
+  "resolves": [
+    {"source": "evidence/dwac-changeset-envelope-integrity-v0.12.11.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-changeset-receipt-shape-integrity-v0.12.13.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-truth-boundary-auth-provenance-v0.12.76.json", "path": "truth_boundary"}
+  ],
+  "verification": {
+    "fresh_main_source_contract": "PASS: all three superseded rows are explicit top-level truth_boundary entries and the bridge's existing resolves mechanism suppresses them only after this newer evidence is observed.",
+    "claim_preservation": "PASS: the remaining coordinated-rewrite authenticity gap is restated once and is still explicitly unresolved.",
+    "routing_integrity": "PASS by exact router source-contract arithmetic: collapsing three equivalent internal candidates into one removes historical duplicate pressure instead of forcing a product or trust architecture.",
+    "hosted_runtime": "Developer Execution Runtime and RNCS Gateway remain transiently unavailable with HTTP 502; no hosted DWAC execution success is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "Authenticated integrity against a coordinated rewrite of the durable changeset envelope, nested semantics and matching receipts remains UNRESOLVED. A real closure requires an independently trustworthy anchor; this cycle does not choose or create credentials, signatures, MACs, trust roots, transparency logs, crash journals or another trust architecture."
+}

@@ -30,6 +30,7 @@ export class TaskStore {
     const tasks=this.load().map(t=>{if(t.runId!==run.id)return t;const mode=activeMode||t.mode;const title=t.phase==='develop'?developmentTitle(mode):t.title;if(t.phase===current){reached=false;return {...t,title,mode,status:'running',progress:.55,detail:run.blocker||run.message||''}}if(reached)return {...t,title,mode,status:'done',progress:1};return {...t,title,mode,status:'queued',progress:0}});
     if(run.status==='READY_FOR_DELIVERY')for(const t of tasks)if(t.runId===run.id&&['observe','develop','apply','validate','repair'].includes(t.phase)){t.status='done';t.progress=1}
     if(run.status==='DELIVERED_LOCAL')for(const t of tasks)if(t.runId===run.id){t.status='done';t.progress=1}
+    if(run.status==='WAITING_PROVIDER')for(const t of tasks)if(t.runId===run.id&&t.phase===current){t.status='blocked'}
     if(run.status==='ROLLED_BACK')for(const t of tasks)if(t.runId===run.id&&t.phase===current){t.status='blocked'}
     if(run.status==='FAILED')for(const t of tasks)if(t.runId===run.id&&t.phase===current){t.status='failed';t.progress=1}
     this.save(tasks);return tasks;

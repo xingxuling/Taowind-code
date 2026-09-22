@@ -12,11 +12,12 @@ function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true}
 function boundedNumber(value,min,max,fallback){const n=Number(value);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback}
 function validMissionConfig(config){return !!config&&typeof config==='object'&&!Array.isArray(config)&&Number.isFinite(config.maxCycles)&&config.maxCycles>=1&&config.maxCycles<=64&&Number.isFinite(config.maxRepairs)&&config.maxRepairs>=0&&config.maxRepairs<=8&&Number.isFinite(config.closureThreshold)&&config.closureThreshold>=.5&&config.closureThreshold<=1&&typeof config.autoCommit==='boolean'}
 function validRunReference(value){return value===undefined||value===null||(typeof value==='string'&&/^run-[A-Za-z0-9-]+$/.test(value))}
+function validMissionCycles(value){return Array.isArray(value)&&value.every(item=>item&&typeof item==='object'&&!Array.isArray(item)&&typeof item.runId==='string'&&/^run-[A-Za-z0-9-]+$/.test(item.runId))}
 function validMissionShape(mission){
   if(typeof mission?.rootGoal!=='string'||!mission.rootGoal.trim())return false;
   if(!Number.isInteger(mission?.cycle)||mission.cycle<0)return false;
   if(!validMissionConfig(mission?.config))return false;
-  if(!Array.isArray(mission?.cycles)||!Array.isArray(mission?.events)||!Array.isArray(mission?.evidence))return false;
+  if(!validMissionCycles(mission?.cycles)||!Array.isArray(mission?.events)||!Array.isArray(mission?.evidence))return false;
   if(mission.nextGoal!==undefined&&(typeof mission.nextGoal!=='string'||!mission.nextGoal.trim()))return false;
   if(!validRunReference(mission.currentRunId))return false;
   if(mission.closure!==undefined&&mission.closure!==null&&(typeof mission.closure!=='object'||Array.isArray(mission.closure)))return false;

@@ -1,0 +1,24 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.75",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "49a4a065f4d462885e32699363c5b656a657abeb",
+  "bottleneck": "task-waiting-provider-parity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main uses WAITING_PROVIDER when DWAC cognition/provider work cannot continue and carries a blocker, but TaskStore still projected the develop phase as running. The existing blocked task state already expresses the runtime reality without adding a new lifecycle concept.",
+  "changes": [
+    "Project the current develop task as blocked when the owning run is WAITING_PROVIDER.",
+    "Preserve the blocker detail and the existing run/task phase model.",
+    "Do not alter provider selection, reconnection, retry, or approval policy."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: WAITING_PROVIDER selected develop and generic projection returned status=running.",
+    "node_check": "PASS on the exact proposed core/tasks.mjs reconstruction.",
+    "focused_bounded_replay": "PASS 1/1: WAITING_PROVIDER leaves no running owned task, develop=blocked, and preserves provider-unavailable detail.",
+    "regression_contract": "tests/task-waiting-provider-parity.test.mjs covers the provider wait projection.",
+    "hosted_runtime": "Developer Execution Runtime remained transiently unavailable with HTTP 502; no hosted/full repository suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle changes only the task-board projection of an existing provider wait. It does not decide which provider should be used or when autonomous retry should occur."
+}

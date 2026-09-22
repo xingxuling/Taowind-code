@@ -27,6 +27,7 @@ function validMissionShape(mission){
   if(mission.nextGoal!==undefined&&(typeof mission.nextGoal!=='string'||!mission.nextGoal.trim()))return false;
   if(!validRunReference(mission.currentRunId))return false;
   if(!validMissionClosure(mission.closure))return false;
+  if(mission.cycle>0&&(!mission.closure||mission.closure.runId!==mission.cycles.at(-1).runId))return false;
   if(mission.blocker!==undefined&&mission.blocker!==null&&typeof mission.blocker!=='string')return false;
   return true;
 }

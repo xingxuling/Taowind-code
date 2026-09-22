@@ -12,7 +12,7 @@ import {browserGoalLikely} from './browser-observation.mjs';
 import {gitDeliveryPreview,gitLocalCommit} from './git.mjs';
 
 function browserValidation(goal,proposal={},previous={}){
-  const required=browserGoalLikely(goal)||previous.browserRequired===true;let checks=Array.isArray(proposal.browser_checks)?proposal.browser_checks.filter(Boolean).slice(0,8):Array.isArray(previous.browserChecks)?previous.browserChecks:[];
+  const required=browserGoalLikely(goal)||previous.browserRequired===true;let checks=Array.isArray(proposal.browser_checks)?proposal.browser_checks:Array.isArray(previous.browserChecks)?previous.browserChecks:[];
   if(required&&!checks.length&&process.env.TAOWIND_PREVIEW_URL)checks=[{url:process.env.TAOWIND_PREVIEW_URL,forbidConsoleErrors:true,forbidPageExceptions:true,forbidCriticalNetworkErrors:true,screenshot:true}];
   return {browserRequired:required,browserChecks:checks};
 }

@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.33",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "f9c5c4bed357929324fea9ef8451135ef3c43deb",
+  "bottleneck": "mission-durable-timestamp-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main made durable event identity explicit, but mission createdAt/updatedAt remained unchecked and unpublished. list() sorts by updatedAt while eventObject() already owns updatedAt by assigning it from the newly appended event timestamp, so a persisted document could forge audit ordering or detach its visible update time from its event ledger.",
+  "changes": [
+    "Require non-empty durable createdAt and updatedAt fields.",
+    "Bind updatedAt to the final durable event timestamp, preserving the writer invariant already enforced by eventObject().",
+    "Publish createdAt/updatedAt in Autonomous Mission v0.1 and add a focused tamper regression."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: validMissionShape did not inspect createdAt or updatedAt, and the schema did not publish them.",
+    "post_fix_contract_replay": "PASS: blank timestamps and updatedAt detached from the event tail fail closed while normal create/update state preserves equality with the final event timestamp.",
+    "focused_regression_contract": "tests/autonomous-mission-durable-timestamp-integrity.test.mjs covers generated timestamp behavior and durable tamper rejection.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not cryptographically authenticate timestamps or impose a wall-clock ordering policy across machines. It only preserves the timestamp relationship already produced by the existing mission writer."
+}

@@ -1,0 +1,30 @@
+{
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "4ef00d3a2b6884a12c5c21a5ead993e44080485c",
+  "selected_bottleneck": "task-item-contract-integrity（任务条目契约完整性）",
+  "selected_problem": "Fresh canonical main publishes an Agent Task schema requiring id/title/status, a fixed status enum, bounded progress, and string evidence items, but TaskStore only validated that tasks.json was an array. Invalid durable items and invalid write-side replacements could therefore contradict the checked-in contract.（最新规范主仓已经发布 Agent Task schema，要求 id/title/status、固定状态枚举、0-1 进度以及字符串 evidence 条目，但 TaskStore 只验证 tasks.json 顶层是否为数组，因此无效持久化任务与写入侧替换仍可违反仓库内正式契约。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "selection_basis": [
+    "The repository already defines the task item schema, so enforcing it at the store boundary closes contract/runtime drift without choosing a new task architecture.（仓库已经定义任务条目 schema，因此在存储边界执行它是在闭合契约/运行时漂移，不需要选择新的任务架构。）",
+    "TaskStore.plan already emits task objects that satisfy these constraints.（TaskStore.plan 当前生成的任务对象本身已经满足这些约束。）"
+  ],
+  "pre_fix_reality": {
+    "focused_test": "1/3 PASS, 2/3 FAIL（1/3 通过，2/3 失败）",
+    "failures": [
+      "A durable task missing required title was accepted by TaskStore.load.（缺少必需 title 的持久化任务仍被 TaskStore.load 接受。）",
+      "TaskStore.replace accepted invalid status/progress/evidence item shapes and overwrote durable state.（TaskStore.replace 接受非法 status/progress/evidence 条目形状并覆盖持久状态。）"
+    ]
+  },
+  "changes": [
+    "Validate required task fields and the published status enum on durable reads and writes.（在持久化读取与写入边界验证必需任务字段和已发布状态枚举。）",
+    "Validate optional progress bounds and evidence string-item semantics exactly as published.（按已发布契约验证可选 progress 边界和 evidence 字符串条目语义。）",
+    "Preserve additional runtime task fields such as runId, phase, detail, and mode.（保持 runId、phase、detail、mode 等运行时附加字段不变。）"
+  ],
+  "verification": {
+    "node_check": "PASS on exact proposed core/tasks.mjs（精确拟议 core/tasks.mjs 的 Node 语法检查通过）",
+    "focused_test": "3/3 PASS, 0 skipped（3/3 通过，0 跳过）",
+    "hosted_runtime": "Developer Execution Runtime still returned transient HTTP 502, so no hosted DWAC success receipt is claimed.（Developer Execution Runtime 仍返回暂时性 HTTP 502，因此不声称托管 DWAC 已成功执行。）"
+  },
+  "truth_boundary": "This cycle enforces the already-published Agent Task item contract only. It does not redefine task phases, scheduling policy, or product workflow.（本轮只执行已经发布的 Agent Task 条目契约；不重新定义任务阶段、调度政策或产品工作流。）"
+}

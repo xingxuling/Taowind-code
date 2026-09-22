@@ -1,0 +1,32 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.77",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "aa23299b7724aa954884946f1aa8558a9946e94c",
+  "bottleneck": "truth-boundary-semantic-provenance-integrity",
+  "mode": "WHOLE_ARTIFACT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main DWAC source-contract replay still sees multiple historical semantic-repository evidence rows as independent unresolved candidates even though later cycles successively closed slash, dot-segment, repeated-separator and parent-segment identity defects while repeatedly restating the same remaining parser-grade and synthesis limits. That historical duplication overstates adjacent current work and can distort four-mode routing.",
+  "changes": [
+    "Use the existing explicit resolves provenance mechanism to supersede historical semantic boundaries whose unresolved residue is fully preserved by this newest canonical boundary.",
+    "Preserve filesystem case/Unicode identity, conflicting-content aliases, complete parser-grade module resolution and arbitrary complex repository synthesis as explicit current unresolved limits.",
+    "Do not choose a parser, bundler, package-resolution stack, filesystem identity policy or synthesis architecture in this provenance-only cycle."
+  ],
+  "resolves": [
+    {"source": "evidence/dwac-semantic-reexport-v0.11.27.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-semantic-import-extension-ambiguity-v0.11.31.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-semantic-edge-dedup-v0.11.41.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-semantic-normalized-path-dedup-v0.11.48.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-semantic-dot-segment-path-dedup-v0.11.49.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-semantic-repeated-separator-path-dedup-v0.11.50.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-semantic-parent-segment-path-dedup-v0.11.51.json", "path": "truth_boundary"}
+  ],
+  "verification": {
+    "fresh_main_source_contract": "PASS: bridge/dwac_bridge.py processes newer evidence before older rows and suppresses only explicitly referenced source/path pairs.",
+    "provenance_audit": "PASS: the referenced semantic receipts form the historical sequence whose later cycles closed lexical alias defects while preserving the residual limits restated here.",
+    "claim_preservation": "PASS: this receipt keeps the remaining semantic limits explicitly unresolved rather than claiming parser-grade or arbitrary synthesis completion.",
+    "hosted_runtime": "Developer Execution Runtime and RNCS Gateway remain transiently unavailable with HTTP 502; no hosted DWAC execution success is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "Filesystem case/Unicode identity, conflicting-content aliases, complete parser-grade Node/TypeScript/bundler/package module resolution, and arbitrary complex repository synthesis remain UNRESOLVED. This cycle only consolidates provenance and does not select their implementation architecture."
+}

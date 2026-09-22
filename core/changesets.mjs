@@ -20,6 +20,16 @@ function stagedAfterBytes(change){
   if(!Buffer.isBuffer(bytes)||bytes.length!==change.after?.size||sha256Buffer(bytes)!==change.after?.sha256)throw new Error(`CHANGESET_POSTIMAGE_CORRUPT:${change.path}`);
   return bytes;
 }
+function stagedBeforeBytes(change){
+  if(change.before?.exists!==true){
+    if(change.before?.sha256!==null||change.before?.contentBase64!==null||change.before?.size!==0)throw new Error(`CHANGESET_PREIMAGE_CORRUPT:${change.path}`);
+    return null;
+  }
+  if(change.before?.type!=='file')throw new Error(`CHANGESET_PREIMAGE_CORRUPT:${change.path}`);
+  const bytes=decode(change.before?.contentBase64??null);
+  if(!Buffer.isBuffer(bytes)||bytes.length!==change.before?.size||sha256Buffer(bytes)!==change.before?.sha256)throw new Error(`CHANGESET_PREIMAGE_CORRUPT:${change.path}`);
+  return bytes;
+}
 export class ChangesetStore{
  constructor(runtimeDir,workspace){this.dir=path.join(runtimeDir,'changesets');fs.mkdirSync(this.dir,{recursive:true});this.workspace=new WorkspaceService(workspace)}
  file(id){if(!/^cs-[a-f0-9]+$/i.test(id))throw new Error('INVALID_CHANGESET_ID');return path.join(this.dir,`${id}.json`)}
@@ -39,8 +49,8 @@ export class ChangesetStore{
    doc.status='APPLIED';doc.updatedAt=now();doc.applyReceipt={at:doc.updatedAt,files:applied,receiptSha256:sha256Text(JSON.stringify(applied))};atomicJson(this.file(id),doc);return doc;
  }
  rollback(id){const doc=this.get(id);if(doc.status!=='APPLIED')throw new Error('CHANGESET_NOT_APPLIED');const preflight=[],appliedByPath=new Map((doc.applyReceipt?.files||[]).map(x=>[x.path,x]));
-   for(const c of [...doc.changes].reverse()){const ancestor=this.workspace.ancestorState(c.path);if(!ancestor.ok)throw new Error(`ROLLBACK_CONFLICT:${c.path}`);const current=this.workspace.stat(c.path);const applied=appliedByPath.get(c.path);const expectedPost=c.op==='delete'?null:c.after.sha256;const expectedIdentity=applied?.identity||null;const expectedMode=applied?.mode;const modeChanged=expectedMode!==null&&expectedMode!==undefined&&current.mode!==expectedMode;if(current.sha256!==expectedPost||current.exists!==(c.op!=='delete')||(expectedIdentity&&current.identity!==expectedIdentity)||modeChanged)throw new Error(`ROLLBACK_CONFLICT:${c.path}`);preflight.push(c)}
-   const restored=[];for(const c of preflight){if(!c.before.exists)this.workspace.remove(c.path);else{if(c.before.type!=='file')throw new Error(`ROLLBACK_UNSUPPORTED_TYPE:${c.path}`);this.workspace.write(c.path,decode(c.before.contentBase64),{mode:c.before.mode??null})}const post=this.workspace.stat(c.path);restored.push({path:c.path,exists:post.exists,sha256:post.sha256,identity:post.identity||null,mode:post.mode??null})}
+   for(const c of [...doc.changes].reverse()){const beforeBytes=stagedBeforeBytes(c);const ancestor=this.workspace.ancestorState(c.path);if(!ancestor.ok)throw new Error(`ROLLBACK_CONFLICT:${c.path}`);const current=this.workspace.stat(c.path);const applied=appliedByPath.get(c.path);const expectedPost=c.op==='delete'?null:c.after.sha256;const expectedIdentity=applied?.identity||null;const expectedMode=applied?.mode;const modeChanged=expectedMode!==null&&expectedMode!==undefined&&current.mode!==expectedMode;if(current.sha256!==expectedPost||current.exists!==(c.op!=='delete')||(expectedIdentity&&current.identity!==expectedIdentity)||modeChanged)throw new Error(`ROLLBACK_CONFLICT:${c.path}`);preflight.push({change:c,beforeBytes})}
+   const restored=[];for(const {change:c,beforeBytes} of preflight){if(!c.before.exists)this.workspace.remove(c.path);else this.workspace.write(c.path,beforeBytes,{mode:c.before.mode??null});const post=this.workspace.stat(c.path);restored.push({path:c.path,exists:post.exists,sha256:post.sha256,identity:post.identity||null,mode:post.mode??null})}
    doc.status='ROLLED_BACK';doc.updatedAt=now();doc.rollbackReceipt={at:doc.updatedAt,files:restored,receiptSha256:sha256Text(JSON.stringify(restored))};atomicJson(this.file(id),doc);return doc;
  }
 }

@@ -1,0 +1,28 @@
+{
+  "version": "0.11.74",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "fdd57ec18f002e762d3b2fa2c8c098630b7f7080",
+  "selected_bottleneck": "apply-persisted-operation-integrity（应用持久化操作完整性）",
+  "selected_problem": "Fresh canonical main enforced the write/delete operation set while staging, but apply trusted the persisted change.op after reload. Rewriting a staged operation to an unsupported value such as copy still followed the non-delete write path and mutated the workspace.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The repository already defines the legal changeset operation set as write/delete during stage, so revalidating the same set at apply is an existing protocol invariant rather than a new architecture choice.",
+    "Rollback is intentionally left able to recover already-APPLIED legacy artifacts rather than making a newly enforced staging rule destroy reversibility.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502; validation therefore used DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and exact local focused tests."
+  ],
+  "pre_fix_reality": {
+    "focused_reproduction": "EXPECTED_FAILURE: 1/2 PASS, 1/2 FAIL with Missing expected exception; a persisted op changed from write to copy was applied as a write.",
+    "impact": "A persisted STAGED artifact could escape the operation vocabulary that stage had already approved and still produce workspace side effects."
+  },
+  "change": "Apply preflight now rejects any persisted operation outside write/delete before preimage/postimage checks or workspace side effects.",
+  "validation": {
+    "node_check": "PASS on the exact proposed core/changesets.mjs content",
+    "focused_tests": "4/4 PASS, 0 skipped across apply-preimage and apply-operation integrity",
+    "pre_fix_regression": "EXPECTED_FAILURE confirmed before the fix",
+    "supported_roundtrip": "PASS: a normal persisted write still applies and rolls back exactly",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This restores the existing persisted operation vocabulary at the apply boundary. It is not an authenticated artifact mechanism and does not prevent a coherent rewrite that remains inside the legal write/delete protocol."
+}

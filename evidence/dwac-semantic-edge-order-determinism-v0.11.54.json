@@ -1,0 +1,28 @@
+{
+  "version": "0.11.54",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "914d2f5730e8a89db929fad556f9f5955c12cf4f",
+  "selected_bottleneck": "semantic-edge-order-input-determinism",
+  "selected_problem": "Fresh-main semantic nodes are ranked deterministically, but the public edges array still inherited repository input enumeration order, so the same code reality could serialize to different graph evidence when file enumeration order changed.",
+  "mode_route": ["DEEP_DEVELOPMENT"],
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_basis": [
+    "The defect is narrow, directly reproducible by reversing the same file set, and affects reproducible semantic evidence rather than product shape.",
+    "Existing compareText code-unit ordering is already the repository's host-locale-independent deterministic ordering primitive, so no new architecture or language policy is introduced.",
+    "Hosted Developer Execution Runtime remained unavailable with transient HTTP 502; this cycle uses DWAC_SOURCE_CONTRACT_REPLAY and does not claim a hosted DWAC success receipt."
+  ],
+  "pre_fix_reality": {
+    "forward_edges": ["src/a.js -> src/x.js", "src/b.js -> src/y.js"],
+    "reversed_edges": ["src/b.js -> src/y.js", "src/a.js -> src/x.js"],
+    "same_repository_reality": true
+  },
+  "change": "Sort deduplicated semantic edges deterministically by relation type, source path, then target path before adjacency construction and graph return.",
+  "validation": {
+    "pre_fix_reproduction": "PASS: reversing file enumeration changed edge serialization order.",
+    "node_check": "PASS",
+    "focused_tests": "1/1 PASS",
+    "skipped": 0,
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This closes input-enumeration drift of the current semantic edge array. It does not claim parser-grade module semantics, exhaustive large-repository coverage, filesystem case/Unicode identity, or arbitrary complex repository synthesis."
+}

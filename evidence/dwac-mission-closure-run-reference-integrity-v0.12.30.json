@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.30",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "54d929a6f22791052d131843263fd1ebb6a60659",
+  "bottleneck": "mission-closure-run-reference-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main bound currentRunId and cycle ledger runId values to the durable RunStore identity grammar, but closure remained an opaque object. Runtime-generated closures carry runId, so a tampered closure could still claim an impossible run identity and weaken traceability.",
+  "changes": [
+    "Validate closure.runId against the existing durable RunStore identity grammar when the field is present.",
+    "Publish the same optional runId constraint in Autonomous Mission v0.1 while leaving other closure metadata extensible.",
+    "Add a focused durable-read regression for valid, impossible, and runId-omitted closure objects."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: closure accepted any object, including impossible runId values.",
+    "post_fix_source_contract_replay": "PASS: closure remains extensible but a present runId must follow ^run-[A-Za-z0-9-]+$.",
+    "focused_regression_contract": "New checked-in test covers valid and invalid closure run references plus an extensible closure object without runId.",
+    "hosted_runtime": "Developer Execution Runtime remained unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only applies an established identity grammar to an existing traceability field. It does not choose a closure-assessment schema or a new audit architecture."
+}

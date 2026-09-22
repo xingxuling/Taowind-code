@@ -1,0 +1,24 @@
+{
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "9f9ddf34701308d1adcc7b0f9aef7e8e67317fc8",
+  "selected_bottleneck": "workspace-control-plane-observation-boundary（工作区控制平面观察边界）",
+  "selected_problem": "Fresh canonical main already treated .git/node_modules/.next/dist/build/runtime-data/.venv as hidden workspace/control-plane segments, while tree/manifest used case-sensitive name checks and contextBundle did not reject hidden segments at all. Case variants such as .GIT, NoDe_MoDuLeS and DIST could therefore enter bounded repository observation or direct context bundles even though the existing effectful proposal/changeset boundary already treats the same segments case-insensitively as non-user-code control paths.（最新主分支已经把这些目录定义为隐藏/控制平面目录，但工作区树和清单仅做大小写敏感过滤，contextBundle 更未直接过滤隐藏段，导致大小写变体仍可进入认知上下文，与既有副作用边界不一致。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The hidden/control segment set already existed; this preserves an existing boundary across observation rather than inventing a new product or architecture policy.（隐藏/控制段集合已经存在，本轮只是把现有边界贯通到观察层，不引入新的产品或架构政策。）",
+    "The defect is directly falsifiable from fresh-main source: HIDDEN.has(e.name) is case-sensitive, while contextBundle accepts normalized paths without checking HIDDEN segments.（缺陷可由 fresh main 源码直接证伪：HIDDEN.has(e.name) 大小写敏感，contextBundle 对规范化路径没有隐藏段检查。）"
+  ],
+  "changes": [
+    "Use a locale-independent lower-case hidden-segment predicate for tree, manifest, and credential hardlink scanning.（树、清单和凭据硬链接扫描统一使用与主机 locale 无关的小写隐藏段判定。）",
+    "Reject any normalized contextBundle path containing a hidden/control-plane segment before reading bytes.（contextBundle 在读取字节前拒绝任何包含隐藏/控制平面段的规范路径。）",
+    "Add a regression covering .GIT, NoDe_MoDuLeS, DIST and an ordinary src file.（新增覆盖 .GIT、NoDe_MoDuLeS、DIST 和普通 src 文件的回归测试。）"
+  ],
+  "verification": {
+    "node_check": "PASS: node --check core/workspace.mjs（通过）",
+    "focused_regression": "PASS: 1/1, 0 skipped for workspace-control-plane-observation-boundary（1/1 通过，0 跳过）",
+    "hosted_runtime": "HTTP 502 transient upstream error; not claimed as passed（托管运行时为暂时性 502，未宣称通过）",
+    "github_actions": "not requested; commits include [skip ci] [skip actions]（未请求，提交包含跳过标记）"
+  },
+  "truth_boundary": "This closes observation of already-declared hidden/control-plane directory names and their case variants. It does not introduce filesystem-wide case-folding identity, authenticate repository artifacts, or claim complete secret classification.（本轮只闭合既有隐藏/控制平面目录及其大小写变体的观察边界；不引入全文件系统大小写折叠身份、不认证仓库工件，也不声称完成全部秘密分类。）"
+}

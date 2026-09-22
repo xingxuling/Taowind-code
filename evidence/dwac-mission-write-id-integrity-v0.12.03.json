@@ -1,0 +1,26 @@
+{
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "e97a28531d6b68fc548974f71a47d4d5eb657af5",
+  "selected_bottleneck": "mission-write-identity-integrity（自治使命写入身份完整性）",
+  "selected_problem": "Fresh canonical main already fails closed when a durable mission document id no longer matches its storage id, but AutonomousMissionStore.update could itself rewrite id and persist a document that the same store rejects on its next read.（最新规范主仓已经会在持久化 mission 文档 id 与存储 id 不一致时失败关闭，但 AutonomousMissionStore.update 自身仍能改写 id，并持久化一个下一次读取时会被同一存储拒绝的文档。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "selection_basis": [
+    "This closes a direct write-side contradiction against the already-established durable mission-id read boundary.（这是对已经建立的持久化 mission ID 读取边界的直接写入侧矛盾闭合。）",
+    "RunStore already enforces the same invariant that its public update API cannot create an identity mismatch its own read path rejects.（RunStore 已经执行相同不变量：公开 update API 不能制造自身读取路径会拒绝的身份不匹配。）"
+  ],
+  "pre_fix_reality": {
+    "focused_replay": "1/2 PASS, 1/2 FAIL（1/2 通过，1/2 失败）",
+    "failure": "update accepted a different id and durably produced a mission document whose body id no longer matched its storage filename.（update 接受不同 id，并持久化生成正文 id 与存储文件名不再匹配的 mission 文档。）"
+  },
+  "changes": [
+    "Reject update patches that change mission id away from the durable identity with MISSION_ID_IMMUTABLE.（以 MISSION_ID_IMMUTABLE 拒绝把 mission id 改离持久化身份的更新补丁。）",
+    "Allow an explicitly repeated same id so compatibility with identity-preserving patches remains unchanged.（允许显式重复同一 id，保持身份不变补丁的兼容性。）"
+  ],
+  "verification": {
+    "focused_store_replay": "2/2 PASS, 0 skipped（2/2 通过，0 跳过）",
+    "pre_fix_replay": "1/2 PASS, 1/2 FAIL as expected（修复前按预期 1/2 通过、1/2 失败）",
+    "hosted_runtime": "Developer Execution Runtime remains unavailable with transient HTTP 502, so no hosted DWAC success receipt is claimed.（Developer Execution Runtime 仍因暂时性 HTTP 502 不可用，因此不声称托管 DWAC 已成功执行。）"
+  },
+  "truth_boundary": "This cycle protects update-side durable mission id immutability only. It does not yet claim complete mission status/shape/ledger enforcement or authenticated-artifact protection against coordinated rewrites.（本轮只保护更新侧持久化 mission ID 不可变性；尚不声称完整执行 mission 状态/结构/账本约束，也不声称抵御协调一致重写下的认证工件问题。）"
+}

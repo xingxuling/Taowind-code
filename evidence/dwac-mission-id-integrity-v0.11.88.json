@@ -1,0 +1,25 @@
+{
+  "version": "0.11.88",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "236b6fd03fbf5004716c9770014ee77d9884211d",
+  "selected_bottleneck": "mission-durable-id-binding-integrity（持久化任务使命 ID 绑定完整性）",
+  "selected_problem": "Fresh canonical main selects a durable autonomous mission file by caller-supplied mission id, but AutonomousMissionStore.get returned the JSON body without proving that its own id still matched that selected artifact. Rewriting only mission.id kept the storage address unchanged while subsequent update/evidence/scheduler identity could diverge from the mission actually selected.（最新主分支按调用方传入的 mission id 选择持久化自治任务使命文件，但 AutonomousMissionStore.get 未证明 JSON 内部 id 仍与被选工件一致；仅改写 mission.id 即可保持存储地址不变，却让后续更新、证据、调度身份与实际选中的使命分裂。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "Mission id is already the storage selector and the canonical identity consumed by the autonomous supervisor, so binding document identity to selected storage reuses existing semantics rather than introducing a new architecture.（Mission id 已同时是存储选择器与自主监督器使用的规范身份，因此绑定文档身份与存储选择只是执行既有语义，不引入新架构。）",
+    "The same fresh-main invariant has already been closed for changesets and runs, while missions remain the persistent outer autonomous-loop object, making this a directly falsifiable consistency defect.（最新主分支已经为 changeset 与 run 闭合相同不变量，而 mission 是更外层的持久化自主循环对象，因此这是可直接证伪的一致性缺陷。）"
+  ],
+  "changes": [
+    "Make AutonomousMissionStore.get fail closed with MISSION_ID_MISMATCH when a durable mission document id differs from the requested artifact id.（当持久化 mission 文档内部 id 与请求工件 id 不一致时，以 MISSION_ID_MISMATCH 失败关闭。）",
+    "Because update/addEvidence/resume/tick already load through get, the identity proof precedes those paths without duplicating policy.（update/addEvidence/resume/tick 已经通过 get 加载，因此同一身份证明自动前置于这些路径。）",
+    "Add focused regression coverage for tampered and intact durable mission identity.（新增被改写及完整持久化 mission 身份的聚焦回归。）"
+  ],
+  "verification": {
+    "focused_reality_replay": "PASS: 2/2 on a faithful isolated AutonomousMissionStore replay; matching id is accepted and rewritten body id is rejected with MISSION_ID_MISMATCH（忠实隔离的 AutonomousMissionStore 重放 2/2 通过；匹配 id 正常读取，改写后的内部 id 以 MISSION_ID_MISMATCH 被拒绝）",
+    "focused_node_check": "PASS for the isolated store replay module（隔离存储重放模块语法检查通过）",
+    "hosted_runtime": "HTTP 502 transient upstream error; not claimed as passed（托管 Developer Execution Runtime 暂时性 502，未宣称通过）",
+    "github_actions": "not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary": "This binds the durable mission document id to its selected storage identity. It does not authenticate coherently rewritten mission metadata/content, add signatures/MACs, or claim crash-safe persistence.（本轮只绑定持久化 mission 文档 id 与存储选择身份；不认证可一致改写的其他 mission 元数据/内容，不引入签名或消息认证码，也不声称崩溃安全持久化。）"
+}

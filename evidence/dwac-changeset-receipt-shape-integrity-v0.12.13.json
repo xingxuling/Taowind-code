@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.13",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "6b873911817309a4f1b069b69d0ad4aaac4251c0",
+  "bottleneck": "changeset-durable-receipt-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main inspection found direct durable reads only required receipt slots to be object/null, while the published v0.3 schema defines receipt metadata and per-file shapes. Downstream rollback performed stronger hash/binding checks, but ordinary get() could still expose malformed receipt structures.",
+  "changes": [
+    "Validate non-null apply/rollback receipt metadata and bounded files arrays against the published v0.3 shape at the shared read boundary.",
+    "Validate apply file operations plus common path/exists/hash/identity/mode fields without changing receipt semantics.",
+    "Preserve existing receipt hash and changeset-binding checks as stronger rollback-time invariants."
+  ],
+  "verification": {
+    "source_contract_replay": "PASS: durable get() now checks non-null receipt shape before returning the document while rollback keeps receiptSha256 and changeset-binding verification.",
+    "focused_regression_contract": "4 focused cases encoded: three malformed receipts fail closed and store-emitted apply/rollback receipts remain readable.",
+    "hosted_runtime": "HTTP 502 transient upstream error from Developer Execution Runtime; no hosted test pass claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "Coordinated whole-artifact rewrite authenticity remains unresolved. This cycle deliberately does not choose signatures, MACs, trust roots, append-only logs, or crash-journal architecture."
+}

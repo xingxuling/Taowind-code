@@ -14,8 +14,8 @@ function hasNpmWorkspaces(pkg){const ws=pkg?.workspaces;return (Array.isArray(ws
 function npmWorkspaceValidationNames(workspace){
   const npm=process.platform==='win32'?'npm.cmd':'npm';
   const result=spawnSync(npm,['pkg','get','scripts','--workspaces','--json'],{cwd:workspace,encoding:'utf8',timeout:5_000,maxBuffer:1024*1024,windowsHide:true,env:buildValidationEnvironment()});
-  if(result.status!==0||!result.stdout)return [];
-  try{const packages=JSON.parse(result.stdout);const found=new Set();for(const scripts of Object.values(packages||{})){if(!scripts||typeof scripts!=='object')continue;for(const name of PACKAGE_VALIDATION_SCRIPTS)if(scripts[name])found.add(name)}return PACKAGE_VALIDATION_SCRIPTS.filter(name=>found.has(name))}catch{return []}
+  if(result.error||result.status!==0||!result.stdout)throw Object.assign(new Error('NPM_WORKSPACE_DISCOVERY_FAILED'),{code:'NPM_WORKSPACE_DISCOVERY_FAILED',cause:result.error||undefined});
+  try{const packages=JSON.parse(result.stdout);const found=new Set();for(const scripts of Object.values(packages||{})){if(!scripts||typeof scripts!=='object')continue;for(const name of PACKAGE_VALIDATION_SCRIPTS)if(scripts[name])found.add(name)}return PACKAGE_VALIDATION_SCRIPTS.filter(name=>found.has(name))}catch(error){throw Object.assign(new Error('INVALID_NPM_WORKSPACE_DISCOVERY_JSON'),{code:'INVALID_NPM_WORKSPACE_DISCOVERY_JSON',cause:error})}
 }
 function packageValidationCommands(workspace,pkg){
   const scripts=pkg?.scripts||{};const names=PACKAGE_VALIDATION_SCRIPTS.filter(name=>scripts[name]);

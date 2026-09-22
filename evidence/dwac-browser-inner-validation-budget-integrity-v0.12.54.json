@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.54",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "29c959120e27baa35a9add611fc749688f59e33b",
+  "bottleneck": "browser-inner-validation-budget-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main preserves the top-level browser validation plan for acceptance, but BrowserObservationOrgan.normalizeCheck still silently truncated distinct requiredSelectors beyond 48 and requiredText entries beyond 32. A required assertion after those cutoffs could therefore disappear before observation and incorrectly allow a browser check to pass.",
+  "changes": [
+    "Keep the already-established 48-selector and 32-required-text limits, but fail closed when a normalized distinct plan exceeds them instead of truncating it.",
+    "Preserve existing URL validation, deduplication, boolean defaults, settle timing, CDP execution, and receipt semantics.",
+    "Add a regression proving overflow is rejected before any CDP/network observation is attempted."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: normalizeCheck used Set(...).slice(0,48) and Set(...).slice(0,32), erasing overflow entries.",
+    "post_fix_source_contract_replay": "PASS: the same established limits are now explicit fail-closed gates with observed and limit metadata; domChecksScript's defensive 48-item bound remains unchanged.",
+    "focused_regression_contract": "tests/browser-inner-validation-budget-integrity.test.mjs exercises 49 distinct selectors and 33 distinct required-text assertions through BrowserObservationOrgan.observe with a non-responsive local CDP URL; both must reject during normalization, before transport.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not invent new browser validation semantics or raise/lower existing limits. It only replaces silent loss of already-requested hard evidence with fail-closed enforcement at the existing observation boundary."
+}

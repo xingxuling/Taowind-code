@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.58",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "aa0d323a7b4e569a085ddd6e4f95768bf5bee7ec",
+  "bottleneck": "federated-change-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main normalized each federated change independently and then filter(Boolean) silently removed malformed entries. A candidate containing one valid change plus one invalid op/path/content entry could therefore remain executable as a partial plan, even though the provider proposed a larger validation scope.",
+  "changes": [
+    "Detect malformed entries across the supplied changes array before building the canonical change map.",
+    "Fail the entire mixed plan closed by clearing its executable changes, expose invalid_change_count, and record INVALID_CHANGE_ENTRY risk evidence instead of silently dropping only the bad rows.",
+    "Keep ambiguity, hierarchy-overlap, validation-budget, consensus, and ranking behavior unchanged for fully valid plans."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: (Array.isArray(rawChanges)?rawChanges:[]).map(normalizeChange).filter(Boolean) erased malformed rows while preserving valid siblings.",
+    "post_fix_source_contract_replay": "PASS: any malformed row makes the mixed proposal non-executable while leaving valid alternative candidates eligible for selection.",
+    "focused_regression_contract": "tests/federated-change-shape-integrity.test.mjs proves a mixed valid+copy plan normalizes to zero changes with invalid_change_count=1 and that a valid competing candidate wins selection.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not invent a new change IR or migration strategy. It only prevents federated normalization from silently weakening a provider-authored change plan before existing downstream change-set invariants can see it."
+}

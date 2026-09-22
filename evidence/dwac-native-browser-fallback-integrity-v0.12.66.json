@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.66",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "70dedd14cc81b0f6ff2d52b6a7aa0b153b8c7874",
+  "bottleneck": "native-browser-fallback-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main made malformed or over-budget browser plans non-executable for federated selection, but nativeProposalExecutable still ignored those browser admissibility flags. A first native implementation proposal could therefore suppress the architecture/verifier fallback roles even though federation would later reject that proposal.",
+  "changes": [
+    "Make nativeProposalExecutable honor the browser-plan invalid/overflow flags already emitted by normalizeProposal.",
+    "Preserve configured candidate-count behavior and all existing non-browser fallback semantics."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: nativeProposalExecutable returned true for a proposal whose browser_checks would be rejected by fresh-main federation, so nativeFallbackRoles returned no alternate roles.",
+    "node_syntax": "PASS: node --check core/tao-ai-adapter.mjs",
+    "focused_reality_replay": "PASS 3/3: valid browser proposal remains executable with no fallback; invalid URL triggers architecture+verifier fallback; nine-check browser plan triggers the same fallback.",
+    "hosted_runtime": "Developer Execution Runtime remained transiently unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only aligns native fallback routing with the executable-candidate contract already enforced by fresh-main federation."
+}

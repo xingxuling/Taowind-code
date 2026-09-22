@@ -46,7 +46,7 @@ export class WorkspaceService {
   tree(rel='.',depth=0){
     const abs=safePath(this.root,rel); const stat=fs.statSync(abs); if(!stat.isDirectory()) return null;
     return fs.readdirSync(abs,{withFileTypes:true})
-      .filter(x=>!hiddenSegment(x.name))
+      .filter(x=>!hiddenSegment(x.name)&&(x.isDirectory()||x.isFile()))
       .sort((a,b)=>Number(b.isDirectory())-Number(a.isDirectory())||compareText(a.name,b.name))
       .slice(0,300)
       .map(x=>{const child=path.posix.join(rel==='.'?'':rel.replaceAll('\\','/'),x.name);return {name:x.name,path:child,type:x.isDirectory()?'dir':'file',children:x.isDirectory()&&depth<5?this.tree(child,depth+1):undefined};});

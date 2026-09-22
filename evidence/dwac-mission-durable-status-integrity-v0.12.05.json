@@ -1,0 +1,15 @@
+{
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"f004e8db99034dc96c242832c90f98659459e56f",
+  "selected_bottleneck":"mission-durable-status-integrity（自治使命持久化状态完整性）",
+  "selected_problem":"Fresh main now validates every explicit status write against the published Autonomous Mission enum, but AutonomousMissionStore.get still accepted externally rewritten durable statuses, including unknown truthy and falsy values. Scheduler/list/tick therefore could consume contract-invalid mission state.（最新 main 已会把每个显式状态写入与已发布 Autonomous Mission 枚举核对，但 AutonomousMissionStore.get 仍接受被外部改写的持久化状态，包括未知真值与假值；因此调度器、列表和 tick 仍可能消费违反契约的 mission 状态。）",
+  "mode_route":["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate":"AUTONOMOUS（自主）",
+  "changes":["Enforce the already-published mission status enum at the durable read boundary.（在持久化读取边界执行已经发布的 mission 状态枚举。）"],
+  "verification":{
+    "focused_reality_replay":"6/6 PASS: one valid status remains readable and five externally rewritten invalid statuses fail closed（6/6 通过：1 个合法状态保持可读，5 个外部改写非法状态全部失败关闭）",
+    "node_check":"PASS on faithful isolated replay（忠实隔离重放的 Node 语法检查通过）",
+    "hosted_runtime":"Developer Execution Runtime remains unavailable with transient HTTP 502; no hosted DWAC success receipt is claimed.（Developer Execution Runtime 仍因暂时性 HTTP 502 不可用；不声称托管 DWAC 已成功执行。）"
+  },
+  "truth_boundary":"This cycle enforces durable mission status identity only. Remaining rootGoal/cycle/config/ledger shape validation is separate and must be selected from fresh main rather than bundled here.（本轮只执行持久化 mission 状态身份；剩余 rootGoal/cycle/config/账本结构验证属于独立问题，必须由后续 fresh main 自主选择，而不是在本轮捆绑。）"
+}

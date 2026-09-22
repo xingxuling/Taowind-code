@@ -75,6 +75,7 @@ export function buildSemanticRepoGraph(files,{goal=''}={}){
   }
   const tests=nodes.filter(n=>n.isTest),nonTests=nodes.filter(n=>!n.isTest);
   for(const t of tests){const matches=nonTests.filter(s=>relatedByStem(t.path,s.path));if(matches.length===1)addEdge({from:t.path,to:matches[0].path,type:'tests'});}
+  edges.sort((a,b)=>compareText(a.type,b.type)||compareText(a.from,b.from)||compareText(a.to,b.to));
   const goalTokens=tokens(goal).filter(x=>x.length>2);
   const adjacency=new Map(nodes.map(n=>[n.path,new Set()]));
   for(const e of edges){adjacency.get(e.from)?.add(e.to);adjacency.get(e.to)?.add(e.from)}

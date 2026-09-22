@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.44",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "96e36aa67c2b551f68b6bd7c300e2e1e79a7d258",
+  "bottleneck": "npm-workspace-discovery-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main now fails closed on malformed package.json, but a declared npm workspace with no root validation scripts still silently treated failed, missing, or malformed `npm pkg get scripts --workspaces --json` inspection as an empty workspace script set. In mixed-language repositories that could again omit JavaScript workspace validation while other validators proceed.",
+  "changes": [
+    "Fail npm workspace script discovery when the npm inspection process errors, exits non-zero, or returns no output.",
+    "Fail explicitly when npm workspace discovery output is not valid JSON.",
+    "Reuse the existing structured VALIDATION_DISCOVERY_FAILED acceptance boundary while preserving root-script discovery that does not need workspace inspection."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: npm workspace inspection failures and malformed JSON returned an empty script set.",
+    "post_fix_source_contract_replay": "PASS: unavailable/malformed workspace discovery fails closed; root-script validation discovery remains independent of npm workspace inspection.",
+    "focused_regression_contract": "tests/acceptance-npm-workspace-discovery-integrity.test.mjs covers missing npm inspection and root-script compatibility.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only makes declared npm workspace validation discovery observable and fail-closed. It does not require npm workspaces to expose any particular validation script and does not invent new validation commands."
+}

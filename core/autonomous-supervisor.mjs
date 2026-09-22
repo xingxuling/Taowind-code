@@ -6,9 +6,21 @@ import {requestGoalAssessment} from './tao-ai-adapter.mjs';
 const MISSION_PROTOCOL='taowind-code.autonomous-mission.v0.1';
 const TERMINAL=new Set(['GOAL_CLOSED','BUDGET_EXHAUSTED','BLOCKED','FAILED']);
 const VALID=new Set(['ACTIVE','WAITING_PROVIDER','WAITING_APPROVAL','GOAL_CLOSED','BUDGET_EXHAUSTED','BLOCKED','FAILED']);
+const REQUIRED_CONFIG=['maxCycles','maxRepairs','closureThreshold','autoCommit'];
 function now(){return new Date().toISOString()}
 function missionId(){return `mission-${Date.now().toString(36)}-${crypto.randomBytes(5).toString('hex')}`}
 function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const tmp=`${file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(value,null,2));fs.renameSync(tmp,file)}
+function validMissionShape(mission){
+  if(typeof mission?.rootGoal!=='string'||mission.rootGoal.length<1)return false;
+  if(!Number.isInteger(mission?.cycle)||mission.cycle<0)return false;
+  if(!mission?.config||typeof mission.config!=='object'||Array.isArray(mission.config)||REQUIRED_CONFIG.some(key=>!Object.prototype.hasOwnProperty.call(mission.config,key)))return false;
+  if(!Array.isArray(mission?.cycles)||!Array.isArray(mission?.events)||!Array.isArray(mission?.evidence))return false;
+  if(mission.nextGoal!==undefined&&typeof mission.nextGoal!=='string')return false;
+  if(mission.currentRunId!==undefined&&mission.currentRunId!==null&&typeof mission.currentRunId!=='string')return false;
+  if(mission.closure!==undefined&&mission.closure!==null&&(typeof mission.closure!=='object'||Array.isArray(mission.closure)))return false;
+  if(mission.blocker!==undefined&&mission.blocker!==null&&typeof mission.blocker!=='string')return false;
+  return true;
+}
 
 export class AutonomousMissionStore{
   constructor(runtimeDir){this.dir=path.join(runtimeDir,'missions');fs.mkdirSync(this.dir,{recursive:true})}
@@ -19,10 +31,10 @@ export class AutonomousMissionStore{
     const mission={id:missionId(),protocol:MISSION_PROTOCOL,rootGoal,nextGoal:rootGoal,status:'ACTIVE',cycle:0,currentRunId:null,config,createdAt:now(),updatedAt:now(),cycles:[],events:[],evidence:[],closure:null,blocker:null};
     this.eventObject(mission,'MISSION_CREATED',{config});atomicJson(this.file(mission.id),mission);return mission;
   }
-  get(id){const f=this.file(id);if(!fs.existsSync(f))throw Object.assign(new Error('MISSION_NOT_FOUND'),{code:'MISSION_NOT_FOUND'});const mission=JSON.parse(fs.readFileSync(f,'utf8'));if(mission?.id!==id)throw new Error('MISSION_ID_MISMATCH');if(mission?.protocol!==MISSION_PROTOCOL)throw new Error('UNSUPPORTED_MISSION_PROTOCOL');if(!VALID.has(mission?.status))throw new Error('INVALID_MISSION_STATUS');return mission}
+  get(id){const f=this.file(id);if(!fs.existsSync(f))throw Object.assign(new Error('MISSION_NOT_FOUND'),{code:'MISSION_NOT_FOUND'});const mission=JSON.parse(fs.readFileSync(f,'utf8'));if(mission?.id!==id)throw new Error('MISSION_ID_MISMATCH');if(mission?.protocol!==MISSION_PROTOCOL)throw new Error('UNSUPPORTED_MISSION_PROTOCOL');if(!VALID.has(mission?.status))throw new Error('INVALID_MISSION_STATUS');if(!validMissionShape(mission))throw new Error('INVALID_MISSION_SHAPE');return mission}
   list(limit=30){return fs.readdirSync(this.dir).filter(x=>x.endsWith('.json')).map(x=>this.get(x.slice(0,-5))).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))).slice(0,limit)}
   eventObject(mission,type,data={}){const event={seq:mission.events.length+1,at:now(),type,data};mission.events.push(event);mission.updatedAt=event.at;return event}
-  update(id,patch={},type='MISSION_UPDATED',data={}){const mission=this.get(id);if(Object.prototype.hasOwnProperty.call(patch,'id')&&patch.id!==mission.id)throw new Error('MISSION_ID_IMMUTABLE');if(Object.prototype.hasOwnProperty.call(patch,'protocol')&&patch.protocol!==MISSION_PROTOCOL)throw new Error('MISSION_PROTOCOL_IMMUTABLE');const hasStatus=Object.prototype.hasOwnProperty.call(patch,'status');if(TERMINAL.has(mission.status)&&hasStatus&&patch.status!==mission.status)throw new Error('MISSION_TERMINAL');if(hasStatus&&!VALID.has(patch.status))throw new Error('INVALID_MISSION_STATUS');Object.assign(mission,patch);this.eventObject(mission,type,data);atomicJson(this.file(id),mission);return mission}
+  update(id,patch={},type='MISSION_UPDATED',data={}){const mission=this.get(id);if(Object.prototype.hasOwnProperty.call(patch,'id')&&patch.id!==mission.id)throw new Error('MISSION_ID_IMMUTABLE');if(Object.prototype.hasOwnProperty.call(patch,'protocol')&&patch.protocol!==MISSION_PROTOCOL)throw new Error('MISSION_PROTOCOL_IMMUTABLE');const hasStatus=Object.prototype.hasOwnProperty.call(patch,'status');if(TERMINAL.has(mission.status)&&hasStatus&&patch.status!==mission.status)throw new Error('MISSION_TERMINAL');if(hasStatus&&!VALID.has(patch.status))throw new Error('INVALID_MISSION_STATUS');const candidate={...mission,...patch};if(!validMissionShape(candidate))throw new Error('INVALID_MISSION_SHAPE');Object.assign(mission,patch);this.eventObject(mission,type,data);atomicJson(this.file(id),mission);return mission}
   addEvidence(id,evidence){const mission=this.get(id);const item={id:`mev-${crypto.randomBytes(6).toString('hex')}`,at:now(),...evidence};mission.evidence.push(item);this.eventObject(mission,'MISSION_EVIDENCE',{evidenceId:item.id,kind:item.kind||'generic'});atomicJson(this.file(id),mission);return mission}
 }
 

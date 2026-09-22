@@ -1,0 +1,25 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.09",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "e78357b6290ccd146d48306086bf083e6c77bb5d",
+  "bottleneck": "changeset-read-protocol-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "ChangesetStore.get bound durable document id to storage identity but did not enforce the published taowind-code.changeset.v0.3 protocol. Unknown durable protocols could therefore reach ordinary read consumers even though apply and rollback failed closed.",
+  "changes": [
+    "Enforce CHANGESET_PROTOCOL in ChangesetStore.get after durable id verification.",
+    "Extend the existing changeset protocol regression to cover direct get(), apply(), and rollback() consumers.",
+    "Keep apply/rollback protocol checks as defense in depth; no new architecture or product policy selected."
+  ],
+  "verification": {
+    "source_contract_replay": "PASS: direct get now routes through verifiedChangesetProtocol; apply and rollback still route through the same invariant.",
+    "focused_regression_contract": "PASS BY INSPECTION: 3 focused cases encode direct read, apply, and rollback protocol drift; unknown v9 must throw UNSUPPORTED_CHANGESET_PROTOCOL before side effects.",
+    "hosted_runtime": "HTTP 502 transient upstream error from Developer Execution Runtime; not claimed as passed.",
+    "github_actions": "Must remain untriggered; commits use [skip ci] [skip actions]."
+  },
+  "non_goals": [
+    "No trust-root/signature/MAC architecture selected.",
+    "No force push, Release, credential operation, paid action, or destructive external action."
+  ]
+}

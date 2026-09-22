@@ -7,7 +7,7 @@
   "properties":{
     "id":{"type":"string","pattern":"^mission-[A-Za-z0-9-]+$"},
     "protocol":{"const":"taowind-code.autonomous-mission.v0.1"},
-    "rootGoal":{"type":"string","minLength":1},
+    "rootGoal":{"type":"string","minLength":1,"pattern":"\\S"},
     "status":{"enum":["ACTIVE","WAITING_PROVIDER","WAITING_APPROVAL","GOAL_CLOSED","BUDGET_EXHAUSTED","BLOCKED","FAILED"]},
     "cycle":{"type":"integer","minimum":0},
     "currentRunId":{"type":["string","null"]},

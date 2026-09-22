@@ -38,3 +38,15 @@ test('autonomous mission config contract publishes runtime bounds and boolean co
   assert.match(runtimeSource,/function boundedNumber\(value,min,max,fallback\)/);
   assert.match(runtimeSource,/function validMissionConfig\(config\)/);
 });
+
+test('autonomous mission currentRunId follows the durable run identity contract',()=>{
+  const alternatives=schema.properties.currentRunId.anyOf;
+  const runRef=alternatives.find(item=>item.type==='string');
+  assert.equal(runRef.pattern,'^run-[A-Za-z0-9-]+$');
+  const contract=new RegExp(runRef.pattern);
+  assert.equal(contract.test('run-abc123'),true);
+  assert.equal(contract.test('run-ABC-123'),true);
+  assert.equal(contract.test('RUN-abc123'),false);
+  assert.equal(contract.test('not-a-run'),false);
+  assert.match(runtimeSource,/function validRunReference\(value\)/);
+});

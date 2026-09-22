@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.26",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "61542a64b94fbf7ddb169a41d4eef8ccafd430ec",
+  "bottleneck": "mission-current-run-reference-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main accepted any string as currentRunId even though the referenced RunStore only accepts durable identities matching ^run-[A-Za-z0-9-]+$. A tampered mission could therefore carry an impossible run reference and fail later inside runner.get() instead of failing closed at the mission read boundary.",
+  "changes": [
+    "Validate non-null currentRunId values against the existing durable RunStore identity contract.",
+    "Publish the same run-id reference pattern in Autonomous Mission v0.1.",
+    "Add a focused cross-contract regression that preserves valid lowercase run prefixes and rejects impossible references."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: currentRunId accepted arbitrary strings while RunStore.file() rejects non run-* identities.",
+    "post_fix_source_contract_replay": "PASS: mission read/update boundaries and the checked-in Mission v0.1 contract now agree with the existing RunStore identity grammar.",
+    "focused_regression_contract": "Checked-in mission contract test covers valid run ids, uppercase-prefix rejection, and non-run references.",
+    "hosted_runtime": "Developer Execution Runtime was unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not add a new reference model. It binds an existing mission field to the already-established durable run identity contract."
+}

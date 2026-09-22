@@ -6,8 +6,8 @@ const MAX_EXECUTABLE_VALIDATION_COMMANDS=8;
 const compareText=(a,b)=>a<b?-1:a>b?1:0;
 function normalizeRel(p){
   if(typeof p!=='string'||!p.trim())return null;
-  const norm=path.posix.normalize(p.replaceAll('\\','/'));
-  if(norm==='.'||norm.startsWith('../')||norm==='..'||norm.startsWith('/')||/^[A-Za-z]:/.test(norm))return null;
+  const norm=path.posix.normalize(p.replaceAll('\\','/')).replace(/\/+$/,'');
+  if(!norm||norm==='.'||norm.startsWith('../')||norm==='..'||norm.startsWith('/')||/^[A-Za-z]:/.test(norm))return null;
   if(norm.split('/').some(x=>BLOCKED_SEGMENTS.has(x)))return null;
   return norm;
 }

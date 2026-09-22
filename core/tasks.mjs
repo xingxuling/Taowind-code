@@ -14,7 +14,7 @@ function developmentTitle(mode){const label=MODE_TITLES[mode]||String(mode||'DWA
 export class TaskStore {
   constructor(dir){this.file=path.join(dir,'tasks.json');fs.mkdirSync(dir,{recursive:true});if(!fs.existsSync(this.file))this.save([])}
   load(){let value;try{value=JSON.parse(fs.readFileSync(this.file,'utf8'))}catch{throw new Error('TASK_STORE_CORRUPT')}if(!Array.isArray(value))throw new Error('TASK_STORE_CORRUPT');return value}
-  save(v){const tmp=`${this.file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(v,null,2));fs.renameSync(tmp,this.file)}
+  save(v){if(!Array.isArray(v))throw new Error('TASKS_REQUIRED_ARRAY');const tmp=`${this.file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(v,null,2));fs.renameSync(tmp,this.file)}
   list(){return this.load()}
   replace(tasks){this.save(tasks);return tasks}
   plan(prompt,{mode='WHOLE_ARTIFACT',runId=null}={}){

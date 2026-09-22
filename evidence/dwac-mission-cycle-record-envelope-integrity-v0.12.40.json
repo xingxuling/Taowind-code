@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.40",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "ea10403666dced3a2bdbb02271706128c38176ba",
+  "bottleneck": "mission-cycle-record-envelope-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main validates mission cycle index/runId identity and append behavior, but durable cycle records can still lose or rewrite goal, mode, run status, close timestamp, or assessment while remaining readable. The current supervisor always emits all of those fields when a validated run becomes a completed mission cycle.",
+  "changes": [
+    "Require every durable cycle record to preserve the non-blank goal, one of the four established run modes, an existing completion status, non-empty closedAt timestamp, and presence of assessment.",
+    "Publish the same existing writer envelope in Autonomous Mission v0.1 while leaving assessment payload semantics unconstrained.",
+    "Add focused durable-tamper coverage for goal/mode/status/closedAt/assessment drift."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: durable cycle validation only required contiguous index and a syntactically valid runId, so the rest of the supervisor-emitted cycle envelope could be dropped or forged.",
+    "post_fix_source_contract_replay": "PASS: a normal supervisor-shaped cycle record remains valid; blank goal, unknown mode, impossible completed-run status, blank closedAt, and missing assessment fail closed.",
+    "focused_regression_contract": "tests/autonomous-mission-cycle-record-envelope-integrity.test.mjs exercises the real AutonomousMissionStore durable boundary.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only preserves fields already emitted by the current mission supervisor. It does not define assessment semantics, authenticate whole-document rewrites, or introduce a new trust root."
+}

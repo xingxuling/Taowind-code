@@ -1,0 +1,29 @@
+{
+  "version": "0.11.71",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "7fe05ec946ecf234297f9a0ab6b5d8fbbaae0042",
+  "selected_bottleneck": "apply-receipt-changeset-binding-integrity（应用回执与变更集绑定完整性）",
+  "selected_problem": "Fresh canonical main verified that applyReceipt.files matched applyReceipt.receiptSha256, but a receipt could still be rewritten coherently and rehashed so its file rows no longer described the staged changeset. Rollback would then consume missing or altered identity/mode evidence while the receipt hash remained internally valid.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The existing changeset and apply receipt already encode the same post-apply path/op/content facts, so cross-checking them closes an existing transactional invariant rather than selecting a new architecture.",
+    "Fresh-main focused reproduction changed an apply receipt path, recomputed receiptSha256, and showed that the pre-fix rollback still proceeded because receipt hash validity alone did not prove semantic binding to doc.changes.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502, so this cycle uses DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） plus exact local focused validation and does not claim a hosted success receipt."
+  ],
+  "pre_fix_reality": {
+    "source_observation": "verifiedReceiptFiles proved only sha256(JSON.stringify(files)) == receiptSha256; rollback then built appliedByPath from those rows without proving one-to-one correspondence with doc.changes.",
+    "focused_reproduction": "After changing applyReceipt.files[0].path and recomputing receiptSha256, the fresh-main rollback path accepted the receipt and restored the preimage.",
+    "impact": "a hash-consistent but semantically detached apply receipt could silently remove or alter rollback identity/mode conflict evidence"
+  },
+  "change": "Apply-receipt verification now additionally requires one receipt row per changeset entry, unique receipt paths, matching path/op, matching expected postimage existence, and matching expected postimage sha256 before rollback consumes receipt metadata.",
+  "validation": {
+    "pre_fix_regression": "EXPECTED_FAILURE: new regression reported Missing expected exception on fresh-main source after the receipt was coherently rewritten and rehashed",
+    "node_check": "PASS on the exact proposed core/changesets.mjs content",
+    "focused_tests": "4/4 PASS, 0 skipped across apply-receipt hash-integrity and semantic-binding regressions",
+    "intact_binding_regression": "PASS: an unchanged, hash-consistent receipt still permits rollback to the exact original bytes",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This binds the apply receipt to the persisted changeset semantics in addition to checking the receipt hash. It still is not an authenticated signature or external trust root and does not claim protection against a coherent rewrite of both the changeset and its matching receipt."
+}

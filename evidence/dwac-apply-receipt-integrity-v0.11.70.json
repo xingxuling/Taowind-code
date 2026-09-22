@@ -1,0 +1,29 @@
+{
+  "version": "0.11.70",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "169f04225b4306c6942fb9ae7385629204ce177a",
+  "selected_bottleneck": "apply-receipt-self-consistency（应用回执自洽完整性）",
+  "selected_problem": "Fresh canonical main recorded applyReceipt.receiptSha256 over applyReceipt.files, and rollback trusted applyReceipt.files to recover expected identity/mode metadata, but rollback never checked that the persisted files array still matched its receipt hash. A stale or tampered durable apply receipt could therefore silently weaken rollback conflict detection even though the receipt already carried an integrity field intended to bind that file list.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "This closes an already-existing receipt self-consistency invariant rather than choosing a new persistence, signature, trust-root, UI, or product architecture.",
+    "The regression is directly falsifiable on fresh main by changing applyReceipt.files while leaving receiptSha256 unchanged: rollback previously proceeded instead of rejecting the inconsistent receipt.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502, so this cycle used DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and exact local focused validation rather than claiming a hosted DWAC execution receipt."
+  ],
+  "pre_fix_reality": {
+    "source_observation": "ChangesetStore.apply persisted applyReceipt={at,files,receiptSha256}, while ChangesetStore.rollback constructed appliedByPath directly from doc.applyReceipt.files without checking receiptSha256.",
+    "focused_reproduction": "Changing the persisted apply receipt file path while retaining the original receiptSha256 caused the pre-fix rollback path to complete instead of rejecting the inconsistent receipt.",
+    "impact": "receipt-protected post-apply identity/mode evidence could be silently altered or dropped before rollback preflight"
+  },
+  "change": "Rollback now verifies that applyReceipt.files exists and that sha256(JSON.stringify(files)) equals applyReceipt.receiptSha256 before deriving any rollback preflight expectations from the receipt. A mismatch fails closed with CHANGESET_APPLY_RECEIPT_CORRUPT before restoration.",
+  "validation": {
+    "pre_fix_regression": "EXPECTED_FAILURE: new regression reported Missing expected exception on fresh-main source, proving the inconsistent apply receipt was accepted",
+    "node_check": "PASS on the exact proposed core/changesets.mjs content",
+    "focused_tests": "2/2 PASS, 0 skipped after the fix",
+    "intact_receipt_regression": "PASS: an unchanged apply receipt still permits rollback to the exact original bytes",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This verifies apply-receipt self-consistency against the receipt hash before rollback consumes receipt metadata. It is not an authenticated signature or trust root and does not claim protection against a coherent malicious rewrite of both receipt files and receiptSha256."
+}

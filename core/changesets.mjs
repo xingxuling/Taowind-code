@@ -12,7 +12,13 @@ function changeId(runId,changes){return `cs-${sha256Text(`${runId}:${Date.now()}
 function encode(bytes){return bytes?bytes.toString('base64'):null}
 function decode(value){return value===null?null:Buffer.from(value,'base64')}
 function blockedChangePath(value){const rel=path.posix.normalize(String(value||'').replaceAll('\\','/')).replace(/\/+$/,'');return rel.split('/').some(segment=>BLOCKED_CHANGE_SEGMENTS.has(segment.toLowerCase()))}
-function verifiedChangesetProtocol(doc){if(doc?.protocol!==CHANGESET_PROTOCOL)throw new Error('UNSUPPORTED_CHANGESET_PROTOCOL');if(!['STAGED','APPLIED','ROLLED_BACK'].includes(doc?.status))throw new Error('INVALID_CHANGESET_STATUS');return doc}
+function verifiedChangesetProtocol(doc){
+ if(doc?.protocol!==CHANGESET_PROTOCOL)throw new Error('UNSUPPORTED_CHANGESET_PROTOCOL');
+ if(!['STAGED','APPLIED','ROLLED_BACK'].includes(doc?.status))throw new Error('INVALID_CHANGESET_STATUS');
+ if(typeof doc?.runId!=='string'||typeof doc?.source!=='string'||typeof doc?.createdAt!=='string'||typeof doc?.updatedAt!=='string'||!Array.isArray(doc?.changes)||doc.changes.length<1||doc.changes.length>MAX_FILES)throw new Error('INVALID_CHANGESET_ENVELOPE');
+ if(!Object.hasOwn(doc,'applyReceipt')||!Object.hasOwn(doc,'rollbackReceipt')||(doc.applyReceipt!==null&&(typeof doc.applyReceipt!=='object'||Array.isArray(doc.applyReceipt)))||(doc.rollbackReceipt!==null&&(typeof doc.rollbackReceipt!=='object'||Array.isArray(doc.rollbackReceipt))))throw new Error('INVALID_CHANGESET_ENVELOPE');
+ return doc
+}
 function stagedAfterBytes(change){
   if(change.op==='delete'){
     if(change.after?.sha256!==null||change.after?.contentBase64!==null||change.after?.size!==0)throw new Error(`CHANGESET_POSTIMAGE_CORRUPT:${change.path}`);

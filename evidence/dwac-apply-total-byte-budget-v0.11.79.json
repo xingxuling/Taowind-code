@@ -1,0 +1,28 @@
+{
+  "version": "0.11.79",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "6fb8164f48d918d404068ef5808b0cf6c99fe95b",
+  "selected_bottleneck": "apply-persisted-total-byte-budget-integrity（应用持久化总字节预算完整性）",
+  "selected_problem": "Fresh canonical main revalidated the per-write MAX_FILE_BYTES limit at apply, but stage also bounded the sum of preimage and postimage bytes for the whole changeset with MAX_TOTAL_BYTES=8,000,000. A durable STAGED document could be coherently expanded into several individually valid writes whose total exceeded 8 MB, and apply would execute all of them.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "CHANGESET_TOO_LARGE and MAX_TOTAL_BYTES are existing stage-time transaction resource constraints, so recomputing the same verified-byte total at apply is protocol preservation rather than a new architecture choice.",
+    "The defect is directly falsifiable with five unique 1.7 MB self-consistent persisted postimages: each remains below MAX_FILE_BYTES while their 8.5 MB aggregate exceeds the already-approved changeset budget.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502; this cycle used DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and exact local focused validation."
+  ],
+  "pre_fix_reality": {
+    "focused_reproduction": "EXPECTED_FAILURE: 1/2 PASS, 1/2 FAIL with Missing expected exception; apply accepted all five 1.7 MB writes and exceeded the 8 MB aggregate stage budget.",
+    "impact": "Durable reload could increase bounded transaction memory/I/O and side-effect volume beyond what stage had approved even when every individual file remained valid."
+  },
+  "change": "Apply now sums the actual verified persisted preimage and postimage bytes during preflight and rejects the changeset with CHANGESET_TOO_LARGE as soon as the total exceeds MAX_TOTAL_BYTES, before any workspace mutation.",
+  "validation": {
+    "node_check": "PASS on the exact proposed core/changesets.mjs content",
+    "focused_tests": "14/14 PASS, 0 skipped across the accumulated apply-integrity regressions",
+    "pre_fix_regression": "EXPECTED_FAILURE confirmed before the fix",
+    "boundary_case": "PASS: five 1.6 MB postimages totaling exactly 8,000,000 bytes remain valid and apply",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This preserves the existing aggregate verified-byte budget across durable reload. It is still not an authenticated artifact mechanism and does not protect against a coherent rewrite that remains within all current structural and resource invariants."
+}

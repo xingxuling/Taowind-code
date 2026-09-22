@@ -13,7 +13,7 @@ function validChangesetLedger(value){return Array.isArray(value)&&value.every(it
 
 export class RunStore{
   constructor(dir){this.dir=path.join(dir,'runs');fs.mkdirSync(this.dir,{recursive:true})}
-  file(runId){if(!/^run-[a-z0-9-]+$/i.test(runId))throw new Error('INVALID_RUN_ID');return path.join(this.dir,`${runId}.json`)}
+  file(runId){if(!/^run-[A-Za-z0-9-]+$/.test(runId))throw new Error('INVALID_RUN_ID');return path.join(this.dir,`${runId}.json`)}
   create({goal,mode='WHOLE_ARTIFACT',dwac=null,tasks=[]}={}){
     const run={id:id(),protocol:RUN_PROTOCOL,goal:String(goal||'').trim(),status:'OBSERVING',mode,cycle:1,createdAt:now(),updatedAt:now(),dwac,tasks,evidence:[],events:[],changesets:[],validation:null,delivery:null,blocker:null,message:null};
     if(!run.goal)throw new Error('GOAL_REQUIRED');if(!MODES.has(run.mode))throw new Error('INVALID_RUN_MODE');this.eventObject(run,'RUN_CREATED',{mode});atomicJson(this.file(run.id),run);return run;

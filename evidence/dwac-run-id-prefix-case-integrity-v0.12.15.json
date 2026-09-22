@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.15",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "36dbc22e86b5bf3d706f3a1b8a385354c630b192",
+  "bottleneck": "run-durable-id-prefix-case-contract-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main inspection found the North Star Run v0.2 schema requires an id beginning with the lowercase literal prefix run-, while RunStore.file() used a case-insensitive matcher. A durable RUN-* storage identity could therefore cross the runtime boundary while violating the checked-in contract.",
+  "changes": [
+    "Make the run- prefix case-sensitive at the storage-id boundary while preserving the pre-existing alphanumeric/hyphen suffix acceptance, including uppercase suffix characters that were already accepted.",
+    "Add a focused regression proving lowercase-prefix ids remain accepted and uppercase-prefix ids fail closed."
+  ],
+  "verification": {
+    "source_contract_replay": "PASS: the storage prefix now follows the case-sensitive ^run- schema contract without broadening or narrowing the existing suffix character class.",
+    "bounded_reality_replay": "PASS: old /^run-[a-z0-9-]+$/i accepted RUN-abc123; proposed /^run-[A-Za-z0-9-]+$/ rejects it while preserving run-abc123 and run-ABC123.",
+    "focused_regression_contract": "1 focused test encoded against the real RunStore.file() boundary.",
+    "hosted_runtime": "HTTP 502 transient upstream error from Developer Execution Runtime; no hosted test pass claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only aligns an already-published lexical prefix invariant and preserves the existing storage filename safety policy. It does not choose new authentication or persistence architecture."
+}

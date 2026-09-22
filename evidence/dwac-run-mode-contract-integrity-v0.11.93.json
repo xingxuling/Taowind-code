@@ -1,0 +1,16 @@
+{
+  "version":"0.11.93",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"12c5b34a0024a58a26176378a65fdbcdea754fda",
+  "selected_bottleneck":"run-mode-contract-integrity（运行模式契约完整性）",
+  "selected_problem":"Fresh main publishes exactly four legal North Star run modes in the checked-in v0.2 schema, while RunStore.create and RunStore.update still accepted arbitrary mode strings and could durably create state outside that declared contract.（最新主分支的 v0.2 仓库契约已经明确只允许四种运行模式，但 RunStore.create 与 RunStore.update 仍接受任意 mode 字符串，可持久化出契约之外的状态。）",
+  "mode_route":["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate":"AUTONOMOUS（自主）",
+  "verification":{
+    "pre_fix_reality_replay":"1/3 PASS; invalid create/update modes were both accepted instead of failing closed（修复前 1/3 通过；非法创建/更新模式均被错误接受）",
+    "post_fix_reality_replay":"3/3 PASS; invalid modes fail closed while all four declared modes remain accepted（修复后 3/3 通过；非法模式失败关闭，四种已声明模式全部保持可用）",
+    "focused_node_check":"PASS for core/run-store.mjs（语法检查通过）",
+    "github_actions":"not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary":"This only enforces the already-published four-mode v0.2 run contract at create/update write boundaries. It does not prescribe how DWAC chooses or switches modes.（本轮只在创建/更新写入边界执行已经公开的四模式 v0.2 契约；不规定 DWAC 如何选择或切换模式。）"
+}

@@ -30,6 +30,7 @@ function validMissionShape(mission){
   if(!validRunReference(mission.currentRunId))return false;
   if(!validMissionClosure(mission.closure))return false;
   if(mission.cycle>0&&(!mission.closure||mission.closure.runId!==mission.cycles.at(-1).runId))return false;
+  if(mission.cycle>0&&(typeof mission.closure.at!=='string'||!mission.closure.at||!Object.prototype.hasOwnProperty.call(mission.closure,'assessment')))return false;
   if(mission.blocker!==undefined&&mission.blocker!==null&&typeof mission.blocker!=='string')return false;
   return true;
 }

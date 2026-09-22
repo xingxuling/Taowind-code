@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.57",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "a263a9f904e881e4f2bfc8af1db96e5fb2aad024",
+  "bottleneck": "browser-scalar-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main had hardened browser list fields and settle timing, but scalar assertion fields still silently coerced malformed values: titleIncludes/urlIncludes used String(...||''), while boolean evidence policies treated every value except literal false as true. This allowed explicit malformed validation plans to be rewritten rather than preserved or rejected.",
+  "changes": [
+    "Require explicitly supplied titleIncludes/urlIncludes values to be strings while preserving the existing empty-string default when omitted.",
+    "Require explicitly supplied console/page/network/screenshot policy values to be booleans while preserving the existing true default when omitted.",
+    "Keep selector/text plans, settle timing, URL validation, CDP execution, and receipt semantics unchanged."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: String(raw.field||'') and raw.booleanField!==false rewrote malformed scalar fields instead of rejecting them.",
+    "post_fix_source_contract_replay": "PASS: scalar fields are presence-sensitive and shape-checked before transport, with the same omitted-field defaults.",
+    "focused_regression_contract": "tests/browser-scalar-shape-integrity.test.mjs covers malformed title/url assertion values and all explicit boolean policy fields and requires INVALID_BROWSER_CHECK_FIELD before CDP transport.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not add browser validation features. It only enforces the scalar types already described by the browser-check contract instead of silently coercing malformed inputs."
+}

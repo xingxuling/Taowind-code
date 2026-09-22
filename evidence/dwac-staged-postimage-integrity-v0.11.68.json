@@ -1,0 +1,27 @@
+{
+  "version": "0.11.68",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "5217632f430f99cbd16913ced4e5e5d61761bb8a",
+  "selected_bottleneck": "staged-postimage-self-consistency（暂存后像自洽完整性）",
+  "selected_problem": "Fresh main persisted after.sha256/after.size/after.contentBase64 for each staged write, but apply decoded and wrote after.contentBase64 without checking that the persisted bytes still matched the staged postimage metadata. Corrupted durable changeset content could therefore produce a workspace state different from the postimage that the changeset itself claimed to apply.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The execution-kernel contract already defines after.sha256 and after.contentBase64 as the transactional postimage; enforcing their self-consistency closes an existing invariant rather than choosing a new architecture.",
+    "The verification happens before any workspace mutation and keeps delete semantics explicit, preserving fail-closed transactional behavior.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502, so this cycle uses DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and does not claim a hosted DWAC success receipt."
+  ],
+  "pre_fix_reality": {
+    "source_observation": "ChangesetStore.apply wrote decode(c.after.contentBase64) directly while c.after.sha256 and c.after.size were only recorded metadata.",
+    "impact": "persisted staged bytes could diverge from their recorded postimage before apply"
+  },
+  "change": "Apply now materializes and verifies each staged postimage before workspace preflight: write bytes must match recorded size and sha256, while delete postimages must remain null/zero. The verified bytes are the exact bytes later written.",
+  "validation": {
+    "node_check": "PASS on the exact proposed core/changesets.mjs content",
+    "focused_changeset_replay": "PASS: tampered persisted write content is rejected with CHANGESET_POSTIMAGE_CORRUPT before file creation; an intact staged write still reaches APPLIED and writes the expected bytes",
+    "regression_test_added": "tests/changeset-staged-postimage-integrity.test.mjs",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This verifies staged postimage self-consistency against its recorded hash/size. It is not an authenticated runtime-artifact signature and does not yet verify rollback preimage bytes before restoration."
+}

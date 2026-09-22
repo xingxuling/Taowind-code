@@ -11,6 +11,15 @@ function changeId(runId,changes){return `cs-${sha256Text(`${runId}:${Date.now()}
 function encode(bytes){return bytes?bytes.toString('base64'):null}
 function decode(value){return value===null?null:Buffer.from(value,'base64')}
 function blockedChangePath(value){const rel=path.posix.normalize(String(value||'').replaceAll('\\','/')).replace(/\/+$/,'');return rel.split('/').some(segment=>BLOCKED_CHANGE_SEGMENTS.has(segment.toLowerCase()))}
+function stagedAfterBytes(change){
+  if(change.op==='delete'){
+    if(change.after?.sha256!==null||change.after?.contentBase64!==null||change.after?.size!==0)throw new Error(`CHANGESET_POSTIMAGE_CORRUPT:${change.path}`);
+    return null;
+  }
+  const bytes=decode(change.after?.contentBase64??null);
+  if(!Buffer.isBuffer(bytes)||bytes.length!==change.after?.size||sha256Buffer(bytes)!==change.after?.sha256)throw new Error(`CHANGESET_POSTIMAGE_CORRUPT:${change.path}`);
+  return bytes;
+}
 export class ChangesetStore{
  constructor(runtimeDir,workspace){this.dir=path.join(runtimeDir,'changesets');fs.mkdirSync(this.dir,{recursive:true});this.workspace=new WorkspaceService(workspace)}
  file(id){if(!/^cs-[a-f0-9]+$/i.test(id))throw new Error('INVALID_CHANGESET_ID');return path.join(this.dir,`${id}.json`)}
@@ -25,8 +34,8 @@ export class ChangesetStore{
    const doc={id,protocol:'taowind-code.changeset.v0.3',runId,source,status:'STAGED',createdAt:now(),updatedAt:now(),changes:normalized,applyReceipt:null,rollbackReceipt:null};atomicJson(this.file(id),doc);return doc;
  }
  apply(id){const doc=this.get(id);if(doc.status!=='STAGED')throw new Error('CHANGESET_NOT_STAGED');const preflight=[];
-   for(const c of doc.changes){if(blockedChangePath(c.path))throw new Error(`BLOCKED_CHANGE_PATH:${c.path}`);const ancestor=this.workspace.ancestorState(c.path);if(!ancestor.ok)throw new Error(`APPLY_CONFLICT:${c.path}`);const current=this.workspace.stat(c.path);const identityChanged=c.before.exists&&c.before.identity&&current.identity!==c.before.identity;const modeChanged=c.before.exists&&c.before.mode!==null&&c.before.mode!==undefined&&current.mode!==c.before.mode;if(current.exists!==c.before.exists||current.sha256!==c.before.sha256||identityChanged||modeChanged)throw new Error(`APPLY_CONFLICT:${c.path}`);preflight.push({change:c,current})}
-   const applied=[];for(const {change:c} of preflight){if(c.op==='delete')this.workspace.remove(c.path);else this.workspace.write(c.path,decode(c.after.contentBase64));const post=this.workspace.stat(c.path);applied.push({path:c.path,op:c.op,sha256:post.sha256,exists:post.exists,identity:post.identity||null,mode:post.mode??null})}
+   for(const c of doc.changes){if(blockedChangePath(c.path))throw new Error(`BLOCKED_CHANGE_PATH:${c.path}`);const afterBytes=stagedAfterBytes(c);const ancestor=this.workspace.ancestorState(c.path);if(!ancestor.ok)throw new Error(`APPLY_CONFLICT:${c.path}`);const current=this.workspace.stat(c.path);const identityChanged=c.before.exists&&c.before.identity&&current.identity!==c.before.identity;const modeChanged=c.before.exists&&c.before.mode!==null&&c.before.mode!==undefined&&current.mode!==c.before.mode;if(current.exists!==c.before.exists||current.sha256!==c.before.sha256||identityChanged||modeChanged)throw new Error(`APPLY_CONFLICT:${c.path}`);preflight.push({change:c,current,afterBytes})}
+   const applied=[];for(const {change:c,afterBytes} of preflight){if(c.op==='delete')this.workspace.remove(c.path);else this.workspace.write(c.path,afterBytes);const post=this.workspace.stat(c.path);applied.push({path:c.path,op:c.op,sha256:post.sha256,exists:post.exists,identity:post.identity||null,mode:post.mode??null})}
    doc.status='APPLIED';doc.updatedAt=now();doc.applyReceipt={at:doc.updatedAt,files:applied,receiptSha256:sha256Text(JSON.stringify(applied))};atomicJson(this.file(id),doc);return doc;
  }
  rollback(id){const doc=this.get(id);if(doc.status!=='APPLIED')throw new Error('CHANGESET_NOT_APPLIED');const preflight=[],appliedByPath=new Map((doc.applyReceipt?.files||[]).map(x=>[x.path,x]));

@@ -1,0 +1,27 @@
+{
+  "version": "0.11.69",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "064662b9677e4871cb5de7b84d10b88af41282e2",
+  "selected_bottleneck": "rollback-preimage-self-consistency（回滚前像自洽完整性）",
+  "selected_problem": "Fresh canonical main verified staged postimage bytes before apply, but rollback still decoded before.contentBase64 and restored it without first proving that those persisted bytes matched before.sha256/before.size. A corrupted durable rollback payload could therefore restore bytes different from the transactional preimage that the changeset claimed to preserve, even while the current workspace correctly matched the applied postimage.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The North Star execution-kernel contract already defines before.sha256 and before.contentBase64 as the transactional preimage, so verifying their self-consistency closes an existing reversible-delivery invariant rather than choosing a new architecture.",
+    "Preimage verification is moved into rollback preflight before any restore mutation, and the exact verified bytes are then reused for restoration.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502, so this cycle uses DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and does not claim a hosted DWAC success receipt."
+  ],
+  "pre_fix_reality": {
+    "source_observation": "Fresh main rollback checked that the live workspace still equaled the expected applied postimage, but restored decode(c.before.contentBase64) directly and only checked before.type inside the later mutation loop.",
+    "impact": "persisted rollback preimage bytes could diverge from before.sha256/before.size and still become the restored workspace content"
+  },
+  "change": "Rollback now validates the staged preimage in preflight. Existing-file preimages must be file-typed and their decoded bytes must match the recorded size and SHA-256; absent preimages must retain null/zero metadata. The exact verified bytes are carried into the mutation phase, so malformed preimage metadata fails closed before any file is restored.",
+  "validation": {
+    "focused_preimage_replay": "PASS: corrupted persisted before.contentBase64 is rejected with CHANGESET_PREIMAGE_CORRUPT while an intact preimage materializes the exact original bytes",
+    "branch_source_reinspection": "PASS: stagedBeforeBytes is executed during rollback preflight and verified beforeBytes are reused during restoration",
+    "regression_test_added": "tests/changeset-rollback-preimage-integrity.test.mjs",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This verifies rollback preimage self-consistency against its recorded hash/size/type before restoration. It is not an authenticated runtime-artifact signature or trust root and does not claim protection against coherent malicious rewrites of all persisted metadata."
+}

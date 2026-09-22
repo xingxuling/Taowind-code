@@ -1,0 +1,27 @@
+{
+  "version": "0.11.66",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "9f5861cb64f3d7501d30eec95679c318cabd7fa1",
+  "selected_bottleneck": "changeset-control-path-boundary-integrity（变更集控制路径边界完整性）",
+  "selected_problem": "After the federation boundary was closed on fresh main, the effectful ChangesetStore.stage layer still accepted direct staged writes to .git/config and case variants such as .GIT/config because it enforced repository escape/symlink/type boundaries but did not enforce the repository's existing blocked control-path rule. NorthStarRunner.stage can reach this layer directly, so federation filtering alone was not an end-to-end invariant.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The same control directories are already hidden from workspace observation and blocked from federated proposal targets; this closes the effectful staging gap instead of defining a new product or development architecture.",
+    "A staged .git path can target repository metadata or hooks inside the workspace, so allowing it would weaken user-sovereignty and delivery-boundary guarantees.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502, so this cycle uses DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and does not claim a hosted DWAC success receipt."
+  ],
+  "pre_fix_reality": {
+    "source_observation": "ChangesetStore.stage normalized relative paths and rejected repository escapes, duplicate/overlapping paths, invalid ancestors and non-file targets, but had no blocked control-segment check; WorkspaceService.ancestorState treats an ordinary in-root .git directory as a valid directory ancestor.",
+    "impact": "direct staged changes could cross the control-path boundary even after federation normalization rejected the same target"
+  },
+  "change": "ChangesetStore.stage now fails closed with BLOCKED_CHANGE_PATH when any canonical path segment case-folds to the repository's established control/generated directory set (.git, node_modules, .next, dist, build, runtime-data, .venv).",
+  "validation": {
+    "node_check": "PASS on the exact proposed core/changesets.mjs content",
+    "focused_guard_replay": "PASS: .git/config, .GIT/config, src/.GiT/hooks/pre-commit, NODE_MODULES/pkg/index.js and .NeXt/cache/meta all fail closed; src/ok.mjs remains accepted",
+    "regression_test_added": "tests/changeset-control-path-boundary.test.mjs",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This makes the existing control-path invariant hold at changeset staging. It does not define a complete credential-write policy, filesystem-wide case/Unicode identity, repository-context ranking, parser-grade module semantics, or arbitrary complex repository synthesis."
+}

@@ -24,7 +24,7 @@ function validMissionShape(mission){
 
 export class AutonomousMissionStore{
   constructor(runtimeDir){this.dir=path.join(runtimeDir,'missions');fs.mkdirSync(this.dir,{recursive:true})}
-  file(id){if(!/^mission-[a-z0-9-]+$/i.test(id))throw new Error('INVALID_MISSION_ID');return path.join(this.dir,`${id}.json`)}
+  file(id){if(!/^mission-[A-Za-z0-9-]+$/.test(id))throw new Error('INVALID_MISSION_ID');return path.join(this.dir,`${id}.json`)}
   create(goal,options={}){
     const rootGoal=String(goal||'').trim();if(!rootGoal)throw new Error('GOAL_REQUIRED');
     const config={maxCycles:Math.max(1,Math.min(64,Number(options.maxCycles||8))),maxRepairs:Math.max(0,Math.min(8,Number(options.maxRepairs??2))),closureThreshold:Math.max(.5,Math.min(1,Number(options.closureThreshold||.8))),autoCommit:options.autoCommit===true};

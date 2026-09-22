@@ -1,0 +1,24 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.73",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "fcbe49f5132f10b4c37f5b758a0a5f0382e64d06",
+  "bottleneck": "task-delivery-terminal-parity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main maps DELIVERED_LOCAL to the delivery task as the current running phase, leaving the task board at delivery=running/progress=.55 even though the run store defines DELIVERED_LOCAL as terminal and delivery has completed.",
+  "changes": [
+    "Preserve the existing phase map and mark every task owned by the delivered run done with progress=1 once status is DELIVERED_LOCAL.",
+    "Do not alter READY_FOR_DELIVERY semantics or invent new phases/statuses.",
+    "Add a focused regression proving all seven planned tasks close when the run is delivered."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: DELIVERED_LOCAL selected phase=delivery, and the generic sync mapper returned that task as running at progress .55.",
+    "node_check": "PASS on the exact proposed core/tasks.mjs in a local reconstruction.",
+    "focused_bounded_replay": "PASS 1/1 using the exact proposed TaskStore: all 7 tasks for a DELIVERED_LOCAL run were done at progress 1.",
+    "regression_contract": "tests/task-delivery-terminal-parity.test.mjs covers the terminal task-board state.",
+    "hosted_runtime": "Developer Execution Runtime remained transiently unavailable with HTTP 502; no hosted/full repository suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only aligns the existing task projection with the already-terminal DELIVERED_LOCAL run state; it does not redefine delivery or task lifecycle architecture."
+}

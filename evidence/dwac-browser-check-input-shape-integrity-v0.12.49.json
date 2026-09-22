@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.49",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "9b29068e58f063a045539fadc4183b6380e1d49e",
+  "bottleneck": "browser-check-input-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main enforces the browser-check count budget but normalizeBrowserChecks still silently filtered malformed entries. A requested browser validation set containing both valid and malformed entries could therefore lose a target and still pass on the remaining checks.",
+  "changes": [
+    "Require browserChecks to be an array and every supplied entry to be a non-null, non-array object instead of silently filtering malformed entries.",
+    "Return a structured BROWSER_CHECK_INPUT_INVALID receipt before command or browser execution when the supplied check set is malformed.",
+    "Keep well-shaped check arrays and the existing eight-check budget behavior unchanged."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: normalizeBrowserChecks used filter(...) and silently dropped null/non-object entries.",
+    "post_fix_bounded_reality_replay": "5/5 PASS for invalid top-level input, invalid entries, and valid-array compatibility.",
+    "focused_regression_contract": "tests/acceptance-browser-check-input-shape-integrity.test.mjs verifies zero observer calls on malformed input and normal execution for a valid check.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle preserves only the object-envelope shape already implied by the prior filter. It does not define browser-check field semantics or choose a browser automation architecture."
+}

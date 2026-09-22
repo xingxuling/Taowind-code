@@ -19,7 +19,7 @@ export class AutonomousMissionStore{
     this.eventObject(mission,'MISSION_CREATED',{config});atomicJson(this.file(mission.id),mission);return mission;
   }
   get(id){const f=this.file(id);if(!fs.existsSync(f))throw Object.assign(new Error('MISSION_NOT_FOUND'),{code:'MISSION_NOT_FOUND'});const mission=JSON.parse(fs.readFileSync(f,'utf8'));if(mission?.id!==id)throw new Error('MISSION_ID_MISMATCH');return mission}
-  list(limit=30){return fs.readdirSync(this.dir).filter(x=>x.endsWith('.json')).map(x=>JSON.parse(fs.readFileSync(path.join(this.dir,x),'utf8'))).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))).slice(0,limit)}
+  list(limit=30){return fs.readdirSync(this.dir).filter(x=>x.endsWith('.json')).map(x=>this.get(x.slice(0,-5))).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))).slice(0,limit)}
   eventObject(mission,type,data={}){const event={seq:mission.events.length+1,at:now(),type,data};mission.events.push(event);mission.updatedAt=event.at;return event}
   update(id,patch={},type='MISSION_UPDATED',data={}){const mission=this.get(id);if(TERMINAL.has(mission.status)&&patch.status&&patch.status!==mission.status)throw new Error('MISSION_TERMINAL');if(patch.status&&!VALID.has(patch.status))throw new Error('INVALID_MISSION_STATUS');Object.assign(mission,patch);this.eventObject(mission,type,data);atomicJson(this.file(id),mission);return mission}
   addEvidence(id,evidence){const mission=this.get(id);const item={id:`mev-${crypto.randomBytes(6).toString('hex')}`,at:now(),...evidence};mission.evidence.push(item);this.eventObject(mission,'MISSION_EVIDENCE',{evidenceId:item.id,kind:item.kind||'generic'});atomicJson(this.file(id),mission);return mission}

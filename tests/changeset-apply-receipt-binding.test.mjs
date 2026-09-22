@@ -1,0 +1,39 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {ChangesetStore} from '../core/changesets.mjs';
+
+function sha256Text(value){return crypto.createHash('sha256').update(String(value)).digest('hex')}
+function withStore(fn){
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-apply-receipt-binding-'));
+  const runtime=path.join(root,'runtime');
+  const workspace=path.join(root,'workspace');
+  const store=new ChangesetStore(runtime,workspace);
+  try{return fn(store,workspace)}finally{fs.rmSync(root,{recursive:true,force:true})}
+}
+
+test('rollback rejects a hash-consistent apply receipt that is no longer semantically bound to the staged changeset',()=>withStore((store,workspace)=>{
+  fs.mkdirSync(path.join(workspace,'src'),{recursive:true});
+  fs.writeFileSync(path.join(workspace,'src','value.mjs'),'export const value=1;\n');
+  const staged=store.stage('run-apply-binding',[{op:'write',path:'src/value.mjs',content:'export const value=2;\n'}]);
+  store.apply(staged.id);
+  const doc=store.get(staged.id);
+  doc.applyReceipt.files[0].path='src/forged.mjs';
+  doc.applyReceipt.receiptSha256=sha256Text(JSON.stringify(doc.applyReceipt.files));
+  fs.writeFileSync(store.file(staged.id),JSON.stringify(doc,null,2));
+  assert.throws(()=>store.rollback(staged.id),error=>error instanceof Error&&error.message==='CHANGESET_APPLY_RECEIPT_CORRUPT');
+  assert.equal(fs.readFileSync(path.join(workspace,'src','value.mjs'),'utf8'),'export const value=2;\n');
+}));
+
+test('a hash-consistent apply receipt that matches the changeset still permits rollback',()=>withStore((store,workspace)=>{
+  fs.mkdirSync(path.join(workspace,'src'),{recursive:true});
+  fs.writeFileSync(path.join(workspace,'src','value.mjs'),'export const value=1;\n');
+  const staged=store.stage('run-intact-apply-binding',[{op:'write',path:'src/value.mjs',content:'export const value=2;\n'}]);
+  store.apply(staged.id);
+  const rolled=store.rollback(staged.id);
+  assert.equal(rolled.status,'ROLLED_BACK');
+  assert.equal(fs.readFileSync(path.join(workspace,'src','value.mjs'),'utf8'),'export const value=1;\n');
+}));

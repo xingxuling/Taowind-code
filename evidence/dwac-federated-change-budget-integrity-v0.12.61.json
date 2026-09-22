@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.61",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "abea57e1524ef6f199a4b299a38d697809b57777",
+  "bottleneck": "federated-change-budget-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main allowed a federated candidate with more than 128 normalized changes to remain executable and eligible for consensus/ranking even though ChangesetStore.stage has an existing MAX_FILES=128 hard gate and will deterministically reject the same plan with TOO_MANY_CHANGES.",
+  "changes": [
+    "Reuse the existing ChangeSet hard budget of 128 as the federated executable change-count boundary.",
+    "Fail oversized candidates closed before normalization/ranking, expose change_overflow and observed_change_count, and record CHANGESET_FILE_BUDGET_EXCEEDED evidence.",
+    "Preserve exactly-128-change plans and all existing change-shape, ambiguity, overlap, validation-command, consensus, and ranking behavior."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: federated normalization had no change-count hard gate, so 129 otherwise-valid changes could remain executable until later ChangeSet staging.",
+    "downstream_contract_evidence": "ChangesetStore declares MAX_FILES=128 and rejects changes.length>MAX_FILES with TOO_MANY_CHANGES during stage/apply preflight.",
+    "focused_regression_contract": "tests/federated-change-budget-integrity.test.mjs proves 129 changes fail closed with observed count/risk evidence, 128 remains valid, and a bounded candidate wins over an oversized competitor.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not choose a new artifact size or product policy. It propagates the already-existing ChangeSet file-count hard gate upstream so federation cannot select a plan guaranteed to fail the next real engineering boundary."
+}

@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.20",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "b2ab8e02dcf330935d720bc6e0f5912314dcb8e0",
+  "bottleneck": "run-durable-id-storage-contract-parity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main inspection found the North Star Run v0.2 schema only required the literal prefix run-, while RunStore.file() already enforces the durable storage identity ^run-[A-Za-z0-9-]+$. The published contract could therefore accept ids such as run-? that the real durable store refuses to address.",
+  "changes": [
+    "Align the checked-in run id pattern with the already-enforced durable storage identity character contract.",
+    "Extend the existing North Star Run contract regression with accepted and rejected identity examples plus runtime-source parity."
+  ],
+  "verification": {
+    "pre_fix_bounded_replay": "EXPECTED FAIL: /^run-/ accepted run-? while the real RunStore storage matcher rejects it.",
+    "source_contract_replay": "PASS after patch: public run id pattern and existing storage matcher now describe the same accepted identity language.",
+    "focused_regression_contract": "Existing North Star Run contract test extended with durable id character parity cases.",
+    "hosted_runtime": "HTTP 502 transient upstream error from Developer Execution Runtime; no hosted test pass claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not invent a new run id format; it publishes the exact storage-safe format already enforced by RunStore.file()."
+}

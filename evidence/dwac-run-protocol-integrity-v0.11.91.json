@@ -1,0 +1,26 @@
+{
+  "version": "0.11.91",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "b97f14c73ed2d6d933a571257fa24b1c7c9ee763",
+  "selected_bottleneck": "durable-run-protocol-integrity（持久化运行协议完整性）",
+  "selected_problem": "Fresh canonical main now publishes North Star Run v0.2 as an explicit protocol contract, but RunStore.get still accepted any persisted protocol string as long as the file id matched. A durable run rewritten to an unknown future/incompatible protocol could therefore continue through update, evidence, runner and scheduler paths under v0.2 semantics.（最新主分支已经把 North Star Run v0.2 明确为公开协议契约，但 RunStore.get 仍只要文件 ID 匹配就接受任意持久化 protocol 字符串；因此被改写为未知未来/不兼容协议的 run 仍可能按 v0.2 语义进入更新、证据、运行器和调度路径。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The immediately preceding fresh-main cycle made the v0.2 protocol an explicit checked-in contract, so enforcing that same already-declared protocol at the durable read boundary closes contract/runtime drift rather than inventing migration policy.（上一轮刚把 v0.2 协议落实为明确仓库契约，因此在持久化读取边界执行同一既有协议只是闭合契约/运行时漂移，不是在发明迁移政策。）",
+    "Changeset persistence already uses the same fail-closed protocol principle, so this restores consistency across durable execution artifacts.（changeset 持久化已经采用相同的协议失败关闭原则，因此本轮是在不同持久化执行工件之间恢复一致性。）"
+  ],
+  "changes": [
+    "Centralize the existing protocol literal as RUN_PROTOCOL and use it for newly created runs.（把现有协议字面量集中为 RUN_PROTOCOL，并用于新建 run。）",
+    "Make RunStore.get fail closed with UNSUPPORTED_RUN_PROTOCOL when a durable run does not declare the current v0.2 protocol.（当持久化 run 未声明当前 v0.2 协议时，RunStore.get 以 UNSUPPORTED_RUN_PROTOCOL 失败关闭。）",
+    "Because list/update/addEvidence and NorthStarRunner reads already route through get, protocol proof now precedes those paths without duplicating policy.（list/update/addEvidence 与 NorthStarRunner 读取均已通过 get，因此协议验证自动前置于这些路径。）",
+    "Add focused regressions for unknown and current protocols.（新增未知协议与当前协议的聚焦回归。）"
+  ],
+  "verification": {
+    "focused_reality_replay": "PASS: 2/2 on a faithful isolated RunStore replay; current v0.2 is accepted and rewritten v9 is rejected with UNSUPPORTED_RUN_PROTOCOL（忠实隔离的 RunStore 重放 2/2 通过；当前 v0.2 正常读取，改写后的 v9 以 UNSUPPORTED_RUN_PROTOCOL 被拒绝）",
+    "focused_node_check": "PASS for the isolated RunStore replay module（隔离 RunStore 重放模块语法检查通过）",
+    "hosted_runtime": "HTTP 502 transient upstream error; not claimed as passed（托管 Developer Execution Runtime 暂时性 502，未宣称通过）",
+    "github_actions": "not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary": "This enforces the already-declared North Star Run v0.2 protocol at the durable read boundary. It does not define protocol migration, authenticate coherently rewritten v0.2 content, or add signatures/MACs.（本轮只在持久化读取边界执行已经声明的 North Star Run v0.2 协议；不定义协议迁移，不认证可一致改写的 v0.2 内容，也不增加签名或消息认证码。）"
+}

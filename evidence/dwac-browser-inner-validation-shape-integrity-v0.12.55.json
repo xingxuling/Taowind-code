@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.55",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "93befdd214a2b98cf85e043aba2a67565f4900f6",
+  "bottleneck": "browser-inner-validation-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "After v0.12.54 made per-check overflow fail closed, fresh main still silently erased some malformed browser assertions: false/null containers could collapse to empty arrays through || fallbacks, empty strings were filtered away, and non-string items were coerced with String(). That allowed an explicitly malformed required assertion plan to be weakened before observation.",
+  "changes": [
+    "Treat explicitly supplied requiredSelectors/selectors and requiredText containers as arrays rather than collapsing false/null malformed values to empty plans.",
+    "Require each selector and required-text item to already be a non-empty string instead of coercing arbitrary values or filtering empty strings away.",
+    "Preserve deduplication, the v0.12.54 budgets, URL validation, CDP behavior, browser evaluation, screenshots, and receipts."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: selector/text sources used || fallbacks plus map(String).filter(Boolean), so explicit false/null, empty strings, and non-string items could be erased or rewritten before observation.",
+    "post_fix_source_contract_replay": "PASS: presence-sensitive source selection plus explicit container/item gates preserve the requested plan or reject it; no malformed item is silently removed or coerced.",
+    "focused_regression_contract": "tests/browser-inner-validation-shape-integrity.test.mjs covers false/null containers, numeric/object items, and empty-string assertions and requires rejection before any CDP transport.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not define new browser assertion fields or alter valid assertion semantics. It only enforces the existing string-array contract without silent plan weakening."
+}

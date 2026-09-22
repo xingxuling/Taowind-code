@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.63",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "b2f516ff1164a50868ecfcba8a7370f0ab613d97",
+  "bottleneck": "federated-total-write-budget-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main now rejects a single federated write above the established 2,000,000-byte ChangeSet file limit, but several individually-valid writes could still total more than the existing 8,000,000-byte ChangeSet budget and remain executable even though staging must reject them with CHANGESET_TOO_LARGE.",
+  "changes": [
+    "Reuse the existing ChangeSet 8,000,000-byte total budget as an upstream lower-bound gate on proposed write bytes.",
+    "Fail a proposal closed when its postimage write bytes alone already exceed that downstream hard limit, exposing total_write_byte_overflow and observed_write_bytes with risk evidence.",
+    "Preserve exactly 8,000,000 proposed write bytes and all existing file-count, per-file, path, preimage, validation, consensus, and ranking behavior."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: federation bounded each file but did not sum proposed write bytes, so five 1.7 MB writes could remain executable even though their postimages alone already exceed MAX_TOTAL_BYTES=8_000_000 downstream.",
+    "post_fix_source_contract_replay": "PASS: after shape and per-file validation, federation sums UTF-8 write bytes and fail-closes only plans whose proposed postimages alone are already guaranteed to exceed the established total ChangeSet budget.",
+    "focused_regression_contract": "tests/federated-total-write-budget-integrity.test.mjs proves 8.5 MB fails closed, exactly 8.0 MB remains valid, and a bounded candidate wins over a guaranteed-too-large competitor.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not estimate unknown preimage bytes or invent a new total-size policy. It rejects only plans whose proposed write bytes already guarantee failure under the existing ChangeSet 8 MB hard gate."
+}

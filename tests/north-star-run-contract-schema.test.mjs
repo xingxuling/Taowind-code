@@ -18,3 +18,10 @@ test('north-star run schema binds the runtime protocol',()=>{
 test('north-star run schema admits all four runtime development modes',()=>{
   assert.deepEqual(new Set(schema.properties.mode.enum),new Set(['NORTH_STAR','NORTH_STAR_BURST','WHOLE_ARTIFACT','DEEP_DEVELOPMENT']));
 });
+
+test('north-star run schema requires the runtime cycle invariant',()=>{
+  assert.ok(schema.required.includes('cycle'));
+  assert.equal(schema.properties.cycle.type,'integer');
+  assert.equal(schema.properties.cycle.minimum,1);
+  assert.match(runtimeSource,/!Number\.isInteger\(run\?\.cycle\)\|\|run\.cycle<1/);
+});

@@ -1,0 +1,29 @@
+{
+  "version": "0.11.75",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "992c337b98df59bbabdf96a807d9e2b35ffdc1f2",
+  "selected_bottleneck": "apply-persisted-pathset-integrity（应用持久化路径集合完整性）",
+  "selected_problem": "Fresh canonical main rejected duplicate and overlapping change paths while staging, but apply trusted the persisted path set after reload. A duplicated path could be applied and only make rollback fail later on duplicate receipt identity; a coherently rewritten overlapping path set could pass preflight and then fail during the second write after the first write had already mutated the workspace.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "Duplicate and overlapping path rejection are already explicit stage-time invariants, so revalidating the same path-set constraints at apply is protocol preservation rather than a new path policy.",
+    "The overlap case is directly falsifiable and demonstrated partial side effects: the first write created src/dir, then the second nested write failed with EEXIST because the persisted path set no longer satisfied the stage invariant.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502; this cycle used DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and exact local focused validation."
+  ],
+  "pre_fix_reality": {
+    "duplicate_case": "EXPECTED_FAILURE: apply accepted a duplicated persisted change path and mutated the workspace.",
+    "overlap_case": "EXPECTED_FAILURE: apply raised a filesystem EEXIST only after the first overlapping write had already changed the workspace.",
+    "impact": "A persisted STAGED artifact could lose the stage-time path-set invariant and become non-reversible or partially applied."
+  },
+  "change": "Apply now rebuilds the seen-path set during preflight and rejects duplicate or ancestor/descendant-overlapping persisted change paths before operation, preimage, postimage, or workspace mutation logic proceeds.",
+  "validation": {
+    "node_check": "PASS on the exact proposed core/changesets.mjs content",
+    "focused_tests": "6/6 PASS, 0 skipped across apply-preimage, apply-operation, and apply-pathset integrity",
+    "pre_fix_regressions": "Both duplicate and overlap cases reproduced before the fix",
+    "no_partial_write": "PASS: overlap rejection occurs before src/dir or its child is created",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This revalidates duplicate/overlap constraints for the persisted path strings already produced by stage. It does not yet claim canonical-path spelling integrity against a coherently rewritten alias path or authenticated artifact integrity."
+}

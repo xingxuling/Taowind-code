@@ -25,3 +25,12 @@ test('north-star run schema requires the runtime cycle invariant',()=>{
   assert.equal(schema.properties.cycle.minimum,1);
   assert.match(runtimeSource,/!Number\.isInteger\(run\?\.cycle\)\|\|run\.cycle<1/);
 });
+
+test('north-star run schema binds the durable storage id character contract',()=>{
+  assert.equal(schema.properties.id.pattern,'^run-[A-Za-z0-9-]+$');
+  const contract=new RegExp(schema.properties.id.pattern);
+  assert.equal(contract.test('run-abc123'),true);
+  assert.equal(contract.test('run-ABC-123'),true);
+  assert.equal(contract.test('run-?'),false);
+  assert.match(runtimeSource,/\^run-\[A-Za-z0-9-\]\+\$/);
+});

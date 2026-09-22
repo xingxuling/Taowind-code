@@ -5,7 +5,7 @@
   "type":"object",
   "required":["id","protocol","goal","status","mode","cycle","events","evidence","changesets"],
   "properties":{
-    "id":{"type":"string","pattern":"^run-"},
+    "id":{"type":"string","pattern":"^run-[A-Za-z0-9-]+$"},
     "protocol":{"const":"taowind-code.north-star-run.v0.2"},
     "goal":{"type":"string","minLength":1},
     "mode":{"enum":["NORTH_STAR","NORTH_STAR_BURST","WHOLE_ARTIFACT","DEEP_DEVELOPMENT"]},

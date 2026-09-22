@@ -92,7 +92,7 @@ export class WorkspaceService {
     const selected=[]; const seenPaths=new Set(); const seenIdentities=new Set(); let blockedIdentities=null; let total=0;
     for(const raw of paths||[]){
       if(selected.length>=maxFiles)break;
-      const rel=path.posix.normalize(String(raw||'').replaceAll('\\','/')).replace(/^\.\//,'');
+      const rel=path.posix.normalize(String(raw||'').replaceAll('\\','/')).replace(/^\.\//,'').replace(/\/+$/,'');
       if(!rel||rel==='.'||seenPaths.has(rel))continue; seenPaths.add(rel);
       if(isCredentialLikePath(rel))continue;
       const ext=path.extname(rel).toLowerCase(); if(ext&&!TEXT_EXT.has(ext))continue;

@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.45",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "a69be703cf36013ea7ce514bcb7bf244ce6f784f",
+  "bottleneck": "browser-check-budget-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main enforces validation command overflow as a hard failure, but browser checks were normalized with `.slice(0,8)`. A ninth browser target could therefore disappear silently and the remaining eight checks could still produce a passing acceptance receipt.",
+  "changes": [
+    "Preserve the full normalized browser-check count long enough to detect overflow instead of silently truncating it.",
+    "Fail before browser execution with BROWSER_CHECK_BUDGET_EXCEEDED when more than eight valid check objects are supplied.",
+    "Keep exactly eight browser checks executable and include explicit observed/limit budget evidence in the failed receipt."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: nine browser checks were truncated to eight before any budget decision, allowing a possible partial PASS.",
+    "post_fix_source_contract_replay": "PASS: nine checks fail before observer execution; eight checks retain their existing executable behavior.",
+    "focused_regression_contract": "tests/acceptance-browser-check-budget-integrity.test.mjs covers overflow rejection and the exact-eight boundary.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only prevents silent loss of explicitly requested browser validation targets. It does not change what a browser check means or increase the established eight-check budget."
+}

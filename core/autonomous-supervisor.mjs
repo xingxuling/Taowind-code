@@ -17,7 +17,7 @@ function validMissionShape(mission){
   if(!Number.isInteger(mission?.cycle)||mission.cycle<0)return false;
   if(!validMissionConfig(mission?.config))return false;
   if(!Array.isArray(mission?.cycles)||!Array.isArray(mission?.events)||!Array.isArray(mission?.evidence))return false;
-  if(mission.nextGoal!==undefined&&typeof mission.nextGoal!=='string')return false;
+  if(mission.nextGoal!==undefined&&(typeof mission.nextGoal!=='string'||!mission.nextGoal.trim()))return false;
   if(!validRunReference(mission.currentRunId))return false;
   if(mission.closure!==undefined&&mission.closure!==null&&(typeof mission.closure!=='object'||Array.isArray(mission.closure)))return false;
   if(mission.blocker!==undefined&&mission.blocker!==null&&typeof mission.blocker!=='string')return false;

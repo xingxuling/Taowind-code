@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.29",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "908c1b033e90fb8a50603c7156f626d521a382aa",
+  "bottleneck": "mission-cycle-run-reference-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main validated currentRunId against the durable RunStore identity grammar, but historical cycles[] remained an untyped array even though every runtime-generated cycle record carries a runId. A tampered cycle ledger could therefore preserve impossible run references and corrupt mission traceability without failing at the mission read boundary.",
+  "changes": [
+    "Require each durable cycle ledger entry to be an object with a runId matching the established RunStore identity grammar.",
+    "Publish that minimal cross-reference contract in Autonomous Mission v0.1 without constraining assessment payloads or future cycle metadata.",
+    "Add a focused durable-read regression for valid and impossible cycle run references."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: cycles[] accepted arbitrary values and arbitrary runId strings.",
+    "post_fix_source_contract_replay": "PASS: cycle entries fail closed unless their runId follows ^run-[A-Za-z0-9-]+$, while additional cycle fields remain extensible.",
+    "focused_regression_contract": "New checked-in test covers a valid reference, uppercase-prefix/non-run/empty references, and malformed null entries.",
+    "hosted_runtime": "Developer Execution Runtime remained unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only binds an existing cycle-ledger reference to the already-established run identity grammar. It does not choose cycle-record assessment schema, append-only policy, or a new audit architecture."
+}

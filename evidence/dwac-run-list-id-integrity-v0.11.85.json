@@ -1,0 +1,25 @@
+{
+  "version": "0.11.85",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "2def6fc28fbdddff829321a06cb3231466bd6e38",
+  "selected_bottleneck": "run-list-durable-id-binding-integrity（运行列表持久化 ID 绑定完整性）",
+  "selected_problem": "Fresh canonical main made RunStore.get verify requested runId against the durable document body, but RunStore.list still bypassed get and parsed each JSON file directly. A single mismatched body id could therefore still appear in listing/audit surfaces even though direct reads now rejected it.（最新主分支已让 RunStore.get 校验请求 runId 与持久化文档内部 id，但 RunStore.list 仍绕过 get 直接解析 JSON；因此同一身份裂缝仍可通过列表/审计入口暴露，形成读取路径不一致。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The fresh main already defines get() as the canonical durable identity boundary; routing list entries through get reuses that existing boundary instead of adding new architecture.（最新主分支已经把 get() 定义为持久化身份边界；让 list 复用 get 只是统一现有入口，不引入新架构。）",
+    "A bounded real-file replay directly reproduced the bypass: the pre-fix list returned a forged in-document id from a file whose filename selected a different run id.（有界真实文件重放直接复现：修复前 list 会返回内部伪造 id，虽然文件名选择的是另一个 run id。）"
+  ],
+  "changes": [
+    "Make RunStore.list derive each durable run id from the filename and load it through RunStore.get, inheriting RUN_ID_MISMATCH fail-closed behavior.（RunStore.list 从文件名推导 run id 并通过 RunStore.get 加载，从而继承 RUN_ID_MISMATCH 的失败关闭行为。）",
+    "Add regressions proving forged list entries fail closed while intact runs remain listable in updatedAt order.（新增回归，证明伪造列表条目失败关闭，同时正常运行仍按 updatedAt 顺序列出。）"
+  ],
+  "verification": {
+    "pre_fix_reality_replay": "EXPECTED FAIL reproduced: 1/2 PASS; list accepted the mismatched body id（修复前已复现：1/2 通过；list 接受了不匹配的文档 id）",
+    "post_fix_focused_tests": "PASS: 6/6 including existing run-store tests, prior direct-id integrity tests, and new list-id cases; 0 skipped（6/6 通过，包含既有 RunStore、上一轮直接 ID 完整性与本轮列表 ID 用例；0 跳过）",
+    "node_check": "PASS for core/run-store.mjs（语法检查通过）",
+    "hosted_runtime": "HTTP 502 transient upstream error; not claimed as passed（托管 Developer Execution Runtime 暂时性 502，未宣称通过）",
+    "github_actions": "not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary": "This closes the list-path bypass of the existing run storage/body identity check. It does not authenticate coherently rewritten run metadata/content or define a new trust root.（本轮只闭合列表入口绕过现有运行存储/文档身份证明的问题；不认证可一致改写的其他运行元数据/内容，也不定义新的信任根。）"
+}

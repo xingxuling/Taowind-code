@@ -1,0 +1,19 @@
+{
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"978563f40f2df9bce268eb7c2833fea0b8043692",
+  "selected_bottleneck":"mission-durable-shape-integrity（自治使命持久化结构完整性）",
+  "selected_problem":"Fresh main now enforces mission id, protocol, and status at durable boundaries, while the checked-in Autonomous Mission v0.1 contract also requires non-empty rootGoal, non-negative integer cycle, required config keys, array ledgers, and declared optional property types. AutonomousMissionStore still accepted durable or update-side documents violating those published shapes.（最新 main 已在持久化边界执行 mission id、protocol 与 status，但仓库内 Autonomous Mission v0.1 契约还要求非空 rootGoal、非负整数 cycle、config 必需键、数组账本及已声明可选属性类型；AutonomousMissionStore 仍接受违反这些已发布结构的持久化或更新侧文档。）",
+  "mode_route":["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate":"AUTONOMOUS（自主）",
+  "changes":[
+    "Add a contract-shaped mission predicate covering rootGoal, cycle, required config keys, cycles/events/evidence arrays, and the declared types of nextGoal/currentRunId/closure/blocker.（新增与契约形状一致的 mission 判定器，覆盖 rootGoal、cycle、config 必需键、cycles/events/evidence 数组，以及 nextGoal/currentRunId/closure/blocker 的已声明类型。）",
+    "Fail closed on invalid durable shape and reject invalid updates before mutating mission state or appending events.（对非法持久化结构失败关闭，并在修改 mission 状态或追加事件前拒绝非法更新。）"
+  ],
+  "verification":{
+    "focused_shape_replay":"12/12 PASS on the contract predicate, covering one valid mission plus eleven invalid structural variants（契约判定器聚焦重放 12/12 通过，覆盖 1 个合法 mission 与 11 种非法结构变体）",
+    "repository_regressions":"Added focused durable-read, optional-property, write-boundary, and valid-compatibility regressions.（新增持久化读取、可选属性、写入边界及合法兼容性聚焦回归。）",
+    "node_check":"PASS on faithful isolated shape replay（忠实隔离结构重放的 Node 语法检查通过）",
+    "hosted_runtime":"Developer Execution Runtime remains unavailable with transient HTTP 502; no hosted DWAC success receipt is claimed.（Developer Execution Runtime 仍因暂时性 HTTP 502 不可用；不声称托管 DWAC 已成功执行。）"
+  },
+  "truth_boundary":"This cycle enforces only shapes already declared by Autonomous Mission v0.1. It does not invent stronger numeric bounds for config members, append-only ledger semantics, or authenticated-artifact/trust-root architecture.（本轮只执行 Autonomous Mission v0.1 已声明的结构；不额外发明 config 数值成员的更强边界、只追加账本语义或认证工件/信任根架构。）"
+}

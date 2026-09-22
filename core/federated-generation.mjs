@@ -24,7 +24,7 @@ function safeRel(p){return normalizeRel(p)!==null}
 function normalizeContextRel(p){const rel=normalizeRel(p);return rel&&!isCredentialLikePath(rel)?rel:null}
 function normalizeChange(c){
   const rel=normalizeRel(c?.path);
-  if(!c||!['write','delete'].includes(c.op)||!rel)return null;
+  if(!c||!['write','delete'].includes(c.op)||!rel||isCredentialLikePath(rel))return null;
   if(c.op==='write'&&typeof c.content!=='string')return null;
   const hasExpected=Object.hasOwn(c,'expectedSha256');
   if(hasExpected&&(typeof c.expectedSha256!=='string'||!SHA256_RE.test(c.expectedSha256)))return null;

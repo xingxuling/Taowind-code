@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.52",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "9567bbf5f6152b700ac1b8e25a9f33238fc16be8",
+  "bottleneck": "npm-workspace-entry-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main verifies npm workspace discovery exit status, JSON syntax, and top-level map shape, but malformed per-workspace script containers were still silently skipped. That could omit a workspace from the discovered validation surface.",
+  "changes": [
+    "Require every discovered workspace value to be a non-null, non-array script object instead of skipping malformed entries.",
+    "Preserve an empty object as a valid no-script workspace result.",
+    "Route malformed workspace entries through the existing validation-discovery hard gate."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: malformed per-workspace values matched a continue branch and disappeared from discovery.",
+    "real_npm_probe": "PASS: a two-workspace local npm probe emitted an empty object for a workspace with no scripts, confirming that fail-closing null/array/non-object entries does not reject the observed legitimate no-script shape.",
+    "focused_regression_contract": "tests/acceptance-npm-workspace-entry-shape-integrity.test.mjs covers malformed entry rejection and empty-object compatibility.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle validates only the object envelope produced by the existing npm workspace discovery path. It does not define workspace package contents or validation script policy."
+}

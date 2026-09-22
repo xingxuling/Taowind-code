@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.35",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "8744d089b91582a9314c17457440a87dedc34c89",
+  "bottleneck": "mission-created-at-write-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main now publishes and validates createdAt as durable mission reality, but AutonomousMissionStore.update() still allowed a caller to replace createdAt with any other non-empty string. The existing writer creates createdAt once at mission creation and never updates it, so the generic write boundary could violate its own provenance semantics.",
+  "changes": [
+    "Reject update patches that attempt to change createdAt away from the persisted store-owned value.",
+    "Allow an explicit identical createdAt value for compatibility while preserving ordinary mission updates.",
+    "Add a focused regression proving the rejected patch leaves durable createdAt unchanged."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: update guarded id and protocol immutability but accepted a different non-empty createdAt that passed validMissionShape().",
+    "post_fix_contract_replay": "PASS: createdAt drift is rejected before Object.assign/event append/persistence; an identical createdAt and ordinary fields remain accepted.",
+    "focused_regression_contract": "tests/autonomous-mission-created-at-write-integrity.test.mjs exercises rejection, durable non-mutation, and compatible same-value update.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not declare all mission ledgers append-only and does not authenticate a consistently rewritten mission document. It only preserves the creation timestamp ownership already implied by create() and the published durable timestamp contract."
+}

@@ -1,11 +1,16 @@
 import path from 'node:path';
 import {isCredentialLikePath} from './repo-context.mjs';
+import {validateWebUrl} from '../vendor/taobrowser/core/security.mjs';
 
 const BLOCKED_SEGMENTS=new Set(['.git','node_modules','.next','dist','build','runtime-data','.venv']);
 const MAX_EXECUTABLE_VALIDATION_COMMANDS=8;
 const MAX_EXECUTABLE_CHANGES=128;
 const MAX_EXECUTABLE_FILE_BYTES=2_000_000;
 const MAX_EXECUTABLE_TOTAL_WRITE_BYTES=8_000_000;
+const MAX_EXECUTABLE_BROWSER_CHECKS=8;
+const MAX_BROWSER_REQUIRED_SELECTORS=48;
+const MAX_BROWSER_REQUIRED_TEXT=32;
+const BROWSER_BOOLEAN_FIELDS=['forbidConsoleErrors','forbidPageExceptions','forbidCriticalNetworkErrors','screenshot'];
 const SHA256_RE=/^[a-f0-9]{64}$/;
 const compareText=(a,b)=>a<b?-1:a>b?1:0;
 function normalizeRel(p){
@@ -59,8 +64,35 @@ function normalizeValidationCommands(rawCommands){
   if(invalidValidationCount)return {commands:[],invalidValidationCount};
   return {commands:[...new Set(rows.map(x=>x.trim()).filter(Boolean))].slice(0,16),invalidValidationCount:0};
 }
+function boundedBrowserStrings(values,limit){
+  if(!Array.isArray(values))return null;
+  const out=[],seen=new Set();
+  for(const value of values){if(typeof value!=='string'||!value.length)return null;if(!seen.has(value)){seen.add(value);out.push(value)}}
+  return out.length<=limit?out:null;
+}
+function normalizeBrowserCheck(raw){
+  if(!raw||typeof raw!=='object'||Array.isArray(raw))return null;
+  let url;try{url=validateWebUrl(String(raw.url||''))}catch{return null}
+  const selectorSource=raw.requiredSelectors!==undefined?raw.requiredSelectors:raw.selectors!==undefined?raw.selectors:[];
+  const requiredSelectors=boundedBrowserStrings(selectorSource,MAX_BROWSER_REQUIRED_SELECTORS);
+  const requiredText=boundedBrowserStrings(raw.requiredText!==undefined?raw.requiredText:[],MAX_BROWSER_REQUIRED_TEXT);
+  if(!requiredSelectors||!requiredText)return null;
+  const titleIncludes=raw.titleIncludes===undefined?'':raw.titleIncludes;
+  const urlIncludes=raw.urlIncludes===undefined?'':raw.urlIncludes;
+  if(typeof titleIncludes!=='string'||typeof urlIncludes!=='string')return null;
+  const booleans={};for(const key of BROWSER_BOOLEAN_FIELDS){if(raw[key]!==undefined&&typeof raw[key]!=='boolean')return null;booleans[key]=raw[key]===undefined?true:raw[key]}
+  const settleMs=Number(raw.settleMs||700);if(!Number.isFinite(settleMs))return null;
+  return {url,requiredSelectors,requiredText,titleIncludes,urlIncludes,...booleans,settleMs:Math.max(100,Math.min(5000,settleMs))};
+}
+function normalizeBrowserChecks(rawChecks){
+  if(rawChecks===undefined)return {checks:[],invalidBrowserCheckCount:0,browserCheckOverflow:false,observedBrowserCheckCount:0};
+  if(!Array.isArray(rawChecks))return {checks:[],invalidBrowserCheckCount:1,browserCheckOverflow:false,observedBrowserCheckCount:1};
+  if(rawChecks.length>MAX_EXECUTABLE_BROWSER_CHECKS)return {checks:[],invalidBrowserCheckCount:0,browserCheckOverflow:true,observedBrowserCheckCount:rawChecks.length};
+  const normalized=rawChecks.map(normalizeBrowserCheck);const invalidBrowserCheckCount=normalized.filter(check=>!check).length;
+  return {checks:invalidBrowserCheckCount?[]:normalized,invalidBrowserCheckCount,browserCheckOverflow:false,observedBrowserCheckCount:rawChecks.length};
+}
 export function normalizeProposal(raw,{provider='unknown',role='implementation'}={}){
-  const normalized=normalizeChanges(raw?.changes);const normalizedValidation=normalizeValidationCommands(raw?.validation_commands);const validation=normalizedValidation.commands;
+  const normalized=normalizeChanges(raw?.changes);const normalizedValidation=normalizeValidationCommands(raw?.validation_commands);const validation=normalizedValidation.commands;const normalizedBrowser=normalizeBrowserChecks(raw?.browser_checks);
   const context=[...new Set((Array.isArray(raw?.needs_more_context)?raw.needs_more_context:[]).map(normalizeContextRel).filter(Boolean))].slice(0,32);
   const risks=(Array.isArray(raw?.risks)?raw.risks:[]).map(String).slice(0,20);
   if(normalized.changeOverflow&&risks.length<20)risks.push(`CHANGESET_FILE_BUDGET_EXCEEDED:${normalized.observedChangeCount}>${MAX_EXECUTABLE_CHANGES}`);
@@ -68,15 +100,17 @@ export function normalizeProposal(raw,{provider='unknown',role='implementation'}
   if(normalized.totalWriteByteOverflow&&risks.length<20)risks.push(`CHANGESET_TOTAL_WRITE_BUDGET_EXCEEDED:${normalized.observedWriteBytes}>${MAX_EXECUTABLE_TOTAL_WRITE_BYTES}`);
   if(normalized.invalidChangeCount&&risks.length<20)risks.push(`INVALID_CHANGE_ENTRY:${normalized.invalidChangeCount}`);
   if(normalizedValidation.invalidValidationCount&&risks.length<20)risks.push(`INVALID_VALIDATION_COMMAND_ENTRY:${normalizedValidation.invalidValidationCount}`);
+  if(normalizedBrowser.invalidBrowserCheckCount&&risks.length<20)risks.push(`INVALID_BROWSER_CHECK_ENTRY:${normalizedBrowser.invalidBrowserCheckCount}`);
+  if(normalizedBrowser.browserCheckOverflow&&risks.length<20)risks.push(`BROWSER_CHECK_BUDGET_EXCEEDED:${normalizedBrowser.observedBrowserCheckCount}>${MAX_EXECUTABLE_BROWSER_CHECKS}`);
   for(const rel of normalized.ambiguousPaths){if(risks.length<20)risks.push(`AMBIGUOUS_CHANGE_PATH:${rel}`)}
   for(const rel of normalized.overlappingPaths){if(risks.length<20)risks.push(`OVERLAPPING_CHANGE_PATH:${rel}`)}
   const validationOverflow=validation.length>MAX_EXECUTABLE_VALIDATION_COMMANDS;if(validationOverflow&&risks.length<20)risks.push(`VALIDATION_COMMAND_BUDGET_EXCEEDED:${validation.length}>${MAX_EXECUTABLE_VALIDATION_COMMANDS}`);
-  return {provider,role,summary:String(raw?.summary||''),changes:normalized.changes,validation_commands:validation,browser_checks:raw?.browser_checks,risks,needs_more_context:context,ambiguous_paths:normalized.ambiguousPaths,overlapping_paths:normalized.overlappingPaths,invalid_change_count:normalized.invalidChangeCount,change_overflow:normalized.changeOverflow,observed_change_count:normalized.observedChangeCount,file_byte_overflow:normalized.fileByteOverflow,oversized_file_count:normalized.oversizedFileCount,total_write_byte_overflow:normalized.totalWriteByteOverflow||false,observed_write_bytes:normalized.observedWriteBytes??0,invalid_validation_command_count:normalizedValidation.invalidValidationCount,validation_overflow:validationOverflow};
+  return {provider,role,summary:String(raw?.summary||''),changes:normalized.changes,validation_commands:validation,browser_checks:normalizedBrowser.checks,risks,needs_more_context:context,ambiguous_paths:normalized.ambiguousPaths,overlapping_paths:normalized.overlappingPaths,invalid_change_count:normalized.invalidChangeCount,change_overflow:normalized.changeOverflow,observed_change_count:normalized.observedChangeCount,file_byte_overflow:normalized.fileByteOverflow,oversized_file_count:normalized.oversizedFileCount,total_write_byte_overflow:normalized.totalWriteByteOverflow||false,observed_write_bytes:normalized.observedWriteBytes??0,invalid_validation_command_count:normalizedValidation.invalidValidationCount,validation_overflow:validationOverflow,invalid_browser_check_count:normalizedBrowser.invalidBrowserCheckCount,browser_check_overflow:normalizedBrowser.browserCheckOverflow,observed_browser_check_count:normalizedBrowser.observedBrowserCheckCount};
 }
 function goalTokens(goal){return [...new Set(String(goal||'').toLowerCase().match(/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu)||[])]}
 function proposalText(p){return `${p.summary} ${p.changes.map(c=>`${c.path} ${c.op==='write'?c.content.slice(0,800):''}`).join(' ')}`.toLowerCase()}
 function proposalOrigin(proposal){return `${proposal.provider||'unknown'}:${proposal.role||'implementation'}`}
-function executableProposal(p){return !!(p?.changes?.length&&p.validation_commands?.length&&!p.change_overflow&&!p.file_byte_overflow&&!p.total_write_byte_overflow&&!p.validation_overflow&&!p.invalid_change_count&&!p.invalid_validation_command_count&&!p.ambiguous_paths?.length&&!p.overlapping_paths?.length)}
+function executableProposal(p){return !!(p?.changes?.length&&p.validation_commands?.length&&!p.change_overflow&&!p.file_byte_overflow&&!p.total_write_byte_overflow&&!p.validation_overflow&&!p.invalid_change_count&&!p.invalid_validation_command_count&&!p.invalid_browser_check_count&&!p.browser_check_overflow&&!p.ambiguous_paths?.length&&!p.overlapping_paths?.length)}
 function consensusSignals(proposals){
   const executable=(proposals||[]).filter(executableProposal);
   const exactSupport=new Map(),pathVariants=new Map();

@@ -23,12 +23,22 @@ function verifiedChangeShape(change){
  if(!after||typeof after!=='object'||Array.isArray(after)||!validNullableHash(after.sha256)||!Number.isInteger(after.size)||after.size<0||!validNullableString(after.contentBase64))throw new Error('INVALID_CHANGESET_CHANGE_SHAPE');
  return change
 }
+function verifiedReceiptShape(receipt,kind){
+ if(receipt===null)return null;
+ if(!receipt||typeof receipt!=='object'||Array.isArray(receipt)||typeof receipt.at!=='string'||!Array.isArray(receipt.files)||receipt.files.length>MAX_FILES||typeof receipt.receiptSha256!=='string'||!HASH_RE.test(receipt.receiptSha256))throw new Error('INVALID_CHANGESET_RECEIPT_SHAPE');
+ for(const file of receipt.files){
+  const common=file&&typeof file==='object'&&!Array.isArray(file)&&typeof file.path==='string'&&typeof file.exists==='boolean'&&validNullableHash(file.sha256)&&validNullableString(file.identity)&&validNullableInteger(file.mode);
+  if(!common||(kind==='APPLY'&&!['write','delete'].includes(file.op)))throw new Error('INVALID_CHANGESET_RECEIPT_SHAPE');
+ }
+ return receipt
+}
 function verifiedChangesetProtocol(doc){
  if(doc?.protocol!==CHANGESET_PROTOCOL)throw new Error('UNSUPPORTED_CHANGESET_PROTOCOL');
  if(!['STAGED','APPLIED','ROLLED_BACK'].includes(doc?.status))throw new Error('INVALID_CHANGESET_STATUS');
  if(typeof doc?.runId!=='string'||typeof doc?.source!=='string'||typeof doc?.createdAt!=='string'||typeof doc?.updatedAt!=='string'||!Array.isArray(doc?.changes)||doc.changes.length<1||doc.changes.length>MAX_FILES)throw new Error('INVALID_CHANGESET_ENVELOPE');
  if(!Object.hasOwn(doc,'applyReceipt')||!Object.hasOwn(doc,'rollbackReceipt')||(doc.applyReceipt!==null&&(typeof doc.applyReceipt!=='object'||Array.isArray(doc.applyReceipt)))||(doc.rollbackReceipt!==null&&(typeof doc.rollbackReceipt!=='object'||Array.isArray(doc.rollbackReceipt))))throw new Error('INVALID_CHANGESET_ENVELOPE');
  for(const change of doc.changes)verifiedChangeShape(change);
+ verifiedReceiptShape(doc.applyReceipt,'APPLY');verifiedReceiptShape(doc.rollbackReceipt,'ROLLBACK');
  return doc
 }
 function stagedAfterBytes(change){

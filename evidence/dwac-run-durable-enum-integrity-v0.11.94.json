@@ -1,0 +1,16 @@
+{
+  "version":"0.11.94",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"a6e703432bb80aa858adb469b8d7884474f24663",
+  "selected_bottleneck":"run-durable-enum-integrity（运行持久化枚举完整性）",
+  "selected_problem":"Fresh main now rejects invalid mode/status values at normal create/update write boundaries, but externally rewritten durable run JSON could still carry an unknown mode or status through RunStore.get and into scheduler/runner consumers.（最新主分支已经在正常创建/更新写入边界拒绝非法 mode/status，但被外部改写的持久化 run JSON 仍可让未知模式或状态通过 RunStore.get 并进入调度器/运行器消费者。）",
+  "mode_route":["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate":"AUTONOMOUS（自主）",
+  "verification":{
+    "pre_fix_reality_replay":"1/3 PASS; rewritten unknown mode and status both remained readable（修复前 1/3 通过；被改写的未知模式与状态仍可读取）",
+    "post_fix_reality_replay":"3/3 PASS; unknown durable enums fail closed while declared mode/status remain readable（修复后 3/3 通过；未知持久化枚举失败关闭，合法模式/状态保持可读）",
+    "focused_node_check":"PASS for core/run-store.mjs（语法检查通过）",
+    "github_actions":"not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary":"This enforces the already-published v0.2 mode/status enums at the durable read boundary. It does not authenticate coherently rewritten valid values or prescribe routing decisions.（本轮只在持久化读取边界执行已经公开的 v0.2 mode/status 枚举；不认证可一致改写的合法值，也不规定路由决策。）"
+}

@@ -1,0 +1,33 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.76",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "90cbf6d542076895989fc6008dede8ae9f067f7a",
+  "bottleneck": "truth-boundary-auth-provenance-integrity",
+  "mode": "WHOLE_ARTIFACT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main DWAC source-contract replay promotes every explicit unresolved evidence boundary into the current candidate portfolio. Multiple historical changeset-hardening receipts repeat the same residual whole-artifact authentication limitation after their local invariant was closed, so the unresolved portfolio cardinality is inflated by superseded provenance rather than distinct current work.",
+  "changes": [
+    "Use the bridge's existing explicit resolves provenance mechanism instead of guessing semantic equivalence in code.",
+    "Supersede older changeset boundaries whose only surviving limitation is the same coherent whole-artifact rewrite/authentication gap restated here.",
+    "Keep the authentication gap explicitly unresolved; do not choose signatures, MACs, trust roots, append-only logs, credentials, or another authentication architecture."
+  ],
+  "resolves": [
+    {"source": "evidence/dwac-rollback-preimage-integrity-v0.11.69.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-apply-receipt-integrity-v0.11.70.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-apply-receipt-binding-v0.11.71.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-rollback-postimage-integrity-v0.11.72.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-apply-preimage-integrity-v0.11.73.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-apply-operation-integrity-v0.11.74.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-apply-total-byte-budget-v0.11.79.json", "path": "truth_boundary"},
+    {"source": "evidence/dwac-changeset-item-shape-integrity-v0.12.12.json", "path": "truth_boundary"}
+  ],
+  "verification": {
+    "fresh_main_source_contract": "PASS: bridge/dwac_bridge.py processes newer evidence first and applies explicit resolves references before older boundary rows become current candidates.",
+    "provenance_audit": "PASS: all eight referenced sources exist on canonical main and each referenced path is the top-level truth_boundary field.",
+    "claim_preservation": "PASS: this receipt restates the surviving authentication limitation instead of marking it solved.",
+    "hosted_runtime": "Developer Execution Runtime and RNCS Gateway remain transiently unavailable with HTTP 502; no hosted DWAC execution success is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "Coordinated whole-artifact rewrite authentication remains UNRESOLVED. This evidence consolidation deliberately does not choose a signature, MAC, credential, trust root, append-only log, crash journal, or other authentication architecture."
+}

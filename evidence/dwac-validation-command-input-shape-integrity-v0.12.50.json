@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.50",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "0649bb99429a302bafdb3e0c5981c80244b460f1",
+  "bottleneck": "validation-command-input-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main treated any non-array explicit commands value as if no explicit commands had been supplied, silently falling back to automatic discovery. A caller typo such as a single command string could therefore validate a different command set than requested.",
+  "changes": [
+    "Reject non-null, non-undefined explicit validation commands unless they are an array.",
+    "Return a structured VALIDATION_COMMAND_INPUT_INVALID receipt before discovery or command execution.",
+    "Preserve null/undefined and empty-array automatic-discovery behavior already used by the runner."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: Array.isArray(commands)&&commands.length selected discovery for a supplied command string.",
+    "post_fix_bounded_reality_replay": "6/6 PASS for null/undefined/array compatibility and string/object rejection.",
+    "focused_regression_contract": "tests/acceptance-validation-command-input-shape-integrity.test.mjs covers explicit string rejection and null discovery compatibility.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle validates only the established container type of explicit validation commands. It does not prescribe command contents or validation strategy."
+}

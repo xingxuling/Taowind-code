@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.14",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "cb34b577463639b8d07d0ad88529593822019427",
+  "bottleneck": "changeset-durable-id-case-contract-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main inspection found the published changeset v0.3 id pattern is lowercase-only (^cs-[a-f0-9]+$), while ChangesetStore.file() used the same expression with the case-insensitive flag. A manually persisted uppercase id could therefore pass the storage identity boundary even though it violates the checked-in contract.",
+  "changes": [
+    "Remove case-insensitive matching from the ChangesetStore storage-id gate so durable ids match the published lowercase-only v0.3 pattern.",
+    "Add a focused regression preserving canonical lowercase ids while rejecting uppercase hex or prefix variants."
+  ],
+  "verification": {
+    "source_contract_replay": "PASS: current schema pattern and proposed storage-id matcher now have the same case semantics.",
+    "bounded_reality_replay": "PASS: old /^cs-[a-f0-9]+$/i accepted cs-ABC123 and CS-abc123; the proposed /^cs-[a-f0-9]+$/ rejects both while accepting cs-abc123.",
+    "focused_regression_contract": "1 focused test encoded against the real ChangesetStore.file() boundary.",
+    "hosted_runtime": "HTTP 502 transient upstream error from Developer Execution Runtime; no hosted test pass claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only aligns an already-published lexical id invariant. It does not choose authenticated-artifact, signing, MAC, trust-root, append-only-log, or crash-journal architecture."
+}

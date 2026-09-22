@@ -1,0 +1,18 @@
+{
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"f4f07d7f5f3741a99d97cc52464569a84aceca77",
+  "selected_bottleneck":"mission-status-write-integrity（自治使命状态写入完整性）",
+  "selected_problem":"Fresh canonical main publishes a fixed Autonomous Mission status enum, but AutonomousMissionStore.update validated status only when patch.status was truthy. Explicit falsy values such as empty string, null, 0, or false bypassed both the enum gate and terminal-state gate and could be durably written.（最新规范主仓已经发布固定的 Autonomous Mission 状态枚举，但 AutonomousMissionStore.update 只在 patch.status 为真值时验证状态；空字符串、null、0、false 等显式假值会绕过枚举门与终态门并被持久化。）",
+  "mode_route":["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate":"AUTONOMOUS（自主）",
+  "changes":[
+    "Detect explicit status patches by own-property presence rather than truthiness.（按字段是否显式存在而不是真值判断状态补丁。）",
+    "Apply terminal-state and published-enum checks to every explicit status value before persistence.（在持久化前，对每个显式状态值执行终态门与已发布枚举检查。）"
+  ],
+  "verification":{
+    "focused_reality_replay":"PASS 5/5 for four falsy invalid values plus terminal-state protection（四种显式假值与终态保护合计 5/5 通过）",
+    "node_check":"PASS on faithful isolated replay（忠实隔离重放的 Node 语法检查通过）",
+    "hosted_runtime":"Developer Execution Runtime remains unavailable with transient HTTP 502; no hosted DWAC success receipt is claimed.（Developer Execution Runtime 仍因暂时性 HTTP 502 不可用；不声称托管 DWAC 已成功执行。）"
+  },
+  "truth_boundary":"This cycle fixes explicit status-write validation only. Durable documents externally rewritten to an invalid truthy or falsy status remain a separate read-boundary question for fresh-main diagnosis.（本轮只修复显式状态写入验证；外部改写持久化文档为非法状态的读取边界仍属于后续 fresh-main 诊断问题。）"
+}

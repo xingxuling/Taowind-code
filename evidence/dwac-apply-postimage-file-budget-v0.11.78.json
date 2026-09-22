@@ -1,0 +1,28 @@
+{
+  "version": "0.11.78",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "d16914db340113acafc620a228e2eef9080a7344",
+  "selected_bottleneck": "apply-persisted-postimage-file-budget-integrity（应用持久化后像单文件预算完整性）",
+  "selected_problem": "Fresh canonical main enforced MAX_FILE_BYTES=2,000,000 on each write while staging, but apply only checked persisted postimage bytes/size/hash self-consistency. A coherently enlarged after image above the approved single-file limit therefore remained internally consistent and was written successfully after durable reload.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "CHANGE_FILE_TOO_LARGE and MAX_FILE_BYTES are existing stage-time resource constraints, so revalidating the same limit at apply preserves the current protocol rather than choosing a new budget.",
+    "The defect is directly falsifiable by coherently replacing after.contentBase64/size/sha256 with 2,000,001 bytes while leaving all other staged metadata valid.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502; this cycle used DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and exact local focused validation."
+  ],
+  "pre_fix_reality": {
+    "focused_reproduction": "EXPECTED_FAILURE: 1/2 PASS, 1/2 FAIL with Missing expected exception; apply accepted and wrote a 2,000,001-byte persisted postimage.",
+    "impact": "Durable STAGED reload could bypass a side-effect resource bound that stage had explicitly approved."
+  },
+  "change": "Apply now rejects a verified write postimage whose actual decoded byte length exceeds MAX_FILE_BYTES before ancestor checks or workspace side effects.",
+  "validation": {
+    "node_check": "PASS on the exact proposed core/changesets.mjs content",
+    "focused_tests": "12/12 PASS, 0 skipped across the accumulated apply-integrity regressions",
+    "pre_fix_regression": "EXPECTED_FAILURE confirmed before the fix",
+    "boundary_case": "PASS: an exactly 2,000,000-byte postimage remains valid and applies",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This preserves the existing single-write byte budget across durable reload. It does not yet revalidate the aggregate MAX_TOTAL_BYTES changeset budget and is not an authenticated artifact mechanism."
+}

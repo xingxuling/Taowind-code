@@ -1,0 +1,27 @@
+{
+  "version": "0.11.65",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "e0daabb885006694b0fef1cc8578e041e38931be",
+  "selected_bottleneck": "federated-control-path-case-folding-boundary（联邦控制路径大小写折叠边界）",
+  "selected_problem": "Fresh canonical main rejected blocked control-plane segments only by exact case. The federated proposal normalizer rejected .git/config but accepted .GIT/config and src/.GiT/hooks/pre-commit. On a case-insensitive workspace these spellings can address the same Git metadata, so an otherwise executable autonomous proposal could cross a boundary the same module already intended to block.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "This closes an existing fail-closed path boundary instead of choosing a new product architecture or repository-context policy.",
+    "The blocked segment set already declares Git metadata, dependency/build outputs and runtime-data as non-proposal targets; the defect was case-sensitive enforcement of that existing rule.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502, so this cycle uses DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and does not claim a hosted DWAC success receipt."
+  ],
+  "pre_fix_reality": {
+    "replay": ".git/config => null; .GIT/config => .GIT/config; src/.GiT/hooks/pre-commit => src/.GiT/hooks/pre-commit",
+    "impact": "case-variant control-plane paths could survive proposal normalization and become executable candidates"
+  },
+  "change": "normalizeRel now compares each path segment to BLOCKED_SEGMENTS after lowercase normalization. The same canonical boundary is therefore enforced independent of path-segment casing for both changes and needs_more_context.",
+  "validation": {
+    "focused_normalization_replay": "PASS: .git/config, .GIT/config, src/.GiT/hooks/pre-commit, NODE_MODULES/pkg/index.js and .NeXt/cache/meta all reject; src/ok.mjs remains accepted",
+    "regression_test_added": "tests/federated-control-path-case-boundary.test.mjs",
+    "branch_source_reinspection": "PASS: exact branch source contains BLOCKED_SEGMENTS.has(x.toLowerCase())",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This closes case-variant aliases for the federation module's already-blocked control-path segments. It does not claim filesystem-wide case equivalence, Unicode normalization equivalence, complete credential-write policy, parser-grade module semantics, or arbitrary complex repository synthesis."
+}

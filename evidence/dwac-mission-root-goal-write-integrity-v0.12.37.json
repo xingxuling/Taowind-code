@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.37",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "2e2f26648603ea17ea39060d3aa48a0bbd5ea8fc",
+  "bottleneck": "mission-root-goal-write-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main treats rootGoal as the mission's stable closure target while nextGoal is the explicitly evolvable per-cycle derivative, yet generic update() could replace rootGoal with any other non-blank string. That allowed an in-place mission write to change the long-term target without creating a new mission identity.",
+  "changes": [
+    "Reject update patches that attempt to change rootGoal away from its persisted mission value.",
+    "Permit an explicit identical rootGoal for compatibility and keep nextGoal independently evolvable.",
+    "Add focused regression coverage for rejected root-goal drift and valid next-goal evolution."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: a different non-blank rootGoal passed validMissionShape() and was persisted by generic update().",
+    "post_fix_contract_replay": "PASS: rootGoal drift is rejected before mutation; same-value rootGoal plus a changed nextGoal remains accepted.",
+    "focused_regression_contract": "tests/autonomous-mission-root-goal-write-integrity.test.mjs covers both invariants against AutonomousMissionStore.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle preserves the existing rootGoal/nextGoal role split. It does not define a new mission-retargeting workflow or forbid creation of a new mission with a different root goal."
+}

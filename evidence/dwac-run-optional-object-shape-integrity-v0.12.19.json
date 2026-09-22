@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.19",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "83593bce727a6ff8ba9262ea2fe1119b5a5ad6de",
+  "bottleneck": "run-durable-optional-object-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main inspection found the North Star Run v0.2 contract permits dwac, validation, and delivery only as object or null, while RunStore accepted arrays or scalars through create/update and persisted drift through get(). These values could therefore become runtime-trusted despite violating the checked-in contract.",
+  "changes": [
+    "Enforce the existing object-or-null contract for dwac, validation, and delivery at run creation, durable read, and update boundaries.",
+    "Add focused regressions covering invalid create/read/update shapes and preserving valid object/null values."
+  ],
+  "verification": {
+    "pre_fix_bounded_replay": "EXPECTED FAIL: exact fresh-main RunStore accepted a persisted dwac array and an update validation array; both rejection assertions failed.",
+    "source_contract_replay": "PASS after patch: runtime checks match the checked-in object-or-null property contract without imposing internal schemas.",
+    "focused_regression_contract": "4 focused tests cover create, durable read, update, and valid object/null compatibility.",
+    "hosted_runtime": "HTTP 502 transient upstream error from Developer Execution Runtime; no hosted test pass claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only enforces already-published top-level type constraints. It does not define provider internals, validation payload schemas, delivery architecture, or product form."
+}

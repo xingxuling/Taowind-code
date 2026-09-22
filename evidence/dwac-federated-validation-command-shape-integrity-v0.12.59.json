@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.59",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "03f5212e4240d3beef09f8ebaa16e3a6c6c0f138",
+  "bottleneck": "federated-validation-command-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main still normalized federated validation_commands with map(String), so a provider plan containing a numeric/object command could be rewritten into executable shell text before the acceptance layer's existing non-string hard gate could ever observe it.",
+  "changes": [
+    "Validate federated validation command item shape before trimming/deduplication instead of coercing arbitrary values with String().",
+    "Fail a mixed string/non-string validation plan closed by clearing executable commands, exposing invalid_validation_command_count, and recording INVALID_VALIDATION_COMMAND_ENTRY risk evidence.",
+    "Keep whitespace filtering, deduplication, the existing 16-item observation window, eight-command executable budget, ranking, and consensus behavior unchanged for valid string plans."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: normalizeProposal used validation_commands.map(String), converting malformed provider output into executable strings.",
+    "post_fix_source_contract_replay": "PASS: non-string rows make the proposal validation plan non-executable while valid string plans retain existing normalization/budget behavior.",
+    "focused_regression_contract": "tests/federated-validation-command-shape-integrity.test.mjs proves mixed string+number/object validation plans fail closed and a valid competing candidate remains selectable.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not add validation commands or change shell execution policy. It only preserves the existing string-array contract before federated selection can weaken malformed provider output."
+}

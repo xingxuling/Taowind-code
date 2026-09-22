@@ -1,0 +1,27 @@
+{
+  "version": "0.11.57",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "2f3c60f27117ffd38065fa48a7a5ba4fd9acdcd3",
+  "selected_bottleneck": "federated-path-hierarchy-overlap-integrity",
+  "selected_problem": "Fresh main now rejects ancestor/descendant target collisions at ChangesetStore.stage, but federated proposal normalization still classified the same doomed proposal as executable and could select it as winner, causing synthesize to fail later instead of choosing a valid alternative candidate.",
+  "mode_route": ["DEEP_DEVELOPMENT"],
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_basis": [
+    "This is a direct consistency gap exposed by the freshly merged changeset invariant, not a new product feature or architecture choice.",
+    "The existing intra-proposal ambiguity machinery already excludes invalid same-path variants from executable consensus and winner selection; hierarchy collisions now reuse that fail-closed candidate-normalization layer.",
+    "Hosted Developer Execution Runtime remained unavailable with transient HTTP 502; this cycle uses DWAC_SOURCE_CONTRACT_REPLAY and does not claim a hosted DWAC success receipt."
+  ],
+  "pre_fix_reality": {
+    "changes": ["write node", "write node/child.txt"],
+    "normalize_result": "two changes, ambiguous_paths empty",
+    "effect": "proposal remained executable despite being guaranteed to fail the fresh-main ChangesetStore.stage invariant"
+  },
+  "change": "Federated normalization detects canonical ancestor/descendant target overlap, exposes overlapping_paths and OVERLAPPING_CHANGE_PATH risks, clears the invalid change set, excludes the proposal from executable consensus, and allows a valid alternative to win.",
+  "validation": {
+    "pre_fix_reproduction": "PASS: focused reproduction of fresh-main normalizeChanges accepted both hierarchy-colliding targets.",
+    "focused_overlap_detection": "PASS: both input orders produce the same two overlapping paths while unrelated paths remain valid.",
+    "regressions_added": "tests/federated-overlapping-paths.test.mjs",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This aligns federation candidate executability with the changeset hierarchy invariant. It does not claim arbitrary proposal correctness, parser-grade repository semantics, filesystem crash atomicity, or arbitrary complex repository synthesis."
+}

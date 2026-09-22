@@ -25,5 +25,5 @@ test('autonomous mission schema rejects whitespace-only root goals like the runt
   const contract=new RegExp(schema.properties.rootGoal.pattern);
   assert.equal(contract.test('maintain real software'),true);
   assert.equal(contract.test('   '),false);
-  assert.match(runtimeSource,/typeof m\.rootGoal!=='string'\|\|!m\.rootGoal\.trim\(\)/);
+  assert.match(runtimeSource,/typeof mission\?\.rootGoal!=='string'\|\|!mission\.rootGoal\.trim\(\)/);
 });

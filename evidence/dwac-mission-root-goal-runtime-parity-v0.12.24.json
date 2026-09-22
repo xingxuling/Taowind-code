@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.24",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "925d62a2b8e060f846c212e52634a9819b673640",
+  "bottleneck": "mission-root-goal-runtime-contract-parity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main already published a Mission v0.1 schema that rejects whitespace-only rootGoal values, but validMissionShape() still accepted them because it checked only string length. The newly added source regression also targeted a non-existent variable name, so the claimed parity check was not executable against the real source.",
+  "changes": [
+    "Make validMissionShape() fail closed on whitespace-only rootGoal values by applying the same trim-based invariant already used by mission creation.",
+    "Correct the focused source-contract regression so it matches the real validMissionShape(mission) source instead of a non-existent variable name."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: schema requires pattern \\S while validMissionShape() accepted any non-empty string, including whitespace-only values; the existing regex also looked for m.rootGoal instead of mission.rootGoal.",
+    "post_fix_source_contract_replay": "PASS: schema, create(), validMissionShape(), and the focused regression all express the same nonblank rootGoal invariant.",
+    "focused_regression_contract": "The checked-in autonomous-mission contract test now targets the real runtime expression and will fail if runtime/schema parity drifts again.",
+    "hosted_runtime": "Developer Execution Runtime returned HTTP 502 during this run; no hosted test pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not invent a new mission-goal language or policy. It repairs an observable contradiction introduced by the previous contract-parity cycle."
+}

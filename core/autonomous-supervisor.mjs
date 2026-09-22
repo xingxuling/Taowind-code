@@ -11,7 +11,7 @@ function now(){return new Date().toISOString()}
 function missionId(){return `mission-${Date.now().toString(36)}-${crypto.randomBytes(5).toString('hex')}`}
 function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const tmp=`${file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(value,null,2));fs.renameSync(tmp,file)}
 function validMissionShape(mission){
-  if(typeof mission?.rootGoal!=='string'||mission.rootGoal.length<1)return false;
+  if(typeof mission?.rootGoal!=='string'||!mission.rootGoal.trim())return false;
   if(!Number.isInteger(mission?.cycle)||mission.cycle<0)return false;
   if(!mission?.config||typeof mission.config!=='object'||Array.isArray(mission.config)||REQUIRED_CONFIG.some(key=>!Object.prototype.hasOwnProperty.call(mission.config,key)))return false;
   if(!Array.isArray(mission?.cycles)||!Array.isArray(mission?.events)||!Array.isArray(mission?.evidence))return false;

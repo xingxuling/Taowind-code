@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.53",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "367b0949a4ffea461267f11d2227d33d9abc7573",
+  "bottleneck": "browser-plan-preservation-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main already fails closed inside runAcceptance for browser-check overflow and malformed entries, but NorthStarRunner.browserValidation still filtered falsey entries and truncated proposal browser_checks to eight before those hard gates could observe the original validation plan.",
+  "changes": [
+    "Preserve proposal browser_checks exactly when the proposal supplied an array instead of filtering or truncating it in NorthStarRunner.",
+    "Leave preview fallback and previous-cycle fallback semantics unchanged.",
+    "Allow the downstream acceptance layer to remain the single enforcement point for browser-check shape and count budgets."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: proposal.browser_checks.filter(Boolean).slice(0,8) erased malformed targets and overflow before acceptance.",
+    "post_fix_diff_scope": "PASS: core/north-star-runner.mjs changed only the browser-plan preservation expression (plus end-of-file newline normalization); compare showed one modified file before test/evidence commits.",
+    "focused_regression_contract": "tests/north-star-browser-plan-preservation-integrity.test.mjs binds the runner source to plan preservation and verifies that nine checks reach the existing BROWSER_CHECK_BUDGET_EXCEEDED gate with zero observer calls.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not define browser-check semantics or add a new browser architecture. It only removes an upstream transformation that bypassed already-established downstream acceptance invariants."
+}

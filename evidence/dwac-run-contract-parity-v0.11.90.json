@@ -1,0 +1,25 @@
+{
+  "version": "0.11.90",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "a0c75732ba43611c7bb678a532a481352bb87545",
+  "selected_bottleneck": "north-star-run-contract-runtime-parity（北极星运行契约与运行时一致性）",
+  "selected_problem": "Fresh canonical main creates durable runs with protocol taowind-code.north-star-run.v0.2 and autonomously routes among four development modes, while the checked-in north-star-run schema did not require/bind protocol and still admitted only WHOLE_ARTIFACT and DEEP_DEVELOPMENT. The public contract therefore rejected two real runtime modes and could not prove the durable protocol it claimed to describe.（最新主分支创建的持久化 run 使用 taowind-code.north-star-run.v0.2 协议，并会在四种开发模式之间自主路由，但仓库内 north-star-run schema 既未要求/绑定 protocol，又仍只允许 WHOLE_ARTIFACT 与 DEEP_DEVELOPMENT；因此公开契约会拒绝两个真实运行时模式，也无法证明自己描述的持久化协议。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The runtime protocol literal and four-mode router already exist on fresh main; updating the checked-in schema to describe that reality removes contract drift without choosing a new product or execution architecture.（最新主分支已经存在运行时协议字面量与四模式路由；更新仓库契约只是在描述既有现实，不选择新的产品或执行架构。）",
+    "The same repository already treats contract/runtime parity as a truth boundary for durable changesets.（仓库已经把契约/运行时一致性作为持久化 changeset 的真实性边界。）"
+  ],
+  "changes": [
+    "Require protocol and bind it to taowind-code.north-star-run.v0.2 in contracts/north-star-run.schema.json.（在 north-star-run schema 中要求 protocol，并绑定为 taowind-code.north-star-run.v0.2。）",
+    "Expand the schema mode enum to NORTH_STAR, NORTH_STAR_BURST, WHOLE_ARTIFACT, and DEEP_DEVELOPMENT, matching the existing autonomous runtime.（把 schema 的 mode 枚举扩展为四种现有自主运行模式。）",
+    "Add focused contract/runtime parity regressions.（新增聚焦的契约/运行时一致性回归。）"
+  ],
+  "verification": {
+    "focused_contract_replay": "PASS: 2/2; protocol requirement/const and four-mode enum match the current runtime contract（2/2 通过；protocol 要求/常量与四模式枚举均与当前运行时契约一致）",
+    "json_parse": "PASS（JSON 解析通过）",
+    "hosted_runtime": "HTTP 502 transient upstream error; not claimed as passed（托管 Developer Execution Runtime 暂时性 502，未宣称通过）",
+    "github_actions": "not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary": "This aligns the checked-in North Star Run v0.2 contract with already-existing runtime protocol and mode reality. It does not define future protocol migration, authenticate persisted run content, or prescribe mode-selection policy.（本轮只让仓库内 North Star Run v0.2 契约与现有运行时协议及模式现实一致；不定义未来协议迁移，不认证持久化 run 内容，也不规定模式选择策略。）"
+}

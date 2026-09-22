@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.56",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "3962bf49852b55bc65cb8cf0cdab7341b0e7b4cb",
+  "bottleneck": "browser-settle-finite-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main clamps settleMs to the established 100..5000 ms window, but a truthy non-numeric value becomes NaN and reaches sleep(NaN), effectively collapsing the intended settle window before console/network/page evidence is evaluated.",
+  "changes": [
+    "Preserve the existing default and clamp semantics for finite/coercible settleMs values.",
+    "Reject non-finite normalized settle timing with INVALID_BROWSER_SETTLE_MS before any CDP transport.",
+    "Leave selector/text gates, browser execution, screenshot capture, and receipt semantics unchanged."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: Math.max(100, Math.min(5000, Number(raw.settleMs||700))) yields NaN for truthy non-numeric values.",
+    "post_fix_source_contract_replay": "PASS: normalizeSettleMs verifies Number.isFinite before applying the same 100..5000 clamp and 700 default semantics.",
+    "focused_regression_contract": "tests/browser-settle-finite-integrity.test.mjs requires string/object non-numeric settleMs values to fail before the non-responsive local CDP endpoint is touched.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not choose a new settle policy. It only prevents invalid values from bypassing the already-established settle-time bounds."
+}

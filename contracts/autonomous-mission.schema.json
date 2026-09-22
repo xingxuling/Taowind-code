@@ -3,7 +3,7 @@
   "$id":"https://taowind.company/schemas/taowind-code-autonomous-mission-v0.1.json",
   "title":"Taowind Code Autonomous Mission v0.1",
   "type":"object",
-  "required":["id","protocol","rootGoal","status","cycle","config","cycles","events","evidence"],
+  "required":["id","protocol","rootGoal","status","cycle","config","createdAt","updatedAt","cycles","events","evidence"],
   "properties":{
     "id":{"type":"string","pattern":"^mission-[A-Za-z0-9-]+$"},
     "protocol":{"const":"taowind-code.autonomous-mission.v0.1"},
@@ -13,6 +13,8 @@
     "cycle":{"type":"integer","minimum":0},
     "currentRunId":{"anyOf":[{"type":"string","pattern":"^run-[A-Za-z0-9-]+$"},{"type":"null"}]},
     "config":{"type":"object","required":["maxCycles","maxRepairs","closureThreshold","autoCommit"],"properties":{"maxCycles":{"type":"number","minimum":1,"maximum":64},"maxRepairs":{"type":"number","minimum":0,"maximum":8},"closureThreshold":{"type":"number","minimum":0.5,"maximum":1},"autoCommit":{"type":"boolean"}}},
+    "createdAt":{"type":"string","minLength":1},
+    "updatedAt":{"type":"string","minLength":1},
     "cycles":{"type":"array","items":{"type":"object","required":["runId"],"properties":{"runId":{"type":"string","pattern":"^run-[A-Za-z0-9-]+$"}}}},
     "events":{"type":"array","items":{"type":"object","required":["seq","at","type","data"],"properties":{"seq":{"type":"integer","minimum":1},"at":{"type":"string","minLength":1},"type":{"type":"string","minLength":1}}}},
     "evidence":{"type":"array","items":{"type":"object","required":["id","at"],"properties":{"id":{"type":"string","pattern":"^mev-[a-f0-9]{12}$"},"at":{"type":"string","minLength":1}}}},

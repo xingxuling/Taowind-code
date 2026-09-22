@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.43",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "bc9af6bf8eff2cf802f6d90916e3836aa18de251",
+  "bottleneck": "validation-manifest-parse-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main silently swallowed malformed package.json during automatic validation discovery. In a mixed-language workspace that could omit JavaScript validation commands while still running and potentially passing another language's validators, weakening the hard acceptance boundary without surfacing the broken manifest.",
+  "changes": [
+    "Make automatic package.json discovery fail explicitly with INVALID_PACKAGE_JSON instead of silently omitting package validation.",
+    "Convert discovery failure into a structured failed acceptance receipt with hardGate VALIDATION_DISCOVERY_FAILED.",
+    "Preserve explicitly supplied validation commands so callers that intentionally bypass discovery keep their existing behavior."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: malformed package.json was caught and ignored, after which pyproject.toml or other evidence could continue alone.",
+    "post_fix_source_contract_replay": "PASS: automatic discovery fails closed before validators run; explicit commands remain explicit.",
+    "focused_regression_contract": "tests/acceptance-package-manifest-parse-integrity.test.mjs covers malformed-manifest discovery failure and explicit-command compatibility.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only closes silent parse failure in automatic package validation discovery. It does not require every repository to have package.json and does not redefine user-supplied validation commands."
+}

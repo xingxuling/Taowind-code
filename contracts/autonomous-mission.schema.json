@@ -16,7 +16,7 @@
     "cycles":{"type":"array","items":{"type":"object","required":["runId"],"properties":{"runId":{"type":"string","pattern":"^run-[A-Za-z0-9-]+$"}}}},
     "events":{"type":"array"},
     "evidence":{"type":"array"},
-    "closure":{"type":["object","null"]},
+    "closure":{"anyOf":[{"type":"object","properties":{"runId":{"type":"string","pattern":"^run-[A-Za-z0-9-]+$"}}},{"type":"null"}]},
     "blocker":{"type":["string","null"]}
   }
 }

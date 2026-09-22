@@ -1,0 +1,28 @@
+{
+  "version": "0.11.73",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "6f47062c5ea1feeea721304049f07924a53169e8",
+  "selected_bottleneck": "apply-preimage-self-consistency（应用前像自洽完整性）",
+  "selected_problem": "Fresh canonical main already validated persisted postimage bytes before apply and preimage bytes before rollback, but apply itself did not prove that before.contentBase64/before.size/before.sha256 remained self-consistent before performing workspace side effects. A staged changeset with a corrupted durable preimage could therefore be applied successfully and only become non-reversible when rollback later rejected the same corrupted preimage.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The repository already defines before.contentBase64/before.size/before.sha256 as one transactional preimage and already provides stagedBeforeBytes(change) to verify that invariant during rollback.",
+    "Reusing the same verifier during apply preflight closes an existing reversibility invariant without selecting a new trust model, product architecture, interface, or development order.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502, so this cycle used DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） plus exact local focused validation and does not claim hosted execution success."
+  ],
+  "pre_fix_reality": {
+    "focused_reproduction": "EXPECTED_FAILURE: 1/2 PASS, 1/2 FAIL with Missing expected exception; apply accepted a persisted preimage whose contentBase64 no longer matched its recorded hash and changed the workspace.",
+    "impact": "A changeset could cross from STAGED to APPLIED even though its durable rollback preimage was already corrupt, weakening the repository's reversible changeset guarantee."
+  },
+  "change": "Apply preflight now executes stagedBeforeBytes(change) before validating the postimage and before any workspace write/delete. A corrupt persisted preimage therefore fails closed while the workspace still matches the original pre-apply state.",
+  "validation": {
+    "node_check": "PASS on the exact proposed core/changesets.mjs content",
+    "focused_tests": "2/2 PASS, 0 skipped after the fix",
+    "pre_fix_regression": "EXPECTED_FAILURE confirmed before the fix",
+    "intact_roundtrip": "PASS: an intact persisted preimage still permits apply followed by exact rollback",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This proves internal self-consistency of the persisted preimage before apply side effects. It is not an authenticated signature or external trust root and does not protect against a coherent rewrite of the complete changeset and all matching metadata."
+}

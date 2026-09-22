@@ -12,7 +12,7 @@ function changeId(runId,changes){return `cs-${sha256Text(`${runId}:${Date.now()}
 function encode(bytes){return bytes?bytes.toString('base64'):null}
 function decode(value){return value===null?null:Buffer.from(value,'base64')}
 function blockedChangePath(value){const rel=path.posix.normalize(String(value||'').replaceAll('\\','/')).replace(/\/+$/,'');return rel.split('/').some(segment=>BLOCKED_CHANGE_SEGMENTS.has(segment.toLowerCase()))}
-function verifiedChangesetProtocol(doc){if(doc?.protocol!==CHANGESET_PROTOCOL)throw new Error('UNSUPPORTED_CHANGESET_PROTOCOL');return doc}
+function verifiedChangesetProtocol(doc){if(doc?.protocol!==CHANGESET_PROTOCOL)throw new Error('UNSUPPORTED_CHANGESET_PROTOCOL');if(!['STAGED','APPLIED','ROLLED_BACK'].includes(doc?.status))throw new Error('INVALID_CHANGESET_STATUS');return doc}
 function stagedAfterBytes(change){
   if(change.op==='delete'){
     if(change.after?.sha256!==null||change.after?.contentBase64!==null||change.after?.size!==0)throw new Error(`CHANGESET_POSTIMAGE_CORRUPT:${change.path}`);

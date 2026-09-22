@@ -1,0 +1,29 @@
+{
+  "version": "0.11.77",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "151dc932f2225724ec68be6952126409d0ecef93",
+  "selected_bottleneck": "apply-persisted-change-count-integrity（应用持久化变更数量完整性）",
+  "selected_problem": "Fresh canonical main required a non-empty change list and capped it at MAX_FILES=128 while staging, but apply trusted the persisted changes array after reload. A rewritten empty list could be marked APPLIED as a no-op, while a coherently expanded list could execute more than 128 workspace mutations and bypass the stage-time file-count budget.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "CHANGES_REQUIRED and TOO_MANY_CHANGES are already explicit stage-time protocol constraints, so revalidating them at apply preserves an existing invariant rather than inventing a new budget policy.",
+    "Both defects are directly falsifiable with a durable STAGED document and can be rejected before any workspace side effect.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502; this cycle used DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and exact local focused validation."
+  ],
+  "pre_fix_reality": {
+    "empty_case": "EXPECTED_FAILURE: apply accepted an empty persisted changes array and reported the changeset as APPLIED.",
+    "over_budget_case": "EXPECTED_FAILURE: apply accepted 129 persisted unique writes and created all files, bypassing the stage-time MAX_FILES limit.",
+    "impact": "Durable reload could erase both the semantic non-empty requirement and the bounded side-effect count that stage had approved."
+  },
+  "change": "Apply now requires doc.changes to remain an array with at least one entry and at most MAX_FILES entries before constructing any preflight state or touching the workspace.",
+  "validation": {
+    "node_check": "PASS on the exact proposed core/changesets.mjs content",
+    "focused_tests": "10/10 PASS, 0 skipped across apply-preimage, operation, path-set, path-canonicality, and change-count integrity",
+    "pre_fix_regressions": "Both empty and over-budget cases reproduced before the fix",
+    "no_side_effect": "PASS: rejected over-budget artifact creates neither the first nor last candidate file",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This preserves the stage-time change-count contract across durable reload. It does not yet revalidate persisted per-file or aggregate byte budgets and is not an authenticated artifact mechanism."
+}

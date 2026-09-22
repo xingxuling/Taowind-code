@@ -1,0 +1,24 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.70",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "e18f6a0239818b47800cebd0025dbdaada9e2370",
+  "bottleneck": "federated-preimage-stage-budget-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main already propagates ChangeSet file-count, write-file, total-write, browser and credential hard gates upstream into federated candidate admissibility. However ChangeSet stage also snapshots existing target preimages: each existing file must be readable within the established 2,000,000-byte file limit, and preimage bytes count together with proposed postimage bytes against the established 8,000,000-byte total. Federation received the real workspace manifest but did not use its observed file sizes for these two downstream bounds, so it could still select a candidate already guaranteed to fail staging under the observed repository snapshot.",
+  "changes": [
+    "Reuse the existing workspace manifest already supplied to federated selection to account for observed existing-target preimage sizes; credential-like manifest paths remain excluded from the size map.",
+    "Mark proposals non-executable when a known existing target exceeds the established 2,000,000-byte ChangeSet read bound or when known preimage bytes plus proposed write bytes exceed the established 8,000,000-byte ChangeSet total bound.",
+    "Keep ChangesetStore.stage as the authoritative effect boundary; this is only an upstream admissibility check over the same existing limits and does not introduce a new budget or storage architecture."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: fresh main federation considered only proposed write bytes while ChangesetStore.stage also reads existing preimages and charges them to the same total budget.",
+    "node_check": "PASS on the exact proposed core/federated-generation.mjs.",
+    "focused_bounded_replay": "PASS 3/3: a known 2,000,001-byte existing target is rejected; a 3,000,000-byte known preimage plus 5,400,000 proposed write bytes is rejected even though write bytes alone are below 8,000,000; the exact 2,000,000-per-file / 8,000,000-total boundary remains eligible.",
+    "regression_contract": "tests/federated-preimage-stage-budget-integrity.test.mjs encodes the three focused cases against selectFederatedProposal.",
+    "hosted_runtime": "Developer Execution Runtime and TURI health remained transiently unavailable with HTTP 502; no hosted/full repository suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "The manifest is the selection-time repository snapshot already used by federation. Missing or non-numeric manifest sizes contribute no preimage bytes, so this does not infer unseen file sizes. Downstream staging remains authoritative and re-observes the live workspace before any effect."
+}

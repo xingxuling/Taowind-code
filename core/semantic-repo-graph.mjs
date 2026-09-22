@@ -5,7 +5,7 @@ const semanticPathError=normalized=>Object.assign(new Error(`Semantic path escap
 const normalizeGraphPath=value=>{
   const raw=String(value).replaceAll('\\','/');
   const normalized=path.posix.normalize(raw).replace(/^\.\//,'');
-  if(path.posix.isAbsolute(raw)||/^[A-Za-z]:\//.test(raw)||normalized==='..'||normalized.startsWith('../'))throw semanticPathError(normalized);
+  if(path.posix.isAbsolute(raw)||/^[A-Za-z]:/.test(raw)||normalized==='..'||normalized.startsWith('../'))throw semanticPathError(normalized);
   return normalized;
 };
 const TOKEN_RE=/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu;

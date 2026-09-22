@@ -29,7 +29,7 @@ export class AutonomousMissionStore{
   file(id){if(!/^mission-[A-Za-z0-9-]+$/.test(id))throw new Error('INVALID_MISSION_ID');return path.join(this.dir,`${id}.json`)}
   create(goal,options={}){
     const rootGoal=String(goal||'').trim();if(!rootGoal)throw new Error('GOAL_REQUIRED');
-    const config={maxCycles:boundedNumber(options.maxCycles,1,64,8),maxRepairs:boundedNumber(options.maxRepairs,0,8,2),closureThreshold:boundedNumber(options.closureThreshold,.5,1,.8),autoCommit:options.autoCommit===true};
+    const config={maxCycles:boundedNumber(options.maxCycles||8,1,64,8),maxRepairs:boundedNumber(options.maxRepairs??2,0,8,2),closureThreshold:boundedNumber(options.closureThreshold||.8,.5,1,.8),autoCommit:options.autoCommit===true};
     const mission={id:missionId(),protocol:MISSION_PROTOCOL,rootGoal,nextGoal:rootGoal,status:'ACTIVE',cycle:0,currentRunId:null,config,createdAt:now(),updatedAt:now(),cycles:[],events:[],evidence:[],closure:null,blocker:null};
     this.eventObject(mission,'MISSION_CREATED',{config});atomicJson(this.file(mission.id),mission);return mission;
   }

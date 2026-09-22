@@ -14,7 +14,7 @@
     "currentRunId":{"anyOf":[{"type":"string","pattern":"^run-[A-Za-z0-9-]+$"},{"type":"null"}]},
     "config":{"type":"object","required":["maxCycles","maxRepairs","closureThreshold","autoCommit"],"properties":{"maxCycles":{"type":"number","minimum":1,"maximum":64},"maxRepairs":{"type":"number","minimum":0,"maximum":8},"closureThreshold":{"type":"number","minimum":0.5,"maximum":1},"autoCommit":{"type":"boolean"}}},
     "cycles":{"type":"array","items":{"type":"object","required":["runId"],"properties":{"runId":{"type":"string","pattern":"^run-[A-Za-z0-9-]+$"}}}},
-    "events":{"type":"array"},
+    "events":{"type":"array","items":{"type":"object","required":["seq","at","type","data"],"properties":{"seq":{"type":"integer","minimum":1},"at":{"type":"string","minLength":1},"type":{"type":"string","minLength":1}}}},
     "evidence":{"type":"array","items":{"type":"object","required":["id","at"],"properties":{"id":{"type":"string","pattern":"^mev-[a-f0-9]{12}$"},"at":{"type":"string","minLength":1}}}},
     "closure":{"anyOf":[{"type":"object","properties":{"runId":{"type":"string","pattern":"^run-[A-Za-z0-9-]+$"}}},{"type":"null"}]},
     "blocker":{"type":["string","null"]}

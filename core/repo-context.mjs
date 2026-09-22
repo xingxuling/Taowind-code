@@ -3,6 +3,7 @@ const IMPORTANT=[/^README/i,/package\.json$/,/pyproject\.toml$/,/Cargo\.toml$/,/
 const SECRET_PATH=/(^|\/)(?:\.env(?:\.[^\/]*)?|credentials?(?:\.[^\/]*)?|secrets?(?:\.[^\/]*)?|id_(?:rsa|ed25519)|[^\/]+\.(?:pem|key|p12|pfx))(?=\/|$)/i;
 const priority=x=>IMPORTANT.some(r=>r.test(x.path))?1:0;
 const compareText=(a,b)=>a<b?-1:a>b?1:0;
+const compareFoldedText=(a,b)=>compareText(String(a).toLowerCase(),String(b).toLowerCase())||compareText(a,b);
 function normalizeRepoPath(value){
   const normalized=path.posix.normalize(String(value||'').replaceAll('\\','/')).replace(/^\.\//,'').replace(/\/+$/,'');
   return normalized&&normalized!=='.'?normalized:'';
@@ -22,7 +23,7 @@ export function repositoryPathIndex(manifest,{maxPaths=800,maxBytes=48_000}={}){
     if(!normalized||isCredentialLikePath(normalized))continue;
     unique.set(normalized,{...item,path:normalized});
   }
-  const rows=[...unique.values()].sort((a,b)=>priority(b)-priority(a)||compareText(a.path,b.path));
+  const rows=[...unique.values()].sort((a,b)=>priority(b)-priority(a)||compareFoldedText(a.path,b.path));
   const paths=[];let bytes=2;
   for(const row of rows){
     if(paths.length>=maxPaths)break;

@@ -1,0 +1,27 @@
+{
+  "version": "0.11.64",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "e321d7a2fa34140d350fafe5c44209d85d5d7df9",
+  "selected_bottleneck": "repository-path-index-order-regression（仓库路径索引排序回归）",
+  "selected_problem": "Fresh main failed its checked-in repository path-index regression: the original bounded exact-path recovery contract ordered core/engine.mjs before README.md before src/main.js, but the later host-locale determinism change replaced locale-aware collation with raw code-unit comparison and changed the order to README.md, core/engine.mjs, src/main.js. This is a directly reproduced regression in an existing test, not a request for a new context architecture.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The failure is present in a checked-in regression on fresh canonical main and historical evidence records the same test as previously passing.",
+    "The repair preserves host-locale independence while restoring prior case-insensitive lexical tie-break semantics with deterministic code-unit comparisons; it does not reintroduce String.localeCompare or host collation.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502, so this cycle uses DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and does not claim a hosted DWAC success receipt."
+  ],
+  "pre_fix_reality": {
+    "test": "tests/repo-context-path-index.test.mjs",
+    "result": "2/3 PASS; 1 FAIL",
+    "expected_order": ["core/engine.mjs", "README.md", "src/main.js"],
+    "actual_order": ["README.md", "core/engine.mjs", "src/main.js"]
+  },
+  "change": "repositoryPathIndex now uses a deterministic folded-text comparator for equal-priority path ordering: lowercase code-unit order first, original code-unit order as a stable tie-break. selectContextPaths and other ordering semantics are unchanged.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "6/6 PASS, 0 skipped: path-index contract, host-locale determinism, bounded path identity and repository-summary path identity",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This restores the checked-in deterministic path-index ordering contract without host-locale dependence. It does not claim a globally optimal repository-context ranking policy, filesystem case/Unicode equivalence, exhaustive repository coverage, parser-grade module semantics, or arbitrary complex repository synthesis."
+}

@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.60",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "523c64fac582afefb2f2a83b849849c16e427828",
+  "bottleneck": "federated-preimage-assertion-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main still treated expectedSha256 as a truthy optional value and coerced it with String(). Explicit empty/false values silently removed the preimage guard, while numeric or malformed strings survived federation and were only rejected later by ChangesetStore preimage comparison. That allowed candidate selection to trust a validation plan whose concurrency assertion had already been weakened or malformed.",
+  "changes": [
+    "Treat presence of expectedSha256 as an explicit preimage assertion and require it to already be a lowercase 64-hex SHA-256 string.",
+    "Reject a malformed expectedSha256 through the existing invalid-change fail-closed path instead of omitting or coercing it.",
+    "Preserve valid lower-case SHA-256 assertions exactly so existing consensus fingerprints and downstream PREIMAGE_MISMATCH behavior remain unchanged."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: ...(c.expectedSha256?{expectedSha256:String(c.expectedSha256)}:{}) silently omitted falsey explicit assertions and coerced truthy malformed values.",
+    "downstream_contract_evidence": "ChangesetStore already uses /^[a-f0-9]{64}$/ for durable hashes and compares supplied expectedSha256 exactly against the observed preimage SHA-256; this cycle aligns federation with that existing reality.",
+    "focused_regression_contract": "tests/federated-preimage-shape-integrity.test.mjs covers empty, boolean/numeric, uppercase and malformed hashes, preserves a valid lowercase hash, and proves malformed candidates cannot win over a valid guarded alternative.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not invent a new concurrency mechanism. It only prevents federation from weakening the existing expectedSha256 preimage assertion before ChangeSet staging."
+}

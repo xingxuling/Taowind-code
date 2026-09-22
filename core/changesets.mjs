@@ -75,7 +75,7 @@ function stagedBeforeBytes(change){
 }
 export class ChangesetStore{
  constructor(runtimeDir,workspace){this.dir=path.join(runtimeDir,'changesets');fs.mkdirSync(this.dir,{recursive:true});this.workspace=new WorkspaceService(workspace)}
- file(id){if(!/^cs-[a-f0-9]+$/i.test(id))throw new Error('INVALID_CHANGESET_ID');return path.join(this.dir,`${id}.json`)}
+ file(id){if(!/^cs-[a-f0-9]+$/.test(id))throw new Error('INVALID_CHANGESET_ID');return path.join(this.dir,`${id}.json`)}
  get(id){const f=this.file(id);if(!fs.existsSync(f))throw new Error('CHANGESET_NOT_FOUND');const doc=JSON.parse(fs.readFileSync(f,'utf8'));if(doc?.id!==id)throw new Error('CHANGESET_ID_MISMATCH');return verifiedChangesetProtocol(doc)}
  stage(runId,changes,{source='agent'}={}){
    if(!Array.isArray(changes)||!changes.length)throw new Error('CHANGES_REQUIRED');if(changes.length>MAX_FILES)throw new Error('TOO_MANY_CHANGES');let total=0;const normalized=[],seenPaths=new Set();

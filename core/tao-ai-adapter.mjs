@@ -72,7 +72,7 @@ function systemPrompt(role){return `You are an optional language/code accelerato
 const NATIVE_CANDIDATE_ROLES=Object.freeze(['implementation','architecture','verifier']);
 export function nativeProposalExecutable(proposal){
   const normalized=normalizeProposal(proposal,{provider:'dwac-native',role:'implementation'});
-  return !!(normalized.changes.length&&normalized.validation_commands.length&&!normalized.validation_overflow&&!normalized.ambiguous_paths.length);
+  return !!(normalized.changes.length&&normalized.validation_commands.length&&!normalized.validation_overflow&&!normalized.invalid_browser_check_count&&!normalized.browser_check_overflow&&!normalized.ambiguous_paths.length);
 }
 export function nativeFallbackRoles(firstProposal,{configuredCount=null}={}){
   const raw=String(configuredCount??'').trim();

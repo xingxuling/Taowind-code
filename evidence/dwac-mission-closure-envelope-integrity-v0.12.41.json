@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.41",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "e1a4235fc4af4ad35f535fb315a502de40b5f044",
+  "bottleneck": "mission-closure-envelope-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main binds closure.runId to the latest completed cycle, but the supervisor also always emits closure.at and closure.assessment when a cycle completes. Durable reads still accepted a completed mission whose closure timestamp was blank or whose assessment field was removed.",
+  "changes": [
+    "Require completed missions (cycle > 0) to preserve a non-empty closure timestamp and the presence of closure assessment in addition to the existing latest-cycle runId binding.",
+    "Publish that completed-cycle closure envelope in Autonomous Mission v0.1 while keeping cycle-0 null closure compatibility.",
+    "Keep assessment payload semantics unconstrained and add focused durable-tamper coverage."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: completed closure validation only bound runId to the latest cycle and accepted a blank at field or missing assessment.",
+    "post_fix_source_contract_replay": "PASS: cycle-0 null closure stays valid; completed closures require latest-cycle runId, non-empty at, and an assessment field.",
+    "focused_regression_contract": "tests/autonomous-mission-closure-envelope-integrity.test.mjs exercises the real AutonomousMissionStore boundary.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle preserves the existing supervisor closure envelope only. It does not define assessment semantics, require wall-clock ordering, or authenticate consistently rewritten mission documents."
+}

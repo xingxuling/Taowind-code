@@ -1,0 +1,21 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.10",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "7276131f7505c137c8ee58c85b3259f975056bc4",
+  "bottleneck": "changeset-read-status-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "The published changeset v0.3 contract limits status to STAGED/APPLIED/ROLLED_BACK, but the durable read boundary accepted arbitrary status values after id and protocol checks.",
+  "changes": [
+    "Fail closed in the shared durable verification boundary when status is outside the published v0.3 enum.",
+    "Add a focused direct-read regression for durable status drift.",
+    "Do not add new lifecycle states or alter transition policy."
+  ],
+  "verification": {
+    "source_contract_replay": "PASS: ChangesetStore.get routes every durable document through protocol + status verification before returning it.",
+    "focused_regression_contract": "PASS BY INSPECTION: UNKNOWN durable status must throw INVALID_CHANGESET_STATUS; existing protocol drift cases remain encoded.",
+    "hosted_runtime": "HTTP 502 transient upstream error from Developer Execution Runtime; not claimed as passed.",
+    "github_actions": "Must remain untriggered; commits use [skip ci] [skip actions]."
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "version": "0.11.81",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "ec36bddacc9b8f427f85e20d03af40145808c391",
+  "selected_bottleneck": "changeset-contract-schema-drift（变更集契约模式漂移）",
+  "selected_problem": "Fresh canonical main emits durable changeset documents with protocol taowind-code.changeset.v0.3, preimage identity/mode metadata, and apply/rollback receipts, while contracts/changeset.schema.json still advertises a v0.2 contract that omits the protocol and these durable evidence fields. A consumer can therefore validate only a stale subset of the artifact actually used by apply/rollback.（最新主分支实际持久化的是 v0.3 变更集，并包含对象身份、权限模式以及应用/回滚回执，但公开契约仍停留在 v0.2 且遗漏这些字段，导致契约验证只能覆盖真实事务工件的一部分。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The runtime protocol and durable fields already exist in core/changesets.mjs; aligning the checked-in schema preserves existing code reality rather than choosing a new transaction architecture.（运行时协议与持久字段已经存在，本轮只是让仓库契约追上真实代码，不引入新的事务架构。）",
+    "The mismatch is directly falsifiable: the pre-fix focused contract test reads the runtime protocol and fails because schema.properties.protocol is absent and the schema id/title still identify v0.2.（该缺陷可直接证伪：修复前聚焦测试读取真实运行时协议后，因为契约缺少 protocol 且 id/title 仍为 v0.2 而失败。）"
+  ],
+  "changes": [
+    "Advance the checked-in changeset schema identity/title to v0.3 and bind protocol to taowind-code.changeset.v0.3.（将仓库内变更集契约标识升级到 v0.3，并绑定真实 protocol。）",
+    "Describe the already-emitted preimage/after-image identity, mode, hash, size and Base64 snapshot fields plus apply/rollback receipts without forbidding future additive fields.（描述运行时已经产生的前后像身份、权限、摘要、大小、Base64 快照与应用/回滚回执，同时不禁止未来增量字段。）",
+    "Add a focused regression that compares the contract against the runtime protocol declaration and durable document shape.（新增聚焦回归，直接比较契约与运行时协议声明及持久化文档形态。）"
+  ],
+  "verification": {
+    "pre_fix_regression": "EXPECTED_FAILURE: focused test failed because schema.properties.protocol was undefined while runtime declared taowind-code.changeset.v0.3（预期失败已复现）",
+    "post_fix_regression": "PASS: 1/1, 0 skipped for changeset-contract-schema（1/1 通过，0 跳过）",
+    "schema_json_parse": "PASS（JSON 解析通过）",
+    "hosted_runtime": "HTTP 502 transient upstream error; not claimed as passed（托管运行时为暂时性 502，未宣称通过）",
+    "github_actions": "not requested; commits include [skip ci] [skip actions]（未请求，提交包含跳过标记）"
+  },
+  "truth_boundary": "This closes the checked-in contract/runtime shape drift for the current v0.3 durable changeset document. It does not authenticate persisted artifacts, add cryptographic trust roots, or claim crash-atomic multi-file application.（本轮闭合当前 v0.3 持久化变更集的契约/运行时形态漂移；不认证持久化工件、不引入密码学信任根，也不声称多文件应用具备崩溃原子性。）"
+}

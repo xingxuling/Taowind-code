@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.64",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "92b5ce9f7208d08ab7b19429b31535391f57ec50",
+  "bottleneck": "federated-browser-plan-preservation-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main's Tao AI / DWAC proposal contract explicitly includes browser_checks, and NorthStarRunner consumes proposal.browser_checks as hard browser acceptance evidence, but normalizeProposal omitted that field. Any valid provider-authored browser plan therefore disappeared when crossing federation even when the code changes themselves won selection.",
+  "changes": [
+    "Preserve provider-authored browser_checks on the normalized federated proposal and therefore on the selected winner.",
+    "Leave browser-check validation, count budgets, scalar/list shape gates, CDP observation, and NorthStarRunner fallback behavior at their existing downstream enforcement boundaries.",
+    "Do not invent new browser semantics or alter change/validation scoring."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: normalizeProposal returned no browser_checks property while systemPrompt declares browser_checks and NorthStarRunner.browserValidation reads proposal.browser_checks.",
+    "post_fix_source_contract_replay": "PASS: valid browser_checks cross normalizeProposal and selectFederatedProposal unchanged so the existing runner/acceptance path can enforce them.",
+    "focused_regression_contract": "tests/federated-browser-plan-preservation-integrity.test.mjs proves a valid provider browser plan survives normalization and remains attached to the federated winner.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only restores an already-declared proposal field across federation. Existing browser observation and acceptance layers remain authoritative for plan semantics and validation."
+}

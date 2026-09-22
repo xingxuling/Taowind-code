@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.12",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "2bff2595773eb0ba1dbdb6afc10df0ba7b8107f5",
+  "bottleneck": "changeset-durable-item-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main inspection found ChangesetStore.get enforced the published v0.3 top-level envelope but still returned nested changes whose op/path/before/after field types could violate the checked-in contract before downstream effect paths applied stronger semantic checks.",
+  "changes": [
+    "Validate each durable change item's published op/path/before/after field shape at the shared read boundary.",
+    "Validate nullable SHA-256/string/integer fields and non-negative image sizes without adding new lifecycle or trust semantics.",
+    "Add focused regressions for operation, before-image, after-image hash, size and valid-control cases."
+  ],
+  "verification": {
+    "source_contract_replay": "PASS: ChangesetStore.get now routes every changes[] member through verifiedChangeShape after top-level protocol/status/envelope verification.",
+    "focused_regression_contract": "5 focused cases encoded; four malformed durable item shapes fail closed and a store-emitted control remains readable.",
+    "hosted_runtime": "HTTP 502 transient upstream error from Developer Execution Runtime; no hosted test pass claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "Receipt read-shape integrity and coordinated whole-artifact authentication remain unresolved. This cycle does not select signatures, MACs, trust roots, journals, or another authentication architecture."
+}

@@ -13,6 +13,7 @@ const IMPORT_PATTERNS=[
   /(?:import\s+[^'"\n]*?from\s*|export\s+[^'"\n]*?from\s*|import\s*\(\s*|import\s*|require\s*\()\s*['"]([^'"]+)['"]/g,
   /(?:from|import)\s+([A-Za-z_][A-Za-z0-9_.]*)/g,
 ];
+const PYTHON_RELATIVE_FROM_RE=/^\s*from\s+(\.+)([A-Za-z_][A-Za-z0-9_.]*)\s+import\b/gm;
 const SYMBOL_PATTERNS=[
   /\b(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$]*)/g,
   /\b(?:export\s+)?class\s+([A-Za-z_$][\w$]*)/g,
@@ -27,6 +28,13 @@ function normalizeImport(from,spec){
   if(!spec?.startsWith('.'))return null;
   const base=path.posix.normalize(path.posix.join(path.posix.dirname(from),spec));
   return base.replace(/^\.\//,'');
+}
+function normalizePythonRelativeImport(from,dots,module){
+  let dir=path.posix.dirname(from);
+  for(let level=1;level<dots.length;level++)dir=path.posix.dirname(dir);
+  const base=path.posix.normalize(path.posix.join(dir,module.replaceAll('.','/'))).replace(/^\.\//,'');
+  if(!base||base==='.'||base==='..'||base.startsWith('../'))return null;
+  return base;
 }
 function resolveImportTarget(nodePaths,imp){
   const directExt=p=>{if(!p.startsWith(`${imp}.`))return false;const suffix=p.slice(imp.length+1);return !!suffix&&!suffix.includes('.')&&!suffix.includes('/')};
@@ -63,6 +71,7 @@ export function buildSemanticRepoGraph(files,{goal=''}={}){
   for(const file of docs){
     const p=file.path.replaceAll('\\','/');
     const imports=[];for(const re of IMPORT_PATTERNS)for(const spec of collect(re,file.content)){const base=normalizeImport(p,spec);if(base)imports.push(base)}
+    PYTHON_RELATIVE_FROM_RE.lastIndex=0;let relativeMatch;while((relativeMatch=PYTHON_RELATIVE_FROM_RE.exec(file.content))){const base=normalizePythonRelativeImport(p,relativeMatch[1],relativeMatch[2]);if(base)imports.push(base)}
     const symbols=[...new Set(SYMBOL_PATTERNS.flatMap(re=>collect(re,file.content)))].slice(0,120);
     nodes.push({path:p,size:Buffer.byteLength(file.content),ext:path.posix.extname(p).toLowerCase(),symbols,imports,isTest:isTestFile(p),isEntry:isEntryLike(p),tokens:tokens(`${p} ${symbols.join(' ')}`)});
   }

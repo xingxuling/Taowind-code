@@ -21,7 +21,8 @@ function npmWorkspaceValidationNames(workspace){
   const found=new Set();for(const scripts of Object.values(packages)){if(!scripts||typeof scripts!=='object'||Array.isArray(scripts))continue;for(const name of PACKAGE_VALIDATION_SCRIPTS)if(scripts[name])found.add(name)}return PACKAGE_VALIDATION_SCRIPTS.filter(name=>found.has(name));
 }
 function packageValidationCommands(workspace,pkg){
-  const scripts=pkg?.scripts||{};const names=PACKAGE_VALIDATION_SCRIPTS.filter(name=>scripts[name]);
+  const rawScripts=pkg?.scripts;if(rawScripts!==undefined&&(rawScripts===null||typeof rawScripts!=='object'||Array.isArray(rawScripts)))throw Object.assign(new Error('INVALID_PACKAGE_SCRIPTS'),{code:'INVALID_PACKAGE_SCRIPTS'});
+  const scripts=rawScripts||{};const names=PACKAGE_VALIDATION_SCRIPTS.filter(name=>scripts[name]);
   if(!hasNpmWorkspaces(pkg))return names.map(name=>`npm run ${name}`);
   if(names.length)return PACKAGE_VALIDATION_SCRIPTS.map(name=>`npm run ${name} --if-present && npm run ${name} --workspaces --if-present`);
   const workspaceNames=npmWorkspaceValidationNames(workspace);return workspaceNames.map(name=>`npm run ${name} --if-present && npm run ${name} --workspaces --if-present`);

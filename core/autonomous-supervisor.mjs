@@ -3,6 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import {requestGoalAssessment} from './tao-ai-adapter.mjs';
 
+const MISSION_PROTOCOL='taowind-code.autonomous-mission.v0.1';
 const TERMINAL=new Set(['GOAL_CLOSED','BUDGET_EXHAUSTED','BLOCKED','FAILED']);
 const VALID=new Set(['ACTIVE','WAITING_PROVIDER','WAITING_APPROVAL','GOAL_CLOSED','BUDGET_EXHAUSTED','BLOCKED','FAILED']);
 function now(){return new Date().toISOString()}
@@ -15,13 +16,13 @@ export class AutonomousMissionStore{
   create(goal,options={}){
     const rootGoal=String(goal||'').trim();if(!rootGoal)throw new Error('GOAL_REQUIRED');
     const config={maxCycles:Math.max(1,Math.min(64,Number(options.maxCycles||8))),maxRepairs:Math.max(0,Math.min(8,Number(options.maxRepairs??2))),closureThreshold:Math.max(.5,Math.min(1,Number(options.closureThreshold||.8))),autoCommit:options.autoCommit===true};
-    const mission={id:missionId(),protocol:'taowind-code.autonomous-mission.v0.1',rootGoal,nextGoal:rootGoal,status:'ACTIVE',cycle:0,currentRunId:null,config,createdAt:now(),updatedAt:now(),cycles:[],events:[],evidence:[],closure:null,blocker:null};
+    const mission={id:missionId(),protocol:MISSION_PROTOCOL,rootGoal,nextGoal:rootGoal,status:'ACTIVE',cycle:0,currentRunId:null,config,createdAt:now(),updatedAt:now(),cycles:[],events:[],evidence:[],closure:null,blocker:null};
     this.eventObject(mission,'MISSION_CREATED',{config});atomicJson(this.file(mission.id),mission);return mission;
   }
-  get(id){const f=this.file(id);if(!fs.existsSync(f))throw Object.assign(new Error('MISSION_NOT_FOUND'),{code:'MISSION_NOT_FOUND'});const mission=JSON.parse(fs.readFileSync(f,'utf8'));if(mission?.id!==id)throw new Error('MISSION_ID_MISMATCH');return mission}
+  get(id){const f=this.file(id);if(!fs.existsSync(f))throw Object.assign(new Error('MISSION_NOT_FOUND'),{code:'MISSION_NOT_FOUND'});const mission=JSON.parse(fs.readFileSync(f,'utf8'));if(mission?.id!==id)throw new Error('MISSION_ID_MISMATCH');if(mission?.protocol!==MISSION_PROTOCOL)throw new Error('UNSUPPORTED_MISSION_PROTOCOL');return mission}
   list(limit=30){return fs.readdirSync(this.dir).filter(x=>x.endsWith('.json')).map(x=>this.get(x.slice(0,-5))).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt))).slice(0,limit)}
   eventObject(mission,type,data={}){const event={seq:mission.events.length+1,at:now(),type,data};mission.events.push(event);mission.updatedAt=event.at;return event}
-  update(id,patch={},type='MISSION_UPDATED',data={}){const mission=this.get(id);if(TERMINAL.has(mission.status)&&patch.status&&patch.status!==mission.status)throw new Error('MISSION_TERMINAL');if(patch.status&&!VALID.has(patch.status))throw new Error('INVALID_MISSION_STATUS');Object.assign(mission,patch);this.eventObject(mission,type,data);atomicJson(this.file(id),mission);return mission}
+  update(id,patch={},type='MISSION_UPDATED',data={}){const mission=this.get(id);if(Object.prototype.hasOwnProperty.call(patch,'protocol')&&patch.protocol!==MISSION_PROTOCOL)throw new Error('MISSION_PROTOCOL_IMMUTABLE');if(TERMINAL.has(mission.status)&&patch.status&&patch.status!==mission.status)throw new Error('MISSION_TERMINAL');if(patch.status&&!VALID.has(patch.status))throw new Error('INVALID_MISSION_STATUS');Object.assign(mission,patch);this.eventObject(mission,type,data);atomicJson(this.file(id),mission);return mission}
   addEvidence(id,evidence){const mission=this.get(id);const item={id:`mev-${crypto.randomBytes(6).toString('hex')}`,at:now(),...evidence};mission.evidence.push(item);this.eventObject(mission,'MISSION_EVIDENCE',{evidenceId:item.id,kind:item.kind||'generic'});atomicJson(this.file(id),mission);return mission}
 }
 

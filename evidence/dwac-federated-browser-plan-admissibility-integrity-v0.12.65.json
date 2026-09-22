@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.65",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "025968a7077baf4ad995642729eb35d47880271a",
+  "bottleneck": "federated-browser-plan-admissibility-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main preserved provider-authored browser_checks through federation, but selection still treated malformed or over-budget browser plans as executable even though the existing acceptance/browser-observation path would deterministically reject them later. This let federation choose a candidate already guaranteed to fail its declared hard evidence path.",
+  "changes": [
+    "Normalize browser_checks at the federation boundary using the already-enforced browser URL, selector/text, scalar, boolean and settle-time semantics.",
+    "Propagate the existing eight-check browser acceptance budget upstream and mark malformed/over-budget browser plans non-executable for federated selection.",
+    "Keep the existing downstream browser observer and acceptance layer authoritative; no new browser product semantics were introduced."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: normalizeProposal passed browser_checks through without shape/budget validation and executableProposal ignored browser-plan admissibility, while runAcceptance/browser observation already hard-failed malformed or >8 checks.",
+    "node_syntax": "PASS: node --check core/federated-generation.mjs",
+    "focused_reality_replay": "PASS 4/4: valid browser plan remains executable; malformed selector container is rejected; nine browser checks are rejected by the existing budget; file:// URL is rejected by the existing web URL boundary.",
+    "hosted_runtime": "Developer Execution Runtime returned transient HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only moves already-existing downstream browser hard gates upstream into candidate admissibility so federation cannot select a browser plan known in advance to fail."
+}

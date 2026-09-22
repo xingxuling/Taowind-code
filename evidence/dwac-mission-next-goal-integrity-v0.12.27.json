@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.27",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "d78e869e3a597c0a1c9c3ed36b5436abe35b418b",
+  "bottleneck": "mission-next-goal-nonblank-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main documented rootGoal/nextGoal as mission state and runtime-generated next goals are trimmed with a root-goal fallback, but durable mission validation accepted whitespace-only nextGoal strings and the public Mission v0.1 schema did not publish nextGoal at all. A tampered truthy whitespace nextGoal could flow into RunStore.create() and fail later instead of failing closed at the mission boundary.",
+  "changes": [
+    "Reject whitespace-only nextGoal values at mission read/update boundaries while preserving omitted nextGoal and all nonblank strings.",
+    "Publish the existing nextGoal field as a nonblank string in Autonomous Mission v0.1.",
+    "Add a focused contract/runtime regression for the nonblank next-goal invariant."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: validMissionShape accepted whitespace-only nextGoal and the checked-in schema had no nextGoal property.",
+    "post_fix_source_contract_replay": "PASS: mission runtime validation and Mission v0.1 now agree that a present nextGoal must contain at least one non-whitespace character.",
+    "focused_regression_contract": "Checked-in mission contract test covers valid and whitespace-only next goals and binds the real runtime expression.",
+    "hosted_runtime": "Developer Execution Runtime was unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not choose a new replanning language or goal-selection policy. It closes a durable-state contradiction around an existing mission field."
+}

@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.62",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "fe86735e3fc949ea7874de4914f9083606f2c7ce",
+  "bottleneck": "federated-file-byte-budget-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main already propagated the ChangeSet 128-file hard budget into federated selection, but a single write larger than 2,000,000 UTF-8 bytes could still remain executable and win federation even though ChangesetStore.stage deterministically rejects the same write with CHANGE_FILE_TOO_LARGE.",
+  "changes": [
+    "Reuse the existing ChangeSet 2,000,000-byte per-file hard budget in federated proposal normalization.",
+    "Fail a proposal closed before ranking when any otherwise-valid write exceeds that established byte limit, and expose file_byte_overflow / oversized_file_count with risk evidence.",
+    "Preserve exactly-2,000,000-byte writes and all existing change-count, path, preimage, validation, consensus, and ranking semantics."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: normalizeChange accepted arbitrary-length string content while ChangesetStore.stage rejects after.length>MAX_FILE_BYTES with MAX_FILE_BYTES=2_000_000.",
+    "post_fix_source_contract_replay": "PASS: normalized valid writes are measured with Buffer.byteLength(...,'utf8'); any file above the existing downstream hard bound makes the candidate non-executable while the exact boundary remains valid.",
+    "focused_regression_contract": "tests/federated-file-byte-budget-integrity.test.mjs proves 2,000,001 bytes fail closed, 2,000,000 bytes remain valid, and a bounded candidate wins over an oversized competitor.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not define a new artifact-size policy. It propagates the already-existing ChangeSet single-file hard gate upstream so federation cannot select a plan guaranteed to fail staging."
+}

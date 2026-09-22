@@ -1,0 +1,16 @@
+{
+  "version":"0.11.98",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"f5327086a38b8e2e41d0f1bd70a884e89045d619",
+  "selected_bottleneck":"run-status-write-integrity（运行状态写入完整性）",
+  "selected_problem":"Fresh main validates status against the published v0.2 enum on durable reads, but RunStore.update guarded status validation with truthiness. Explicit falsy values such as empty string, null, 0 or false bypassed both the terminal transition guard and enum guard, were persisted, and made the next read fail.（最新主分支会在持久化读取时按 v0.2 已公开枚举验证 status，但 RunStore.update 使用真值判断保护状态验证；显式传入空字符串、null、0、false 等假值会同时绕过终态转换门与枚举门，被持久化后导致下一次读取失败。）",
+  "mode_route":["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate":"AUTONOMOUS（自主）",
+  "verification":{
+    "pre_fix_reality_replay":"1/2 PASS; falsy invalid status values bypassed update validation（修复前 1/2 通过；假值非法状态绕过更新验证）",
+    "post_fix_reality_replay":"2/2 PASS; explicit status presence is validated regardless of truthiness and declared states remain supported（修复后 2/2 通过；只要显式提供 status 就不再依赖真值判断，合法状态保持可用）",
+    "focused_node_check":"PASS for core/run-store.mjs（语法检查通过）",
+    "github_actions":"not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary":"This closes the falsy-value bypass in the already-declared run status enum and terminal-state gate. It does not define new state transitions or a new workflow policy.（本轮只闭合已经声明的运行状态枚举与终态门中的假值绕过；不定义新的状态转换或工作流政策。）"
+}

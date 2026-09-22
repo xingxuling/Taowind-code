@@ -1,0 +1,27 @@
+{
+  "version": "0.11.67",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "9443ffecee7c03d3086321e8c0d2e089e53e3eb6",
+  "selected_bottleneck": "changeset-apply-control-boundary-revalidation（变更集应用时控制路径边界重验证）",
+  "selected_problem": "Fresh main blocked new control-path changesets at stage time, but ChangesetStore.apply still trusted persisted STAGED documents. A changeset staged before the boundary hardening (or otherwise persisted with an old valid format) could still apply a .git/config change after upgrading, so the invariant was not migration-safe across the durable stage→apply boundary.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "Changesets are durable runtime artifacts and apply is a later effectful boundary, so safety rules that only exist at stage time do not cover already-persisted STAGED artifacts.",
+    "Revalidating the existing blocked-path rule at apply time is a narrow invariant repair; rollback intentionally remains available so already-applied legacy artifacts can still be reverted.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502, so this cycle uses DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and does not claim a hosted DWAC success receipt."
+  ],
+  "pre_fix_reality": {
+    "source_observation": "Fresh main ChangesetStore.apply checked ancestor/preimage identity and mode but had no blocked control-path revalidation before writing persisted changes.",
+    "impact": "a legacy STAGED .git control-path changeset could survive an upgrade and still cross the newly established staging boundary"
+  },
+  "change": "The blocked control-path predicate is shared inside ChangesetStore and is enforced both when staging and immediately before apply preflight. Rollback is deliberately not blocked, preserving reversibility for already-applied legacy changesets.",
+  "validation": {
+    "node_check": "PASS on the exact proposed core/changesets.mjs content",
+    "focused_legacy_changeset_replay": "PASS: a persisted STAGED .git/config write is rejected before mutation; an already-APPLIED legacy .git/config changeset remains rollback-capable and restores the original content",
+    "regression_test_added": "tests/changeset-apply-control-boundary.test.mjs",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This makes the existing control-path invariant migration-safe at stage→apply while preserving rollback. It does not prove general runtime-artifact tamper resistance, staged postimage integrity, credential-write policy, filesystem-wide case/Unicode identity, or arbitrary complex repository synthesis."
+}

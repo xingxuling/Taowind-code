@@ -5,6 +5,7 @@ import {WorkspaceService} from './workspace.mjs';
 import {sha256Buffer,sha256Text} from './hash.mjs';
 const MAX_FILES=128,MAX_FILE_BYTES=2_000_000,MAX_TOTAL_BYTES=8_000_000;
 const CHANGESET_PROTOCOL='taowind-code.changeset.v0.3';
+const HASH_RE=/^[a-f0-9]{64}$/;
 const BLOCKED_CHANGE_SEGMENTS=new Set(['.git','node_modules','.next','dist','build','runtime-data','.venv']);
 function now(){return new Date().toISOString()}
 function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const tmp=`${file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(value,null,2));fs.renameSync(tmp,file)}
@@ -12,11 +13,22 @@ function changeId(runId,changes){return `cs-${sha256Text(`${runId}:${Date.now()}
 function encode(bytes){return bytes?bytes.toString('base64'):null}
 function decode(value){return value===null?null:Buffer.from(value,'base64')}
 function blockedChangePath(value){const rel=path.posix.normalize(String(value||'').replaceAll('\\','/')).replace(/\/+$/,'');return rel.split('/').some(segment=>BLOCKED_CHANGE_SEGMENTS.has(segment.toLowerCase()))}
+function validNullableHash(value){return value===null||(typeof value==='string'&&HASH_RE.test(value))}
+function validNullableString(value){return value===null||typeof value==='string'}
+function validNullableInteger(value){return value===null||Number.isInteger(value)}
+function verifiedChangeShape(change){
+ if(!change||typeof change!=='object'||Array.isArray(change)||!['write','delete'].includes(change.op)||typeof change.path!=='string')throw new Error('INVALID_CHANGESET_CHANGE_SHAPE');
+ const before=change.before,after=change.after;
+ if(!before||typeof before!=='object'||Array.isArray(before)||typeof before.exists!=='boolean'||!validNullableString(before.type)||!validNullableHash(before.sha256)||!Number.isInteger(before.size)||before.size<0||!validNullableString(before.identity)||!validNullableInteger(before.mode)||!validNullableString(before.contentBase64))throw new Error('INVALID_CHANGESET_CHANGE_SHAPE');
+ if(!after||typeof after!=='object'||Array.isArray(after)||!validNullableHash(after.sha256)||!Number.isInteger(after.size)||after.size<0||!validNullableString(after.contentBase64))throw new Error('INVALID_CHANGESET_CHANGE_SHAPE');
+ return change
+}
 function verifiedChangesetProtocol(doc){
  if(doc?.protocol!==CHANGESET_PROTOCOL)throw new Error('UNSUPPORTED_CHANGESET_PROTOCOL');
  if(!['STAGED','APPLIED','ROLLED_BACK'].includes(doc?.status))throw new Error('INVALID_CHANGESET_STATUS');
  if(typeof doc?.runId!=='string'||typeof doc?.source!=='string'||typeof doc?.createdAt!=='string'||typeof doc?.updatedAt!=='string'||!Array.isArray(doc?.changes)||doc.changes.length<1||doc.changes.length>MAX_FILES)throw new Error('INVALID_CHANGESET_ENVELOPE');
  if(!Object.hasOwn(doc,'applyReceipt')||!Object.hasOwn(doc,'rollbackReceipt')||(doc.applyReceipt!==null&&(typeof doc.applyReceipt!=='object'||Array.isArray(doc.applyReceipt)))||(doc.rollbackReceipt!==null&&(typeof doc.rollbackReceipt!=='object'||Array.isArray(doc.rollbackReceipt))))throw new Error('INVALID_CHANGESET_ENVELOPE');
+ for(const change of doc.changes)verifiedChangeShape(change);
  return doc
 }
 function stagedAfterBytes(change){

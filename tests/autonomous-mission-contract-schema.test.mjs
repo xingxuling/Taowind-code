@@ -19,3 +19,11 @@ test('autonomous mission schema binds the durable storage id character contract'
   assert.equal(contract.test('mission-?'),false);
   assert.match(runtimeSource,/\^mission-\[A-Za-z0-9-\]\+\$/);
 });
+
+test('autonomous mission schema rejects whitespace-only root goals like the runtime',()=>{
+  assert.equal(schema.properties.rootGoal.pattern,'\\S');
+  const contract=new RegExp(schema.properties.rootGoal.pattern);
+  assert.equal(contract.test('maintain real software'),true);
+  assert.equal(contract.test('   '),false);
+  assert.match(runtimeSource,/typeof m\.rootGoal!=='string'\|\|!m\.rootGoal\.trim\(\)/);
+});

@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.28",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "05845ec8aedd51b67bc40ff276154f7c2d978f7a",
+  "bottleneck": "mission-config-default-semantics-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main inspection found the previous finite-number hardening changed existing mission creation semantics for empty/null inputs: null/empty maxCycles and closureThreshold were clamped to their minima instead of retaining historical defaults, and null maxRepairs became zero instead of two. The hardening therefore introduced a compatibility regression while fixing NaN propagation.",
+  "changes": [
+    "Feed boundedNumber through the original || / ?? default semantics before finite normalization.",
+    "Keep non-numeric truthy inputs fail-safe by falling back to existing defaults rather than persisting NaN/null.",
+    "Add a focused regression covering null, empty-string, and non-numeric creation inputs."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: Number(null) and Number('') changed existing defaults to numeric minima in the hardened creation path.",
+    "post_fix_source_contract_replay": "PASS: prior default semantics are restored while non-finite inputs still resolve to finite defaults.",
+    "focused_regression_contract": "New checked-in test covers maxCycles=8, maxRepairs=2, closureThreshold=0.8 defaults for null/empty/nonnumeric inputs as applicable.",
+    "hosted_runtime": "Developer Execution Runtime remained unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle repairs a regression introduced by the immediately preceding config-integrity cycle. It does not choose new mission budgets or scheduler policy."
+}

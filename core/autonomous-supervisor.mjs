@@ -6,13 +6,15 @@ import {requestGoalAssessment} from './tao-ai-adapter.mjs';
 const MISSION_PROTOCOL='taowind-code.autonomous-mission.v0.1';
 const TERMINAL=new Set(['GOAL_CLOSED','BUDGET_EXHAUSTED','BLOCKED','FAILED']);
 const VALID=new Set(['ACTIVE','WAITING_PROVIDER','WAITING_APPROVAL','GOAL_CLOSED','BUDGET_EXHAUSTED','BLOCKED','FAILED']);
+const MISSION_RUN_MODES=new Set(['NORTH_STAR','NORTH_STAR_BURST','WHOLE_ARTIFACT','DEEP_DEVELOPMENT']);
+const CYCLE_RUN_STATUSES=new Set(['READY_FOR_DELIVERY','DELIVERED_LOCAL']);
 function now(){return new Date().toISOString()}
 function missionId(){return `mission-${Date.now().toString(36)}-${crypto.randomBytes(5).toString('hex')}`}
 function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const tmp=`${file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(value,null,2));fs.renameSync(tmp,file)}
 function boundedNumber(value,min,max,fallback){const n=Number(value);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback}
 function validMissionConfig(config){return !!config&&typeof config==='object'&&!Array.isArray(config)&&Number.isFinite(config.maxCycles)&&config.maxCycles>=1&&config.maxCycles<=64&&Number.isFinite(config.maxRepairs)&&config.maxRepairs>=0&&config.maxRepairs<=8&&Number.isFinite(config.closureThreshold)&&config.closureThreshold>=.5&&config.closureThreshold<=1&&typeof config.autoCommit==='boolean'}
 function validRunReference(value){return value===undefined||value===null||(typeof value==='string'&&/^run-[A-Za-z0-9-]+$/.test(value))}
-function validMissionCycles(value){return Array.isArray(value)&&value.every((item,index)=>item&&typeof item==='object'&&!Array.isArray(item)&&Number.isInteger(item.index)&&item.index===index+1&&typeof item.runId==='string'&&/^run-[A-Za-z0-9-]+$/.test(item.runId))}
+function validMissionCycles(value){return Array.isArray(value)&&value.every((item,index)=>item&&typeof item==='object'&&!Array.isArray(item)&&Number.isInteger(item.index)&&item.index===index+1&&typeof item.runId==='string'&&/^run-[A-Za-z0-9-]+$/.test(item.runId)&&typeof item.goal==='string'&&!!item.goal.trim()&&MISSION_RUN_MODES.has(item.mode)&&CYCLE_RUN_STATUSES.has(item.status)&&typeof item.closedAt==='string'&&item.closedAt.length>0&&Object.prototype.hasOwnProperty.call(item,'assessment'))}
 function validMissionClosure(value){return value===undefined||value===null||(typeof value==='object'&&!Array.isArray(value)&&validRunReference(value.runId))}
 function validMissionEvidence(value){return Array.isArray(value)&&value.every(item=>item&&typeof item==='object'&&!Array.isArray(item)&&typeof item.id==='string'&&/^mev-[a-f0-9]{12}$/.test(item.id)&&typeof item.at==='string'&&item.at.length>0)}
 function validMissionEvents(value){return Array.isArray(value)&&value.every((item,index)=>item&&typeof item==='object'&&!Array.isArray(item)&&Number.isInteger(item.seq)&&item.seq===index+1&&typeof item.at==='string'&&item.at.length>0&&typeof item.type==='string'&&item.type.length>0&&Object.prototype.hasOwnProperty.call(item,'data'))}

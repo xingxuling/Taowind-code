@@ -1,0 +1,24 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.74",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "5418b7247e584b4546c4dbd6c883a44880e75485",
+  "bottleneck": "task-terminal-active-state-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main already treats ROLLED_BACK and FAILED as terminal RunStore states, but TaskStore.syncRun maps them onto apply/repair as a currently running task. The task projection therefore claims ongoing work after the owning run has terminated even though blocked/failed task states already exist.",
+  "changes": [
+    "Preserve the existing phase projection, but project the current apply task as blocked for ROLLED_BACK and the current repair task as failed for FAILED.",
+    "Ensure neither terminal run state leaves an owned task marked running.",
+    "Do not invent new task states, recovery policy, retry behavior, or post-terminal phases."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: the generic current-phase mapper returned status=running for both ROLLED_BACK and FAILED.",
+    "node_check": "PASS on the exact proposed core/tasks.mjs reconstruction.",
+    "focused_bounded_replay": "PASS 2/2: ROLLED_BACK projected apply=blocked with no running owned tasks; FAILED projected repair=failed with no running owned tasks.",
+    "regression_contract": "tests/task-terminal-active-state-integrity.test.mjs covers both existing terminal statuses.",
+    "hosted_runtime": "Developer Execution Runtime remained transiently unavailable with HTTP 502; no hosted/full repository suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only removes an impossible active-task projection from already-terminal run states. It does not decide whether or how a future user action may restart, fork, retry, or recover a terminated run."
+}

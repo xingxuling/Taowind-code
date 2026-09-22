@@ -1,0 +1,25 @@
+{
+  "version": "0.11.92",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "647bf74098e2f4aa3ffbc6291eb7029e2459bf25",
+  "selected_bottleneck": "run-write-identity-integrity（运行写入身份完整性）",
+  "selected_problem": "Fresh canonical main fail-closes when a persisted run's id or protocol is externally rewritten, but RunStore.update itself still accepted patches that changed id or protocol and then durably wrote a document that the same store would reject on the next read.（最新规范主仓已经会在读取时拒绝被外部改写 id 或 protocol 的持久化 run，但 RunStore.update 自身仍允许补丁改写 id 或 protocol，并把一个下一次读取时会被同一存储拒绝的文档持久化。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "This is a direct write-side contradiction against the existing durable id/protocol read boundary, not a new storage architecture or migration policy.（这是对既有持久化 id/protocol 读取边界的直接写入侧矛盾，不涉及新的存储架构或迁移政策。）",
+    "TaskStore already follows the same principle that a public write API must not create state its own read path classifies as corrupt.（TaskStore 已采用相同原则：公开写 API 不应制造自身读取路径会判损坏的状态。）"
+  ],
+  "changes": [
+    "Reject update patches that attempt to change a run id to a different durable identity with RUN_ID_IMMUTABLE.（拒绝试图把 run id 改成不同持久化身份的更新补丁。）",
+    "Reject update patches that attempt to change the declared run protocol away from the current v0.2 contract with RUN_PROTOCOL_IMMUTABLE.（拒绝试图把声明协议改离当前 v0.2 契约的更新补丁。）",
+    "Keep normal status and metadata updates unchanged.（保持正常状态与元数据更新行为不变。）"
+  ],
+  "verification": {
+    "pre_fix_reality_replay": "FAIL as expected: 0/2; both id and protocol rewrite probes were accepted instead of throwing（修复前按预期失败：0/2，id 与 protocol 改写探针均被错误接受）",
+    "post_fix_reality_replay": "PASS: 2/2; divergent id and protocol writes fail closed and the durable run remains readable under its original identity（修复后 2/2 通过；不同 id 与 protocol 的写入失败关闭，原持久化身份保持可读）",
+    "focused_node_check": "PASS for core/run-store.mjs（core/run-store.mjs 语法检查通过）",
+    "github_actions": "not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary": "This prevents RunStore.update from self-corrupting the already-declared durable run id/protocol identity. It does not authenticate coherently rewritten storage, define protocol migration, or make all run fields immutable.（本轮只防止 RunStore.update 自行破坏既有持久化 run 的 id/protocol 身份；不认证可一致改写的存储，不定义协议迁移，也不把所有 run 字段设为不可变。）"
+}

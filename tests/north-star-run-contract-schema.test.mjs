@@ -34,3 +34,11 @@ test('north-star run schema binds the durable storage id character contract',()=
   assert.equal(contract.test('run-?'),false);
   assert.match(runtimeSource,/\^run-\[A-Za-z0-9-\]\+\$/);
 });
+
+test('north-star run schema rejects whitespace-only goals like the runtime',()=>{
+  assert.equal(schema.properties.goal.pattern,'\\S');
+  const contract=new RegExp(schema.properties.goal.pattern);
+  assert.equal(contract.test('ship software'),true);
+  assert.equal(contract.test('   '),false);
+  assert.match(runtimeSource,/typeof run\?\.goal!=='string'\|\|!run\.goal\.trim\(\)/);
+});

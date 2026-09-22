@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.22",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "f15462b72568aa3d7c3eab104b6deb1c463cbfb7",
+  "bottleneck": "run-goal-nonblank-contract-parity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main inspection found RunStore.create()/get()/update() all reject whitespace-only goals via trim(), while the checked-in North Star Run v0.2 schema only required minLength: 1. The public contract therefore admitted a whitespace-only goal the real runtime rejects.",
+  "changes": [
+    "Add the existing non-whitespace goal invariant to the checked-in North Star Run v0.2 schema with pattern \\S.",
+    "Extend the existing contract/runtime regression with valid and whitespace-only goal cases."
+  ],
+  "verification": {
+    "pre_fix_bounded_replay": "EXPECTED FAIL: minLength:1 admits a whitespace-only string while runtime trim() rejects it.",
+    "source_contract_replay": "PASS after patch: the public goal contract requires at least one non-whitespace character, matching the existing runtime invariant.",
+    "focused_regression_contract": "Existing North Star Run contract test extended with goal nonblank parity cases.",
+    "hosted_runtime": "HTTP 502 transient upstream error from Developer Execution Runtime; no hosted test pass claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not choose a new goal language or planner. It only publishes the nonblank goal invariant already enforced by RunStore."
+}

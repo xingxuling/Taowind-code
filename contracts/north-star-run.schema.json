@@ -7,7 +7,7 @@
   "properties":{
     "id":{"type":"string","pattern":"^run-[A-Za-z0-9-]+$"},
     "protocol":{"const":"taowind-code.north-star-run.v0.2"},
-    "goal":{"type":"string","minLength":1},
+    "goal":{"type":"string","minLength":1,"pattern":"\\S"},
     "mode":{"enum":["NORTH_STAR","NORTH_STAR_BURST","WHOLE_ARTIFACT","DEEP_DEVELOPMENT"]},
     "status":{"enum":["OBSERVING","PLANNED","WAITING_PROVIDER","CHANGESET_STAGED","CHANGES_APPLIED","VALIDATING","REPAIR_REQUIRED","READY_FOR_DELIVERY","DELIVERED_LOCAL","ROLLED_BACK","FAILED"]},
     "cycle":{"type":"integer","minimum":1},

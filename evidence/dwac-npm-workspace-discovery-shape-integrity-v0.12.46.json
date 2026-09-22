@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.46",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "5784855689266d02a030431a5952f84b3fbe8cda",
+  "bottleneck": "npm-workspace-discovery-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main now rejects npm workspace discovery process failures and malformed JSON, but any syntactically valid JSON value was still accepted. An array, string, or scalar response therefore collapsed to an empty script set and could silently omit declared workspace validation.",
+  "changes": [
+    "Require successful npm workspace discovery JSON to have the expected top-level object/map shape before reading workspace scripts.",
+    "Return INVALID_NPM_WORKSPACE_DISCOVERY_SHAPE through the existing structured validation-discovery hard gate for syntactically-valid but structurally invalid output.",
+    "Keep empty or script-free workspace maps valid and avoid defining new validation scripts."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: valid JSON such as [] or a scalar reached Object.values(...) and became an empty script set instead of a discovery failure.",
+    "post_fix_source_contract_replay": "PASS: non-object or array top-level discovery output fails closed before any acceptance command is inferred.",
+    "focused_regression_contract": "tests/acceptance-npm-workspace-discovery-shape-integrity.test.mjs uses a fake npm executable returning [] and verifies both inferValidationCommands and runAcceptance fail closed.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle validates only the top-level response envelope promised by npm workspace discovery. It does not require any workspace to expose a particular script and does not infer missing scripts."
+}

@@ -1,0 +1,29 @@
+{
+  "version": "0.11.62",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "39168ff4912d86c42b45fb0edbcb002533321cc6",
+  "selected_bottleneck": "repo-context-bounded-path-identity（仓库上下文有界路径身份完整性）",
+  "selected_problem": "Fresh main still let lexical aliases such as src/a.js, src/a.js/, src/./a.js, src//a.js and src/tmp/../a.js consume distinct bounded context-selection and exact-path-index slots even though downstream workspace, semantic, federated and changeset layers had already converged these regular-file spellings. The defect is directly falsifiable without choosing a new repository-context architecture.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The defect is a fresh-main consistency gap in bounded repository observation, not a request to preselect UI, module-resolution or synthesis architecture.",
+    "The fix reuses the same POSIX lexical normalization already established by adjacent Taowind Code path-identity layers and deduplicates before maxFiles/maxPaths budgets are consumed.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502, so this cycle uses DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and does not claim a hosted DWAC success receipt."
+  ],
+  "pre_fix_reality": {
+    "manifest_paths": ["src/a.js", "src/a.js/", "src/b.js"],
+    "selectContextPaths_maxFiles_2": ["src/a.js", "src/a.js/"],
+    "repositoryPathIndex_paths": ["src/a.js", "src/a.js/", "src/b.js"],
+    "repositoryPathIndex_totalPaths": 3
+  },
+  "change": "repo-context now performs POSIX lexical normalization, leading ./ cleanup and trailing-separator collapse before bounded selection/index identity. selectContextPaths deduplicates canonical paths before maxFiles is consumed; repositoryPathIndex uses the same canonical identity before maxPaths/maxBytes accounting.",
+  "validation": {
+    "node_check": "PASS",
+    "focused_tests": "2/2 PASS, 0 skipped: repository context path identity + host-locale determinism",
+    "new_regression": "tests/repo-context-path-identity.test.mjs",
+    "base_main_existing_note": "tests/repo-context-path-index.test.mjs already contains one unrelated ordering expectation that fails on base main; this candidate does not change that comparator behavior and does not claim it closed.",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This closes lexical alias duplication in bounded repository context selection and exact-path indexing. It does not claim filesystem case/Unicode equivalence, canonical metadata arbitration for conflicting duplicate manifest rows, exhaustive large-repository coverage, parser-grade module semantics, or arbitrary complex repository synthesis."
+}

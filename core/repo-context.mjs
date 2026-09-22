@@ -3,15 +3,22 @@ const IMPORTANT=[/^README/i,/package\.json$/,/pyproject\.toml$/,/Cargo\.toml$/,/
 const SECRET_PATH=/(^|\/)(?:\.env(?:\.[^\/]*)?|credentials?(?:\.[^\/]*)?|secrets?(?:\.[^\/]*)?|id_(?:rsa|ed25519)|[^\/]+\.(?:pem|key|p12|pfx))(?=\/|$)/i;
 const priority=x=>IMPORTANT.some(r=>r.test(x.path))?1:0;
 const compareText=(a,b)=>a<b?-1:a>b?1:0;
-export function isCredentialLikePath(value){const normalized=String(value||'').replaceAll('\\','/').replace(/^\.\//,'');return !!normalized&&SECRET_PATH.test(normalized)}
+function normalizeRepoPath(value){
+  const normalized=path.posix.normalize(String(value||'').replaceAll('\\','/')).replace(/^\.\//,'').replace(/\/+$/,'');
+  return normalized&&normalized!=='.'?normalized:'';
+}
+export function isCredentialLikePath(value){const normalized=normalizeRepoPath(value);return !!normalized&&SECRET_PATH.test(normalized)}
 export function selectContextPaths(manifest,{maxFiles=28}={}){
-  return [...manifest].filter(x=>x.size<=80_000&&!isCredentialLikePath(x.path)).sort((a,b)=>priority(b)-priority(a)||a.size-b.size||compareText(a.path,b.path)).slice(0,maxFiles).map(x=>x.path);
+  const rows=[...(manifest||[])].filter(x=>x&&typeof x.path==='string'&&x.path.trim()&&x.size<=80_000).map(x=>({...x,path:normalizeRepoPath(x.path)})).filter(x=>x.path&&!isCredentialLikePath(x.path)).sort((a,b)=>priority(b)-priority(a)||a.size-b.size||compareText(a.path,b.path));
+  const paths=[];const seen=new Set();
+  for(const row of rows){if(paths.length>=maxFiles)break;if(seen.has(row.path))continue;seen.add(row.path);paths.push(row.path)}
+  return paths;
 }
 export function repositoryPathIndex(manifest,{maxPaths=800,maxBytes=48_000}={}){
   const unique=new Map();
   for(const item of manifest||[]){
     if(!item||typeof item.path!=='string'||!item.path.trim())continue;
-    const normalized=item.path.replaceAll('\\','/').replace(/^\.\//,'');
+    const normalized=normalizeRepoPath(item.path);
     if(!normalized||isCredentialLikePath(normalized))continue;
     unique.set(normalized,{...item,path:normalized});
   }

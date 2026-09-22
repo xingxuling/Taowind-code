@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.17",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "480c258f49e0e612ff8fdf6c86b86ae33cb10b9d",
+  "bottleneck": "north-star-run-required-cycle-contract-parity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main inspection found RunStore.get() rejects a persisted North Star run unless cycle is an integer >= 1, and RunStore.create() always emits cycle: 1, while the checked-in North Star Run v0.2 schema defines cycle but does not require it. The published contract therefore admits a document the real runtime rejects.",
+  "changes": [
+    "Require cycle in the checked-in North Star Run v0.2 schema without changing its existing integer minimum of 1.",
+    "Extend the existing contract/runtime parity regression to prove the schema-required cycle invariant matches RunStore.get()."
+  ],
+  "verification": {
+    "pre_fix_bounded_replay": "EXPECTED FAIL: focused Node assertion showed schema.required did not contain cycle while runtime rejects missing cycle.",
+    "source_contract_replay": "PASS after patch: cycle is required by the checked-in v0.2 contract and remains integer >= 1, matching RunStore.get().",
+    "focused_regression_contract": "Existing north-star-run-contract-schema test extended with a cycle-required/runtime-source parity assertion.",
+    "hosted_runtime": "HTTP 502 transient upstream error from Developer Execution Runtime; no hosted test pass claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only aligns an already-enforced runtime invariant with the public checked-in contract. It does not select a new run lifecycle, mode policy, UI, trust root, or persistence architecture."
+}

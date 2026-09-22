@@ -34,13 +34,19 @@ export function repositoryPathIndex(manifest,{maxPaths=800,maxBytes=48_000}={}){
   return {paths,totalPaths:rows.length,truncated:paths.length<rows.length,approxJsonBytes:bytes};
 }
 export function repositorySummary(manifest){
-  const visible=manifest.filter(x=>!isCredentialLikePath(x.path));
-  const byExt={};for(const f of visible)byExt[f.ext||'<none>']=(byExt[f.ext||'<none>']||0)+1;
+  const visiblePaths=[];const seen=new Set();
+  for(const item of manifest||[]){
+    if(!item||typeof item.path!=='string'||!item.path.trim())continue;
+    const normalized=normalizeRepoPath(item.path);
+    if(!normalized||isCredentialLikePath(normalized)||seen.has(normalized))continue;
+    seen.add(normalized);visiblePaths.push(normalized);
+  }
+  const byExt={};for(const rel of visiblePaths){const ext=path.posix.extname(rel).toLowerCase()||'<none>';byExt[ext]=(byExt[ext]||0)+1}
   const index=repositoryPathIndex(manifest);
   const extensionRows=Object.entries(byExt).sort((a,b)=>b[1]-a[1]||compareText(a[0],b[0]));
-  const topLevels=[...new Set(visible.map(x=>x.path.split('/')[0]))].sort((a,b)=>compareText(a,b));
+  const topLevels=[...new Set(visiblePaths.map(x=>x.split('/')[0]))].sort((a,b)=>compareText(a,b));
   return {
-    fileCount:visible.length,
+    fileCount:visiblePaths.length,
     manifestTruncated:manifest?.truncated===true,
     extensions:extensionRows.slice(0,16),
     extensionsTruncated:extensionRows.length>16,
@@ -50,7 +56,7 @@ export function repositorySummary(manifest){
       protocol:'taowind.repo-context-recovery.v0.1',
       exactPathHints:index.paths,
       indexedPaths:index.totalPaths,
-      totalManifestPaths:visible.length,
+      totalManifestPaths:visiblePaths.length,
       manifestTruncated:manifest?.truncated===true,
       truncated:index.truncated||manifest?.truncated===true,
       approxJsonBytes:index.approxJsonBytes,

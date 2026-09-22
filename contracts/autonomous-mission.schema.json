@@ -3,9 +3,10 @@
   "$id":"https://taowind.company/schemas/taowind-code-autonomous-mission-v0.1.json",
   "title":"Taowind Code Autonomous Mission v0.1",
   "type":"object",
-  "required":["id","rootGoal","status","cycle","config","cycles","events","evidence"],
+  "required":["id","protocol","rootGoal","status","cycle","config","cycles","events","evidence"],
   "properties":{
     "id":{"type":"string","pattern":"^mission-"},
+    "protocol":{"const":"taowind-code.autonomous-mission.v0.1"},
     "rootGoal":{"type":"string","minLength":1},
     "nextGoal":{"type":"string"},
     "status":{"enum":["ACTIVE","WAITING_PROVIDER","WAITING_APPROVAL","GOAL_CLOSED","BUDGET_EXHAUSTED","BLOCKED","FAILED"]},

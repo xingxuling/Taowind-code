@@ -29,30 +29,34 @@ function overlappingChangePaths(paths){
   return [...out].sort(compareText);
 }
 function normalizeChanges(rawChanges){
+  const normalizedRows=(Array.isArray(rawChanges)?rawChanges:[]).map(normalizeChange);
+  const invalidChangeCount=normalizedRows.filter(change=>!change).length;
+  if(invalidChangeCount)return {changes:[],ambiguousPaths:[],overlappingPaths:[],invalidChangeCount};
   const byPath=new Map();
-  for(const change of (Array.isArray(rawChanges)?rawChanges:[]).map(normalizeChange).filter(Boolean)){
+  for(const change of normalizedRows){
     const variants=byPath.get(change.path)||new Map();
     variants.set(changeFingerprint(change),change);byPath.set(change.path,variants);
   }
   const ambiguousPaths=[...byPath.entries()].filter(([,variants])=>variants.size>1).map(([path])=>path).sort(compareText);
   const overlappingPaths=overlappingChangePaths(byPath.keys());
-  if(ambiguousPaths.length||overlappingPaths.length)return {changes:[],ambiguousPaths,overlappingPaths};
-  return {changes:[...byPath.values()].map(variants=>variants.values().next().value),ambiguousPaths:[],overlappingPaths:[]};
+  if(ambiguousPaths.length||overlappingPaths.length)return {changes:[],ambiguousPaths,overlappingPaths,invalidChangeCount:0};
+  return {changes:[...byPath.values()].map(variants=>variants.values().next().value),ambiguousPaths:[],overlappingPaths:[],invalidChangeCount:0};
 }
 export function normalizeProposal(raw,{provider='unknown',role='implementation'}={}){
   const normalized=normalizeChanges(raw?.changes);
   const validation=[...new Set((Array.isArray(raw?.validation_commands)?raw.validation_commands:[]).map(String).map(x=>x.trim()).filter(Boolean))].slice(0,16);
   const context=[...new Set((Array.isArray(raw?.needs_more_context)?raw.needs_more_context:[]).map(normalizeContextRel).filter(Boolean))].slice(0,32);
   const risks=(Array.isArray(raw?.risks)?raw.risks:[]).map(String).slice(0,20);
+  if(normalized.invalidChangeCount&&risks.length<20)risks.push(`INVALID_CHANGE_ENTRY:${normalized.invalidChangeCount}`);
   for(const rel of normalized.ambiguousPaths){if(risks.length<20)risks.push(`AMBIGUOUS_CHANGE_PATH:${rel}`)}
   for(const rel of normalized.overlappingPaths){if(risks.length<20)risks.push(`OVERLAPPING_CHANGE_PATH:${rel}`)}
   const validationOverflow=validation.length>MAX_EXECUTABLE_VALIDATION_COMMANDS;if(validationOverflow&&risks.length<20)risks.push(`VALIDATION_COMMAND_BUDGET_EXCEEDED:${validation.length}>${MAX_EXECUTABLE_VALIDATION_COMMANDS}`);
-  return {provider,role,summary:String(raw?.summary||''),changes:normalized.changes,validation_commands:validation,risks,needs_more_context:context,ambiguous_paths:normalized.ambiguousPaths,overlapping_paths:normalized.overlappingPaths,validation_overflow:validationOverflow};
+  return {provider,role,summary:String(raw?.summary||''),changes:normalized.changes,validation_commands:validation,risks,needs_more_context:context,ambiguous_paths:normalized.ambiguousPaths,overlapping_paths:normalized.overlappingPaths,invalid_change_count:normalized.invalidChangeCount,validation_overflow:validationOverflow};
 }
 function goalTokens(goal){return [...new Set(String(goal||'').toLowerCase().match(/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu)||[])]}
 function proposalText(p){return `${p.summary} ${p.changes.map(c=>`${c.path} ${c.op==='write'?c.content.slice(0,800):''}`).join(' ')}`.toLowerCase()}
 function proposalOrigin(proposal){return `${proposal.provider||'unknown'}:${proposal.role||'implementation'}`}
-function executableProposal(p){return !!(p?.changes?.length&&p.validation_commands?.length&&!p.validation_overflow&&!p.ambiguous_paths?.length&&!p.overlapping_paths?.length)}
+function executableProposal(p){return !!(p?.changes?.length&&p.validation_commands?.length&&!p.validation_overflow&&!p.invalid_change_count&&!p.ambiguous_paths?.length&&!p.overlapping_paths?.length)}
 function consensusSignals(proposals){
   const executable=(proposals||[]).filter(executableProposal);
   const exactSupport=new Map(),pathVariants=new Map();

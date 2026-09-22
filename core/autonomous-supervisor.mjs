@@ -15,11 +15,12 @@ function validRunReference(value){return value===undefined||value===null||(typeo
 function validMissionCycles(value){return Array.isArray(value)&&value.every(item=>item&&typeof item==='object'&&!Array.isArray(item)&&typeof item.runId==='string'&&/^run-[A-Za-z0-9-]+$/.test(item.runId))}
 function validMissionClosure(value){return value===undefined||value===null||(typeof value==='object'&&!Array.isArray(value)&&validRunReference(value.runId))}
 function validMissionEvidence(value){return Array.isArray(value)&&value.every(item=>item&&typeof item==='object'&&!Array.isArray(item)&&typeof item.id==='string'&&/^mev-[a-f0-9]{12}$/.test(item.id)&&typeof item.at==='string'&&item.at.length>0)}
+function validMissionEvents(value){return Array.isArray(value)&&value.every((item,index)=>item&&typeof item==='object'&&!Array.isArray(item)&&Number.isInteger(item.seq)&&item.seq===index+1&&typeof item.at==='string'&&item.at.length>0&&typeof item.type==='string'&&item.type.length>0&&Object.prototype.hasOwnProperty.call(item,'data'))}
 function validMissionShape(mission){
   if(typeof mission?.rootGoal!=='string'||!mission.rootGoal.trim())return false;
   if(!Number.isInteger(mission?.cycle)||mission.cycle<0)return false;
   if(!validMissionConfig(mission?.config))return false;
-  if(!validMissionCycles(mission?.cycles)||!Array.isArray(mission?.events)||!validMissionEvidence(mission?.evidence))return false;
+  if(!validMissionCycles(mission?.cycles)||!validMissionEvents(mission?.events)||!validMissionEvidence(mission?.evidence))return false;
   if(mission.nextGoal!==undefined&&(typeof mission.nextGoal!=='string'||!mission.nextGoal.trim()))return false;
   if(!validRunReference(mission.currentRunId))return false;
   if(!validMissionClosure(mission.closure))return false;

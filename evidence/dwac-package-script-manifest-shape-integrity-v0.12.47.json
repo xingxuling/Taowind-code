@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.47",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "235c2fbd9538aac68bb7d51e7d89c3885933efb5",
+  "bottleneck": "package-script-manifest-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main now fails closed on malformed package.json and malformed npm workspace discovery output, but a syntactically valid package.json whose scripts field had the wrong top-level shape was still treated like a script-free package. In a mixed-language repository that could silently omit JavaScript validation while another validator still runs.",
+  "changes": [
+    "Reject a present package.json scripts field unless it is a non-array object before any validation commands are inferred.",
+    "Reuse the existing VALIDATION_DISCOVERY_FAILED acceptance boundary with blocker INVALID_PACKAGE_SCRIPTS.",
+    "Keep omitted scripts valid so script-free packages and other language validators retain existing behavior."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: packageValidationCommands used pkg?.scripts||{} and therefore collapsed strings, arrays, and null-like invalid script containers into no recognized validation scripts.",
+    "post_fix_source_contract_replay": "PASS: a present non-object/array/null scripts value fails before pyproject or other automatic validators can mask the malformed JavaScript manifest shape.",
+    "focused_regression_contract": "tests/acceptance-package-scripts-shape-integrity.test.mjs covers invalid scripts shape rejection and omitted-scripts compatibility.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle validates only the existing package scripts container shape used by automatic discovery. It does not define new validation script names, package-manager policy, or workspace architecture."
+}

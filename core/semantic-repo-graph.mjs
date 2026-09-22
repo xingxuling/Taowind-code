@@ -30,8 +30,10 @@ function normalizeImport(from,spec){
   return base.replace(/^\.\//,'');
 }
 function normalizePythonRelativeImport(from,dots,module){
-  let dir=path.posix.dirname(from);
-  for(let level=1;level<dots.length;level++)dir=path.posix.dirname(dir);
+  const segments=path.posix.dirname(from).split('/').filter(part=>part&&part!=='.');
+  const ascend=dots.length-1;
+  if(ascend>=segments.length)return null;
+  const dir=segments.slice(0,segments.length-ascend).join('/');
   const base=path.posix.normalize(path.posix.join(dir,module.replaceAll('.','/'))).replace(/^\.\//,'');
   if(!base||base==='.'||base==='..'||base.startsWith('../'))return null;
   return base;

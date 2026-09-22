@@ -1,0 +1,27 @@
+{
+  "version": "0.11.86",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "f6ffbbcbd697ca644b723a9214d64947220842c5",
+  "selected_bottleneck": "durable-task-store-corruption-boundary（持久化任务存储损坏边界）",
+  "selected_problem": "Fresh canonical main persisted task reality to runtime-data/tasks.json, but TaskStore.load caught every read/parse failure and silently returned an empty task list. Malformed JSON therefore erased observable durable task state without surfacing a blocker, and structurally wrong but valid JSON could pass through until a later unrelated operation failed.（最新主分支把任务现实持久化到 runtime-data/tasks.json，但 TaskStore.load 会捕获所有读取/解析失败并静默返回空任务列表；因此损坏 JSON 会在不暴露阻断的情况下抹掉可观察任务现实，而结构错误但语法合法的 JSON 还会继续流入后续逻辑。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "TaskStore already writes only JSON arrays and every consumer treats load() as an array, so enforcing the existing durable shape is an integrity repair rather than a new task architecture.（TaskStore 现有写入只产生 JSON 数组，所有消费者也把 load() 当数组使用，因此本轮只是执行既有持久化形状契约，不是新任务架构。）",
+    "Truth-first autonomous execution should not translate unreadable persisted state into a fabricated empty reality when the store already exists.（真实性优先的自主执行不应把不可读取的持久化状态翻译成虚构的空现实。）",
+    "A bounded replay reproduced both defects before the fix: malformed JSON returned [] and a non-array JSON object was accepted by list().（有界重放在修复前复现两个缺陷：损坏 JSON 被转换为 []，非数组 JSON 对象被 list() 接受。）"
+  ],
+  "changes": [
+    "Make TaskStore.load fail closed with TASK_STORE_CORRUPT when durable JSON cannot be read/parsed.（当持久化 JSON 无法读取或解析时，TaskStore.load 以 TASK_STORE_CORRUPT 失败关闭。）",
+    "Require the durable root value to remain an array, matching the existing writer and all current consumers.（要求持久化根值保持数组，与现有写入器及所有消费者契约一致。）",
+    "Add focused regressions for malformed JSON, non-array JSON, and intact planning/listing behavior.（新增损坏 JSON、非数组 JSON 与正常计划/列表行为的聚焦回归。）"
+  ],
+  "verification": {
+    "pre_fix_reality_replay": "EXPECTED FAIL reproduced: 1/3 PASS; malformed JSON was silently converted to [] and non-array JSON did not fail closed（修复前已复现：1/3 通过；损坏 JSON 被静默转换为空数组，非数组 JSON 未失败关闭）",
+    "post_fix_focused_tests": "PASS: 3/3; 0 skipped（3/3 通过；0 跳过）",
+    "node_check": "PASS for core/tasks.mjs（语法检查通过）",
+    "hosted_runtime": "HTTP 502 transient upstream error; not claimed as passed（托管 Developer Execution Runtime 暂时性 502，未宣称通过）",
+    "github_actions": "not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary": "This makes durable task corruption explicit and preserves the existing array-shaped task contract. It does not add authenticated storage, crash recovery, schema migration, or a new task model.（本轮只把持久化任务损坏显式化并保留既有数组任务契约；不增加认证存储、崩溃恢复、模式迁移或新的任务模型。）"
+}

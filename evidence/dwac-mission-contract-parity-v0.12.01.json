@@ -1,0 +1,27 @@
+{
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "303a5f7aa6d340814f105b099e6d360cd560831e",
+  "selected_bottleneck": "autonomous-mission-contract-runtime-parity（自治使命契约/运行时一致性）",
+  "selected_problem": "Fresh canonical runtime durably writes protocol=taowind-code.autonomous-mission.v0.1 into every mission, but the checked-in Autonomous Mission v0.1 schema neither required nor described protocol. The public contract could therefore validate a document that did not identify the runtime protocol actually in use.（最新规范主仓运行时会在每个 mission 中持久化 protocol=taowind-code.autonomous-mission.v0.1，但仓库内 Autonomous Mission v0.1 schema 既没有要求也没有描述 protocol，因此公开契约仍可能把没有标识真实运行协议的文档判定为有效。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "selection_basis": [
+    "The protocol value already exists in runtime code; this cycle only makes the checked-in contract match code reality.（协议值已经存在于运行时代码；本轮只让仓库内契约与代码现实一致。）",
+    "The same repository already treats durable Run and Changeset protocol parity as a truth boundary.（同一仓库已经把持久化 Run 与 Changeset 的协议一致性视为真实性边界。）"
+  ],
+  "pre_fix_reality": {
+    "focused_contract_test": "0/1 PASS（0/1 通过）",
+    "failure": "schema.required did not include protocol and schema.properties.protocol was absent, while canonical runtime source already emitted taowind-code.autonomous-mission.v0.1.（schema.required 不包含 protocol，properties.protocol 也不存在，但规范运行时源码已经写入 taowind-code.autonomous-mission.v0.1。）"
+  },
+  "changes": [
+    "Require protocol in Autonomous Mission v0.1.（在 Autonomous Mission v0.1 中要求 protocol。）",
+    "Bind protocol to taowind-code.autonomous-mission.v0.1, matching the existing runtime.（把 protocol 绑定到 taowind-code.autonomous-mission.v0.1，与现有运行时一致。）",
+    "Add a focused contract/runtime parity regression.（新增聚焦的契约/运行时一致性回归。）"
+  ],
+  "verification": {
+    "json_parse": "PASS（通过）",
+    "focused_contract_test": "1/1 PASS, 0 skipped（1/1 通过，0 跳过）",
+    "hosted_runtime": "Developer Execution Runtime remains unavailable with transient HTTP 502, so no hosted DWAC success receipt is claimed.（Developer Execution Runtime 仍因暂时性 HTTP 502 不可用，因此不声称托管 DWAC 已成功执行。）"
+  },
+  "truth_boundary": "This cycle publishes the protocol that runtime already writes. It does not yet claim that every durable mission read path rejects unknown protocols; that is a separate runtime-enforcement boundary to be selected from fresh main if it remains the dominant bottleneck.（本轮只发布运行时已经写入的协议；尚不声称所有持久化 mission 读取路径都会拒绝未知协议。若 fresh main 上该问题仍是最大瓶颈，则属于后续独立的运行时执行边界。）"
+}

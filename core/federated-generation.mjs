@@ -85,7 +85,7 @@ function normalizeBrowserCheck(raw){
   return {url,requiredSelectors,requiredText,titleIncludes,urlIncludes,...booleans,settleMs:Math.max(100,Math.min(5000,settleMs))};
 }
 function normalizeBrowserChecks(rawChecks){
-  if(rawChecks===undefined)return {checks:[],invalidBrowserCheckCount:0,browserCheckOverflow:false,observedBrowserCheckCount:0};
+  if(rawChecks===undefined)return {checks:undefined,invalidBrowserCheckCount:0,browserCheckOverflow:false,observedBrowserCheckCount:0};
   if(!Array.isArray(rawChecks))return {checks:[],invalidBrowserCheckCount:1,browserCheckOverflow:false,observedBrowserCheckCount:1};
   if(rawChecks.length>MAX_EXECUTABLE_BROWSER_CHECKS)return {checks:[],invalidBrowserCheckCount:0,browserCheckOverflow:true,observedBrowserCheckCount:rawChecks.length};
   const normalized=rawChecks.map(normalizeBrowserCheck);const invalidBrowserCheckCount=normalized.filter(check=>!check).length;

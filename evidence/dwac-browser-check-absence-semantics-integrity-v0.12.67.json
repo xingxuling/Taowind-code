@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.67",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "983dcd7ae81c8133339c2bf38704747ec6b4601e",
+  "bottleneck": "browser-check-absence-semantics-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main normalized omitted browser_checks to an explicit empty array. NorthStarRunner intentionally distinguishes an omitted repair browser plan from an explicit empty plan so repair can inherit the previous hard-evidence browser checks. The new normalization therefore erased validation continuity during repair.",
+  "changes": [
+    "Preserve browser_checks as undefined when the provider omits the field.",
+    "Keep an explicitly supplied empty array as an explicit empty plan.",
+    "Keep all present browser checks on the existing admissibility normalization path."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: normalizeProposal converted omission to [], so NorthStarRunner.browserValidation selected [] instead of previous.browserChecks during repair.",
+    "focused_bounded_replay": "PASS 4/4: omission remains undefined; omission inherits previous checks under the runner selection rule; explicit [] stays explicit; explicit [] suppresses inheritance as before.",
+    "regression_contract": "tests/federated-browser-absence-semantics-integrity.test.mjs covers omitted, explicit-empty and present browser plans.",
+    "hosted_runtime": "Developer Execution Runtime remained transiently unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle restores pre-existing absence semantics required by the repair path; it does not invent a new browser policy."
+}

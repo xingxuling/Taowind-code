@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.38",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "1c633a5b8d9187a7e920b164bb4a55440f448ae5",
+  "bottleneck": "mission-cycle-write-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main binds durable cycle count and indices, but generic update() could still replace an existing cycle ledger with a different structurally-valid history or advance multiple cycles at once. The supervisor writer already advances exactly one cycle at a time by appending one cycleRecord to the preserved prefix.",
+  "changes": [
+    "Require any cycles patch to append exactly one record to the existing durable prefix.",
+    "Require the paired cycle value to advance by exactly one in the same update.",
+    "Keep the supervisor's existing one-cycle append path valid and cover forged-prefix/multi-advance rejection."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: a replacement cycle history with valid indices/runIds and matching cycle count passed generic update validation.",
+    "post_fix_contract_replay": "PASS: one-record append with preserved prefix is accepted; same-length history rewrite and multi-record jump are rejected before persistence.",
+    "focused_regression_contract": "tests/autonomous-mission-cycle-write-integrity.test.mjs covers first append, prefix forgery rejection, multi-cycle jump rejection, and valid second append.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle preserves the cycle append behavior already used by the supervisor. It does not authenticate externally rewritten mission files and does not constrain the cycle assessment payload beyond existing shape rules."
+}

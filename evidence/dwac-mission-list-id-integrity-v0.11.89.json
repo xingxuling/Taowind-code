@@ -1,0 +1,24 @@
+{
+  "version": "0.11.89",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "831e70533d1e79b11d1bb0aa48c60e296d39f02c",
+  "selected_bottleneck": "mission-list-durable-id-binding-integrity（使命列表持久化 ID 绑定完整性）",
+  "selected_problem": "Fresh canonical main made AutonomousMissionStore.get fail closed on storage/body id mismatch, but AutonomousMissionStore.list still parsed mission JSON files directly. The scheduler consumes list() and then calls tick(mission.id), so a forged in-document id could bypass the new read boundary and turn an active durable mission into a silently unschedulable identity.（最新主分支已让 AutonomousMissionStore.get 在存储/文档 ID 不匹配时失败关闭，但 AutonomousMissionStore.list 仍直接解析 mission JSON；调度器消费 list() 后按 mission.id 调用 tick，因此伪造内部 id 可绕过新读取边界，并把真实存在的活动使命变成身份错误、无法正常调度的对象。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The newly merged main already establishes get() as the durable mission identity boundary, so routing list through get closes a bypass without adding architecture.（刚合并的主分支已经把 get() 建立为持久化 mission 身份边界，因此让 list 复用 get 只是闭合绕过路径，不增加架构。）",
+    "The list path feeds the autonomous scheduler directly, making this a real autonomous-loop integrity defect rather than a cosmetic listing inconsistency.（列表路径直接供自主调度器使用，因此这是真实的自主循环完整性缺陷，而不是纯展示问题。）"
+  ],
+  "changes": [
+    "Make AutonomousMissionStore.list derive each mission id from the durable filename and load through AutonomousMissionStore.get.（AutonomousMissionStore.list 从持久化文件名推导 mission id，并通过 AutonomousMissionStore.get 加载。）",
+    "Add focused regressions proving forged list entries fail closed while intact missions remain listable.（新增回归，证明伪造列表条目失败关闭，同时完整 mission 仍可列出。）"
+  ],
+  "verification": {
+    "focused_reality_replay": "PASS: 2/2 on a faithful isolated mission-store list replay; intact missions list and a rewritten body id fails with MISSION_ID_MISMATCH（忠实隔离的 mission-store 列表重放 2/2 通过；完整 mission 可列出，改写内部 id 后以 MISSION_ID_MISMATCH 失败）",
+    "focused_node_check": "PASS for the isolated list replay（隔离列表重放语法检查通过）",
+    "hosted_runtime": "HTTP 502 transient upstream error; not claimed as passed（托管 Developer Execution Runtime 暂时性 502，未宣称通过）",
+    "github_actions": "not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary": "This closes the list/scheduler bypass of the existing mission storage/body identity proof. It does not authenticate coherently rewritten mission content or add a trust root.（本轮只闭合列表/调度器绕过现有 mission 存储/文档身份证明的问题；不认证可一致改写的 mission 内容，也不增加信任根。）"
+}

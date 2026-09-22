@@ -107,10 +107,34 @@ export function normalizeProposal(raw,{provider='unknown',role='implementation'}
   const validationOverflow=validation.length>MAX_EXECUTABLE_VALIDATION_COMMANDS;if(validationOverflow&&risks.length<20)risks.push(`VALIDATION_COMMAND_BUDGET_EXCEEDED:${validation.length}>${MAX_EXECUTABLE_VALIDATION_COMMANDS}`);
   return {provider,role,summary:String(raw?.summary||''),changes:normalized.changes,validation_commands:validation,browser_checks:normalizedBrowser.checks,risks,needs_more_context:context,ambiguous_paths:normalized.ambiguousPaths,overlapping_paths:normalized.overlappingPaths,invalid_change_count:normalized.invalidChangeCount,change_overflow:normalized.changeOverflow,observed_change_count:normalized.observedChangeCount,file_byte_overflow:normalized.fileByteOverflow,oversized_file_count:normalized.oversizedFileCount,total_write_byte_overflow:normalized.totalWriteByteOverflow||false,observed_write_bytes:normalized.observedWriteBytes??0,invalid_validation_command_count:normalizedValidation.invalidValidationCount,validation_overflow:validationOverflow,invalid_browser_check_count:normalizedBrowser.invalidBrowserCheckCount,browser_check_overflow:normalizedBrowser.browserCheckOverflow,observed_browser_check_count:normalizedBrowser.observedBrowserCheckCount};
 }
+function manifestFileSizes(manifest){
+  const sizes=new Map();
+  for(const item of manifest||[]){
+    if(!item||typeof item!=='object'||Array.isArray(item)||typeof item.path!=='string')continue;
+    const rel=normalizeRel(item.path);
+    if(!rel||isCredentialLikePath(rel)||!Number.isInteger(item.size)||item.size<0)continue;
+    sizes.set(rel,item.size);
+  }
+  return sizes;
+}
+function applyManifestStageBudget(proposal,manifest){
+  const sizes=manifestFileSizes(manifest);let observedPreimageBytes=0,oversizedExistingFileCount=0;
+  for(const change of proposal.changes||[]){
+    const size=sizes.get(change.path);if(size===undefined)continue;
+    observedPreimageBytes+=size;if(size>MAX_EXECUTABLE_FILE_BYTES)oversizedExistingFileCount+=1;
+  }
+  const observedStageBytes=observedPreimageBytes+(proposal.observed_write_bytes||0);
+  const existingFileByteOverflow=oversizedExistingFileCount>0;
+  const stageTotalByteOverflow=observedStageBytes>MAX_EXECUTABLE_TOTAL_WRITE_BYTES;
+  const risks=[...(proposal.risks||[])];
+  if(existingFileByteOverflow&&risks.length<20)risks.push(`EXISTING_FILE_BUDGET_EXCEEDED:${oversizedExistingFileCount}:${MAX_EXECUTABLE_FILE_BYTES}`);
+  if(stageTotalByteOverflow&&risks.length<20)risks.push(`CHANGESET_STAGE_TOTAL_BUDGET_EXCEEDED:${observedStageBytes}>${MAX_EXECUTABLE_TOTAL_WRITE_BYTES}`);
+  return {...proposal,risks,observed_preimage_bytes:observedPreimageBytes,existing_file_byte_overflow:existingFileByteOverflow,oversized_existing_file_count:oversizedExistingFileCount,stage_total_byte_overflow:stageTotalByteOverflow,observed_stage_bytes:observedStageBytes};
+}
 function goalTokens(goal){return [...new Set(String(goal||'').toLowerCase().match(/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu)||[])]}
 function proposalText(p){return `${p.summary} ${p.changes.map(c=>`${c.path} ${c.op==='write'?c.content.slice(0,800):''}`).join(' ')}`.toLowerCase()}
 function proposalOrigin(proposal){return `${proposal.provider||'unknown'}:${proposal.role||'implementation'}`}
-function executableProposal(p){return !!(p?.changes?.length&&p.validation_commands?.length&&!p.change_overflow&&!p.file_byte_overflow&&!p.total_write_byte_overflow&&!p.validation_overflow&&!p.invalid_change_count&&!p.invalid_validation_command_count&&!p.invalid_browser_check_count&&!p.browser_check_overflow&&!p.ambiguous_paths?.length&&!p.overlapping_paths?.length)}
+function executableProposal(p){return !!(p?.changes?.length&&p.validation_commands?.length&&!p.change_overflow&&!p.file_byte_overflow&&!p.total_write_byte_overflow&&!p.existing_file_byte_overflow&&!p.stage_total_byte_overflow&&!p.validation_overflow&&!p.invalid_change_count&&!p.invalid_validation_command_count&&!p.invalid_browser_check_count&&!p.browser_check_overflow&&!p.ambiguous_paths?.length&&!p.overlapping_paths?.length)}
 function consensusSignals(proposals){
   const executable=(proposals||[]).filter(executableProposal);
   const exactSupport=new Map(),pathVariants=new Map();
@@ -162,7 +186,7 @@ export function scoreProposal(p,{goal='',manifest=[],consensus=null}={}){
   return {score:Number(score.toFixed(3)),coverage:Number(coverage.toFixed(3)),files,existingEdits,risky,ambiguousPaths,overlappingPaths,hasValidation:!!p.validation_commands.length,...agreement};
 }
 export function selectFederatedProposal(candidates,{goal='',manifest=[]}={}){
-  const normalized=(candidates||[]).map((x,i)=>normalizeProposal(x.proposal??x,{provider:x.provider||`candidate-${i+1}`,role:x.role||'implementation'}));
+  const normalized=(candidates||[]).map((x,i)=>applyManifestStageBudget(normalizeProposal(x.proposal??x,{provider:x.provider||`candidate-${i+1}`,role:x.role||'implementation'}),manifest));
   const signals=consensusSignals(normalized);
   const ranked=normalized.map(p=>({...p,evaluation:scoreProposal(p,{goal,manifest,consensus:signals})})).sort((a,b)=>b.evaluation.score-a.evaluation.score||compareText(a.provider,b.provider)||compareText(a.role,b.role));
   const contextRequests=[...new Set(ranked.flatMap(p=>p.needs_more_context||[]))].slice(0,32);

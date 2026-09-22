@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.18",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "997c71abc5df8588de9593f0ad555c613bb04d89",
+  "bottleneck": "authority-receipt-request-id-required-contract-parity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main inspection found the RCL authority runtime rejects any receipt whose requestId is not a string, and decide() always materializes requestId from the caller value or the generated receipt id, while the checked-in Authority Receipt v0.1 schema defines requestId but does not require it. The published contract therefore admits a receipt that the real write boundary rejects.",
+  "changes": [
+    "Require requestId in the checked-in RCL Authority Receipt v0.1 schema.",
+    "Add a focused contract/runtime parity regression proving the public receipt contract matches the existing authoritative write boundary."
+  ],
+  "verification": {
+    "pre_fix_bounded_replay": "EXPECTED FAIL: focused Node assertion showed schema.required did not contain requestId while validAuthorityReceipt requires a string requestId.",
+    "source_contract_replay": "PASS after patch: requestId is required and remains a string, matching validAuthorityReceipt and decide() materialization.",
+    "focused_regression_contract": "New focused schema/runtime parity test covers requestId requiredness, string type, write-boundary validation, and generated fallback identity.",
+    "hosted_runtime": "HTTP 502 transient upstream error from Developer Execution Runtime; no hosted test pass claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only aligns an already-enforced receipt identity invariant with the checked-in contract. It does not change RCL policy semantics, approval scope, trust roots, credentials, or external side-effect authority."
+}

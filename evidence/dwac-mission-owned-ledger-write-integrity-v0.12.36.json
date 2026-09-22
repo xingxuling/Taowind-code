@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.36",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "7b29b39f09b336a61e3841e8f79f863779f1666b",
+  "bottleneck": "mission-owned-ledger-write-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main validates durable event and evidence identity, yet generic update() could still replace both arrays with structurally valid forged ledgers. That bypassed the existing dedicated writers: eventObject() owns event sequence/time/type and addEvidence() owns evidence id/time.",
+  "changes": [
+    "Reject generic update patches containing events so event history continues to flow through eventObject().",
+    "Reject generic update patches containing evidence so evidence identity continues to flow through addEvidence().",
+    "Keep dedicated event/evidence append paths and ordinary mission updates unchanged, with focused regression coverage."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: a structurally valid replacement events/evidence array passed candidate shape validation and was persisted before the update event append.",
+    "post_fix_contract_replay": "PASS: generic ledger replacement is rejected before mutation while addEvidence() and ordinary update() still append through their dedicated writers.",
+    "focused_regression_contract": "tests/autonomous-mission-owned-ledger-write-integrity.test.mjs covers rejected replacements, durable non-mutation, and normal dedicated append paths.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle establishes write-path ownership already implied by dedicated writers. It does not cryptographically authenticate persisted ledgers and does not prevent an external actor from consistently rewriting the whole mission file."
+}

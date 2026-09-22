@@ -4,8 +4,8 @@ const compareText=(a,b)=>a<b?-1:a>b?1:0;
 const semanticPathError=normalized=>Object.assign(new Error(`Semantic path escapes repository boundary: ${normalized}`),{code:'SEMANTIC_PATH_OUTSIDE_REPOSITORY',path:normalized});
 const normalizeGraphPath=value=>{
   const raw=String(value).replaceAll('\\','/');
-  const normalized=path.posix.normalize(raw).replace(/^\.\//,'');
-  if(path.posix.isAbsolute(raw)||/^[A-Za-z]:/.test(raw)||normalized==='..'||normalized.startsWith('../'))throw semanticPathError(normalized);
+  const normalized=path.posix.normalize(raw).replace(/^\.\//,'').replace(/\/+$/,'');
+  if(!normalized||path.posix.isAbsolute(raw)||/^[A-Za-z]:/.test(raw)||normalized==='.'||normalized==='..'||normalized.startsWith('../'))throw semanticPathError(normalized);
   return normalized;
 };
 const TOKEN_RE=/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu;

@@ -1,0 +1,26 @@
+{
+  "version": "0.11.82",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "a3edbb878113871af2c9d84ecd3382afc01c8fd8",
+  "selected_bottleneck": "changeset-persisted-protocol-integrity（持久化变更集协议完整性）",
+  "selected_problem": "Fresh canonical main now declares the durable changeset contract as taowind-code.changeset.v0.3, but apply/rollback still trusted any persisted protocol string as long as the remaining fields looked usable. A staged or applied artifact whose protocol was coherently rewritten to an unknown version would still be executed under v0.3 semantics.（最新主分支已经明确声明 v0.3 持久化契约，但 apply/rollback 仍忽略持久化 protocol；未知协议版本的工件仍会被按 v0.3 语义执行。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The protocol identity is now an explicit checked-in contract and stage already emits it, so revalidating that same identity at effectful boundaries preserves existing semantics rather than choosing a new architecture.（协议身份已是仓库明确契约且 stage 已写入，本轮只在副作用边界重验同一语义。）",
+    "The defect is directly falsifiable by rewriting only doc.protocol after stage/apply: pre-fix apply and rollback both continued instead of rejecting the unknown protocol.（只改写 doc.protocol 即可直接复现：修复前 apply 与 rollback 均继续执行。）"
+  ],
+  "changes": [
+    "Centralize the current durable protocol string in CHANGESET_PROTOCOL and use it when staging documents.（集中定义当前持久化协议字符串，并由 stage 使用。）",
+    "Fail closed with UNSUPPORTED_CHANGESET_PROTOCOL before apply or rollback consumes a durable document whose protocol differs from v0.3.（apply/rollback 在消费未知协议工件前失败关闭。）",
+    "Add focused regressions for both apply and rollback protocol drift.（新增覆盖应用与回滚两条路径的协议漂移回归。）"
+  ],
+  "verification": {
+    "node_check": "PASS on exact proposed core/changesets.mjs（精确拟议源码语法检查通过）",
+    "pre_fix_regression": "EXPECTED_FAILURE: 0/2 PASS; both tests reported Missing expected exception because protocol drift was ignored（修复前 0/2，通过预期失败复现）",
+    "post_fix_regression": "PASS: 2/2, 0 skipped using the exact proposed ChangesetStore with a bounded workspace/hash harness（2/2 通过，0 跳过）",
+    "hosted_runtime": "HTTP 502 transient upstream error; not claimed as passed（托管运行时暂时性 502，未宣称通过）",
+    "github_actions": "not requested; commits include [skip ci] [skip actions]（未请求，提交包含跳过标记）"
+  },
+  "truth_boundary": "This ensures current v0.3 semantics are not applied to an artifact that declares another protocol. It does not authenticate the whole durable artifact, provide protocol migration, or make multi-file apply crash-atomic.（本轮防止未知协议工件被按 v0.3 执行；不认证整个持久化工件、不提供协议迁移，也不声称多文件应用具备崩溃原子性。）"
+}

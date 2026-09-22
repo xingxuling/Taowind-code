@@ -11,7 +11,7 @@
     "status":{"enum":["ACTIVE","WAITING_PROVIDER","WAITING_APPROVAL","GOAL_CLOSED","BUDGET_EXHAUSTED","BLOCKED","FAILED"]},
     "cycle":{"type":"integer","minimum":0},
     "currentRunId":{"type":["string","null"]},
-    "config":{"type":"object","required":["maxCycles","maxRepairs","closureThreshold","autoCommit"]},
+    "config":{"type":"object","required":["maxCycles","maxRepairs","closureThreshold","autoCommit"],"properties":{"maxCycles":{"type":"number","minimum":1,"maximum":64},"maxRepairs":{"type":"number","minimum":0,"maximum":8},"closureThreshold":{"type":"number","minimum":0.5,"maximum":1},"autoCommit":{"type":"boolean"}}},
     "cycles":{"type":"array"},
     "events":{"type":"array"},
     "evidence":{"type":"array"},

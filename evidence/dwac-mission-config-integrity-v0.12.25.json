@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.25",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "a6c0eb5f42878ee281a7f547a2485b9ab021c9bc",
+  "bottleneck": "mission-config-bounded-value-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main inspection found mission creation intended maxCycles/maxRepairs/closureThreshold to be bounded, but Number(nonNumeric) propagated NaN through Math.min/Math.max and JSON serialization could persist null. Durable reads only checked that config keys existed, so externally rewritten out-of-range or wrong-type config values could alter repair budgets, closure decisions, cycle budgets, or auto-commit behavior.",
+  "changes": [
+    "Normalize non-finite mission config inputs to existing defaults before bounding them.",
+    "Fail closed when durable mission config values are non-finite, out of the existing creation bounds, or autoCommit is non-boolean.",
+    "Publish those already-existing runtime bounds and boolean policy in Autonomous Mission v0.1 and bind them with a focused contract regression."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: Number('not-a-number') produced NaN in creation, JSON could persist null, and validMissionShape only required config key presence.",
+    "post_fix_source_contract_replay": "PASS: creation has finite fallbacks; durable read/update validation enforces the same 1..64, 0..8, 0.5..1 bounds and boolean autoCommit shape; schema publishes the same contract.",
+    "focused_regression_contract": "Checked-in mission contract test asserts config field bounds and runtime helper presence.",
+    "hosted_runtime": "Developer Execution Runtime remained unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle preserves the bounds and autoCommit semantics already present in mission creation. It does not choose a new scheduler policy, cycle budget, repair policy, or delivery architecture."
+}

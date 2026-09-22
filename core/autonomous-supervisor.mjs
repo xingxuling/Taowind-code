@@ -6,14 +6,15 @@ import {requestGoalAssessment} from './tao-ai-adapter.mjs';
 const MISSION_PROTOCOL='taowind-code.autonomous-mission.v0.1';
 const TERMINAL=new Set(['GOAL_CLOSED','BUDGET_EXHAUSTED','BLOCKED','FAILED']);
 const VALID=new Set(['ACTIVE','WAITING_PROVIDER','WAITING_APPROVAL','GOAL_CLOSED','BUDGET_EXHAUSTED','BLOCKED','FAILED']);
-const REQUIRED_CONFIG=['maxCycles','maxRepairs','closureThreshold','autoCommit'];
 function now(){return new Date().toISOString()}
 function missionId(){return `mission-${Date.now().toString(36)}-${crypto.randomBytes(5).toString('hex')}`}
 function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const tmp=`${file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(value,null,2));fs.renameSync(tmp,file)}
+function boundedNumber(value,min,max,fallback){const n=Number(value);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback}
+function validMissionConfig(config){return !!config&&typeof config==='object'&&!Array.isArray(config)&&Number.isFinite(config.maxCycles)&&config.maxCycles>=1&&config.maxCycles<=64&&Number.isFinite(config.maxRepairs)&&config.maxRepairs>=0&&config.maxRepairs<=8&&Number.isFinite(config.closureThreshold)&&config.closureThreshold>=.5&&config.closureThreshold<=1&&typeof config.autoCommit==='boolean'}
 function validMissionShape(mission){
   if(typeof mission?.rootGoal!=='string'||!mission.rootGoal.trim())return false;
   if(!Number.isInteger(mission?.cycle)||mission.cycle<0)return false;
-  if(!mission?.config||typeof mission.config!=='object'||Array.isArray(mission.config)||REQUIRED_CONFIG.some(key=>!Object.prototype.hasOwnProperty.call(mission.config,key)))return false;
+  if(!validMissionConfig(mission?.config))return false;
   if(!Array.isArray(mission?.cycles)||!Array.isArray(mission?.events)||!Array.isArray(mission?.evidence))return false;
   if(mission.nextGoal!==undefined&&typeof mission.nextGoal!=='string')return false;
   if(mission.currentRunId!==undefined&&mission.currentRunId!==null&&typeof mission.currentRunId!=='string')return false;
@@ -27,7 +28,7 @@ export class AutonomousMissionStore{
   file(id){if(!/^mission-[A-Za-z0-9-]+$/.test(id))throw new Error('INVALID_MISSION_ID');return path.join(this.dir,`${id}.json`)}
   create(goal,options={}){
     const rootGoal=String(goal||'').trim();if(!rootGoal)throw new Error('GOAL_REQUIRED');
-    const config={maxCycles:Math.max(1,Math.min(64,Number(options.maxCycles||8))),maxRepairs:Math.max(0,Math.min(8,Number(options.maxRepairs??2))),closureThreshold:Math.max(.5,Math.min(1,Number(options.closureThreshold||.8))),autoCommit:options.autoCommit===true};
+    const config={maxCycles:boundedNumber(options.maxCycles,1,64,8),maxRepairs:boundedNumber(options.maxRepairs,0,8,2),closureThreshold:boundedNumber(options.closureThreshold,.5,1,.8),autoCommit:options.autoCommit===true};
     const mission={id:missionId(),protocol:MISSION_PROTOCOL,rootGoal,nextGoal:rootGoal,status:'ACTIVE',cycle:0,currentRunId:null,config,createdAt:now(),updatedAt:now(),cycles:[],events:[],evidence:[],closure:null,blocker:null};
     this.eventObject(mission,'MISSION_CREATED',{config});atomicJson(this.file(mission.id),mission);return mission;
   }

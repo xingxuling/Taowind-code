@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.16",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "cfc95f847a4fa1f15c1e05df343ba2f343643e06",
+  "bottleneck": "mission-durable-id-prefix-case-contract-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main inspection found the Autonomous Mission v0.1 schema requires an id beginning with the lowercase literal prefix mission-, while AutonomousMissionStore.file() used a case-insensitive matcher. A durable MISSION-* storage identity could therefore cross the runtime boundary while violating the checked-in contract.",
+  "changes": [
+    "Make the mission- prefix case-sensitive at the storage-id boundary while preserving the pre-existing alphanumeric/hyphen suffix acceptance, including uppercase suffix characters that were already accepted.",
+    "Add a focused regression proving lowercase-prefix ids remain accepted and uppercase-prefix ids fail closed."
+  ],
+  "verification": {
+    "source_contract_replay": "PASS: the storage prefix now follows the case-sensitive ^mission- schema contract without broadening or narrowing the existing suffix character class.",
+    "bounded_reality_replay": "PASS: old /^mission-[a-z0-9-]+$/i accepted MISSION-abc123; proposed /^mission-[A-Za-z0-9-]+$/ rejects it while preserving mission-abc123 and mission-ABC123.",
+    "focused_regression_contract": "1 focused test encoded against the real AutonomousMissionStore.file() boundary.",
+    "hosted_runtime": "HTTP 502 transient upstream error from Developer Execution Runtime; no hosted test pass claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only aligns an already-published lexical prefix invariant and preserves the existing storage filename safety policy. It does not choose new authentication or persistence architecture."
+}

@@ -1,0 +1,16 @@
+{
+  "version":"0.11.95",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"bff4a9b64fd4a419068f8bc60ec84860edea3028",
+  "selected_bottleneck":"run-durable-shape-integrity（运行持久化结构完整性）",
+  "selected_problem":"Fresh main validates durable id/protocol/mode/status, but the same checked-in v0.2 contract also requires a non-empty goal, cycle >= 1, and array-shaped events/evidence/changesets. Externally rewritten durable JSON could violate those declared structural invariants and still pass RunStore.get.（最新主分支已验证持久化 id/protocol/mode/status，但同一个 v0.2 仓库契约还要求非空 goal、cycle >= 1，以及数组形状的 events/evidence/changesets；被外部改写的持久化 JSON 仍可违反这些已声明结构不变量并通过 RunStore.get。）",
+  "mode_route":["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate":"AUTONOMOUS（自主）",
+  "verification":{
+    "pre_fix_reality_replay":"1/4 PASS; blank goal, cycle 0 and non-array ledgers were all accepted（修复前 1/4 通过；空 goal、cycle 0、非数组账本均被错误接受）",
+    "post_fix_reality_replay":"4/4 PASS; declared durable structural invariants now fail closed while valid runs remain readable（修复后 4/4 通过；已声明的持久化结构不变量失败关闭，合法 run 保持可读）",
+    "focused_node_check":"PASS for core/run-store.mjs（语法检查通过）",
+    "github_actions":"not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary":"This enforces only the structural invariants already present in the checked-in North Star Run v0.2 schema. It does not add authentication, migration policy, or new run semantics.（本轮只执行 North Star Run v0.2 仓库契约中已经存在的结构不变量；不增加认证、迁移政策或新的运行语义。）"
+}

@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.11",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "d5133f174341b28d63575dab6941c21098d96795",
+  "bottleneck": "changeset-durable-envelope-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main inspection found the published changeset v0.3 envelope requires string runId/source/timestamps, 1..128 changes, and explicit nullable receipt slots, while ChangesetStore.get only enforced storage id, protocol and status.",
+  "changes": [
+    "Validate the remaining published top-level envelope shape at the durable read boundary.",
+    "Add focused regressions for non-string identity metadata, empty changes, missing receipt slots, and a valid staged control case.",
+    "Do not select a new trust architecture, lifecycle state, or product form."
+  ],
+  "verification": {
+    "source_contract_replay": "PASS: every get() now checks storage id, protocol, status and published top-level envelope before returning a durable document.",
+    "focused_regression_contract": "4 focused cases encoded; three invalid envelopes must fail closed and a store-emitted staged document remains readable.",
+    "hosted_runtime": "HTTP 502 transient upstream error from Developer Execution Runtime; no hosted test pass claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "Nested change/receipt semantic authenticity beyond already enforced apply/rollback invariants, and whole-artifact authentication against coordinated rewrites, remain unresolved rather than being silently invented here."
+}

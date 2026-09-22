@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.70",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "e18f6a0239818b47800cebd0025dbdaada9e2370",
+  "bottleneck": "python-relative-import-semantic-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh-main truth-boundary replay still marks full Python/module resolution unresolved. The existing lightweight graph already tokenizes Python symbols/imports, but relative `from .module import name` and `from ..module import name` dependencies produced no semantic edge, so Python-local dependencies were systematically absent from centrality/context selection.",
+  "changes": [
+    "Extend the existing lightweight import extractor with bounded Python relative `from` syntax rather than introducing a parser or new module-resolution architecture.",
+    "Resolve same-package, parent-package and dotted module names to the existing extensionless target resolver.",
+    "Fail closed when relative-dot ascent reaches above the repository package path so invalid imports cannot fabricate root-level edges."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: IMPORT_PATTERNS only captured Python module names beginning with an identifier, so leading-dot relative imports were invisible to the graph.",
+    "focused_bounded_replay": "PASS 4/4: same-package, parent-package and dotted relative modules normalize to the intended repository targets; over-ascent returns no target.",
+    "regression_contract": "tests/semantic-python-relative-import.test.mjs encodes four graph-level cases including no fabricated above-package edge.",
+    "hosted_runtime": "Developer Execution Runtime remained transiently unavailable with HTTP 502; no hosted/full repository suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "Complete Node/TypeScript/bundler/Python package semantics remain UNRESOLVED; this cycle closes only directly relative Python module-file edges under the existing lightweight graph model."
+}

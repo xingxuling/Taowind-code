@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.51",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "034f8cfe2b22d430235e99227329ad9def7d35ac",
+  "bottleneck": "validation-command-item-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main now requires the explicit commands container to be an array, but individual entries were still coerced with String(...). Non-string entries therefore became unintended shell text, while whitespace-only strings reached runCommand and could escape the structured acceptance-receipt path as COMMAND_REQUIRED.",
+  "changes": [
+    "Require every supplied validation command entry to be a string instead of coercing arbitrary values into shell text.",
+    "Treat whitespace-only strings like empty validation entries so the existing VALIDATION_EVIDENCE_REQUIRED gate remains structured.",
+    "Return malformed command-entry failures through the existing VALIDATION_COMMAND_INPUT_INVALID receipt path before shell execution."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: normalizeValidationCommands called String(command) and only removed exact empty strings.",
+    "post_fix_bounded_reality_replay": "5/5 PASS for valid string, empty/whitespace normalization, and null/object rejection.",
+    "focused_regression_contract": "tests/acceptance-validation-command-item-shape-integrity.test.mjs covers non-string rejection and whitespace-only structured no-evidence behavior.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle validates only the established shell-command string envelope and structured receipt behavior. It does not choose which commands should validate a project."
+}

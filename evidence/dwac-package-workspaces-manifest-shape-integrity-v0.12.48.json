@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.48",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "5af14bae633e2433cbac08b14c502e9e2e0cbcff",
+  "bottleneck": "package-workspaces-manifest-shape-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main validates package JSON and scripts-container shape, but a present malformed workspaces field was still treated as no workspaces. With root scripts present that could silently run only root validation and omit declared workspace intent.",
+  "changes": [
+    "Require a present workspaces field to use one of the two shapes already recognized by current code: an array or an object with a packages array.",
+    "Fail malformed present workspace declarations through the existing structured validation-discovery boundary.",
+    "Keep absent and empty established workspace shapes compatible without inventing workspace patterns or package-manager policy."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: malformed present workspaces values collapsed to false and were indistinguishable from an absent workspace declaration.",
+    "post_fix_bounded_reality_replay": "7/7 PASS for malformed string/null/object-package rejection plus array/object/empty/absent compatibility.",
+    "focused_regression_contract": "tests/acceptance-package-workspaces-shape-integrity.test.mjs covers fail-closed discovery and established array compatibility.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle only preserves the workspace declaration shapes already understood by the existing acceptance code. It does not choose new workspace syntax or package-manager architecture."
+}

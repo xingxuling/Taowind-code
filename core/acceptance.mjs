@@ -11,7 +11,7 @@ const PACKAGE_VALIDATION_SCRIPTS=['check','test','lint','typecheck','build'];
 export function buildValidationEnvironment(source=process.env){
   const out={};for(const [key,value] of Object.entries(source||{})){const upper=String(key).toUpperCase();if((VALIDATION_ENV_KEYS.has(upper)||upper.startsWith('LC_'))&&value!==undefined&&value!==null)out[key]=String(value)}return out;
 }
-function hasNpmWorkspaces(pkg){const ws=pkg?.workspaces;return (Array.isArray(ws)&&ws.length>0)||(ws&&typeof ws==='object'&&Array.isArray(ws.packages)&&ws.packages.length>0)}
+function hasNpmWorkspaces(pkg){const ws=pkg?.workspaces;if(ws===undefined)return false;if(Array.isArray(ws))return ws.length>0;if(ws&&typeof ws==='object'&&!Array.isArray(ws)&&Array.isArray(ws.packages))return ws.packages.length>0;throw Object.assign(new Error('INVALID_PACKAGE_WORKSPACES'),{code:'INVALID_PACKAGE_WORKSPACES'})}
 function npmWorkspaceValidationNames(workspace){
   const npm=process.platform==='win32'?'npm.cmd':'npm';
   const result=spawnSync(npm,['pkg','get','scripts','--workspaces','--json'],{cwd:workspace,encoding:'utf8',timeout:5_000,maxBuffer:1024*1024,windowsHide:true,env:buildValidationEnvironment()});

@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.72",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "a7ecca76bc677f8d4a8172019505545b2284ec77",
+  "bottleneck": "workspace-tree-special-entry-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main labels every non-directory Dirent in WorkspaceService.tree as type=file. Symlinks and other special entries are therefore advertised as regular files even though manifest excludes non-files and contextBundle rejects symlinks, creating a false repository observation at the API tree boundary.",
+  "changes": [
+    "Reuse the existing Dirent file/directory distinction and omit entries that are neither regular files nor directories before tree classification.",
+    "Keep the existing tree type vocabulary unchanged instead of inventing a new symlink product contract.",
+    "Add a focused regression proving an in-workspace symlink is not misclassified as a regular file while ordinary files/directories remain visible."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: tree mapped any non-directory Dirent to type=file while manifest/contextBundle already distinguish special entries.",
+    "focused_bounded_replay": "PASS 1/1 on Linux host: a real symlink was created and the proposed Dirent boundary returned only the regular file and directory.",
+    "regression_contract": "tests/workspace-tree-special-entry-integrity.test.mjs exercises WorkspaceService.tree together with manifest/contextBundle special-entry behavior.",
+    "hosted_runtime": "Developer Execution Runtime health remained transiently unavailable with HTTP 502; no hosted/full repository suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not decide whether Taowind Code should expose symlinks as a first-class UI/API type. It only prevents the existing two-type tree contract from falsely calling special entries regular files."
+}

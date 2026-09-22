@@ -1,0 +1,28 @@
+{
+  "version": "0.11.76",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "6709f178a772a4142ac90f0a578e047427c93768",
+  "selected_bottleneck": "apply-persisted-path-canonicality（应用持久化路径规范性）",
+  "selected_problem": "Fresh canonical main revalidated duplicate/overlap path sets at apply, but still trusted each persisted path string as already canonical. A staged new-file write could be redirected inside the workspace by rewriting src/original.mjs to src/../redirected.mjs while leaving the staged preimage/postimage metadata unchanged; safePath resolved the rewritten target and apply performed the redirected write.",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "Stage already canonicalizes change paths and rejects empty, dot, parent-escape, absolute, and drive-qualified paths. Requiring the durable path string to remain exactly equal to that canonical form is preservation of an existing stage invariant.",
+    "The defect is directly falsifiable without changing hashes, bytes, or trust policy because a non-existing-file preimage remains valid after an in-workspace path redirection.",
+    "Hosted Developer Execution Runtime remained temporarily unavailable with HTTP 502; this cycle used DWAC_SOURCE_CONTRACT_REPLAY（DWAC 源码契约重放） and exact local focused validation."
+  ],
+  "pre_fix_reality": {
+    "focused_reproduction": "EXPECTED_FAILURE: apply accepted src/../redirected.mjs and created redirected.mjs even though stage had approved src/original.mjs.",
+    "impact": "The durable STAGED artifact could change its actual workspace target after approval without changing the staged preimage or postimage payload."
+  },
+  "change": "Apply now recomputes the same lexical path normalization used by stage, rejects stage-invalid forms, and requires the persisted path string to already equal the canonical result before path-set, operation, image, or workspace checks proceed.",
+  "validation": {
+    "node_check": "PASS on the exact proposed core/changesets.mjs content",
+    "focused_tests": "8/8 PASS, 0 skipped across apply-preimage, operation, path-set, and path-canonicality integrity",
+    "pre_fix_regression": "EXPECTED_FAILURE confirmed before the fix",
+    "canonical_roundtrip": "PASS: a canonical persisted path still applies and rolls back exactly",
+    "hosted_runtime": "HTTP 502; not claimed as passed",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This preserves stage-time lexical path canonicality across durable reload. It does not authenticate the chosen canonical path against a coherent rewrite of the complete changeset or decide filesystem case/Unicode identity semantics."
+}

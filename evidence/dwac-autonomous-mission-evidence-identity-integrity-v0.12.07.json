@@ -1,0 +1,21 @@
+{
+  "version":"0.12.07",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"262105ea1e7794bf985deab7c9944702d6f6bdf9",
+  "selected_bottleneck":"autonomous-mission-evidence-identity-integrity（自治使命证据身份完整性）",
+  "selected_problem":"Fresh canonical-main inspection found that AutonomousMissionStore.addEvidence generated a mission evidence id and timestamp, then spread caller evidence afterward. Caller-supplied id/at could therefore overwrite the store-owned receipt identity and time while the mission event ledger trusted the resulting evidenceId.（最新规范主仓检查发现 AutonomousMissionStore.addEvidence 先生成使命证据 ID 与时间戳，随后才展开调用方证据，导致调用方自带 id/at 可以覆盖存储拥有的回执身份与时间，而使命事件账本又会信任被覆盖后的 evidenceId。）",
+  "mode_route":["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate":"AUTONOMOUS（自主）",
+  "decision_provenance":{
+    "hosted_developer_execution_runtime":"TRANSIENT_HTTP_502",
+    "compute_router":"TRANSIENT_HTTP_502",
+    "route_basis":"The defect is a singular, directly falsifiable ledger-identity invariant already established for the sibling RunStore evidence boundary. Closing it requires no new product shape, trust architecture, or forced mode rotation, so source-contract replay narrows to DEEP_DEVELOPMENT.（该缺陷是单一、可直接反证的账本身份不变量，且同级 RunStore 证据边界已经确立相同约束；闭合它不需要选择新产品形态、信任架构或强制轮换模式，因此源码契约重放收敛到深度开发模式。）"
+  },
+  "verification":{
+    "focused_reality_replay":"2/2 PASS; forged id/at no longer win and ordinary evidence payload remains intact（2/2 通过；伪造 id/at 不再覆盖，普通证据负载保持不变）",
+    "focused_node_check":"PASS for the bounded replay script（有界重放脚本语法检查通过）",
+    "regression_added":"tests/autonomous-mission-evidence-identity-integrity.test.mjs",
+    "github_actions":"not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary":"This protects only the store-generated identity and timestamp of newly appended Autonomous Mission evidence receipts. It does not authenticate already persisted mission evidence or introduce an external trust root.（本轮只保护新追加自治使命证据回执由存储生成的身份与时间戳；不认证已经持久化的使命证据，也不引入外部信任根。）"
+}

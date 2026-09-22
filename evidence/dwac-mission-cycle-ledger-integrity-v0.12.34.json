@@ -1,0 +1,22 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.34",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "0a0e6dd43189f4499e8d85e7dfa0aa5cec2d4982",
+  "bottleneck": "mission-cycle-ledger-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main validated mission cycle records only by durable runId. The writer, however, already emits contiguous cycleRecord.index values and increments mission.cycle in lockstep with the number of completed cycle records. A persisted mission could therefore claim an impossible cycle count or reorder cycle identity while still being accepted.",
+  "changes": [
+    "Require each durable cycle record to carry a contiguous 1-based index matching its array position.",
+    "Require mission.cycle to equal the number of durable completed cycle records.",
+    "Publish the existing cycle index field in Autonomous Mission v0.1 and add focused tamper regression coverage."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: validMissionCycles only checked runId shape and validMissionShape did not bind cycle to cycles.length.",
+    "post_fix_contract_replay": "PASS: a normal newly-created mission remains cycle=0 with an empty ledger; forged count, forged index, and missing index fail closed.",
+    "focused_regression_contract": "tests/autonomous-mission-cycle-ledger-integrity.test.mjs exercises the real AutonomousMissionStore durable boundary.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle does not constrain assessment payloads, mode/status semantics, or external run existence. It only preserves the cycle numbering/count invariant already emitted by the current supervisor."
+}

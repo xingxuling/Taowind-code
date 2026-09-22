@@ -5,6 +5,7 @@ import {runCommand} from './terminal.mjs';
 
 const VALIDATION_ENV_KEYS=new Set(['PATH','PATHEXT','SYSTEMROOT','COMSPEC','WINDIR','HOME','USERPROFILE','TMPDIR','TMP','TEMP','LANG','LC_ALL','TERM','COLORTERM','CI']);
 const MAX_VALIDATION_COMMANDS=8;
+const MAX_BROWSER_CHECKS=8;
 const PACKAGE_VALIDATION_SCRIPTS=['check','test','lint','typecheck','build'];
 
 export function buildValidationEnvironment(source=process.env){
@@ -31,10 +32,11 @@ export function inferValidationCommands(workspace){
   return out.slice(0,MAX_VALIDATION_COMMANDS);
 }
 function normalizeValidationCommands(commands){const out=[];for(const command of Array.isArray(commands)?commands:[]){const text=String(command);if(!text)continue;out.push(text);if(out.length>MAX_VALIDATION_COMMANDS)break}return out}
-function normalizeBrowserChecks(checks){return (Array.isArray(checks)?checks:[]).filter(x=>x&&typeof x==='object').slice(0,8)}
+function normalizeBrowserChecks(checks){return (Array.isArray(checks)?checks:[]).filter(x=>x&&typeof x==='object')}
 
 export async function runAcceptance(workspace,commands,{mode='workspace',browserObserver=null,browserChecks=[],browserRequired=false}={}){
-  let source;try{source=Array.isArray(commands)&&commands.length?commands:inferValidationCommands(workspace)}catch(error){const checks=normalizeBrowserChecks(browserChecks);return {status:'FAILED',passed:false,commands:[],results:[],browser:{required:browserRequired||checks.length>0,checks,results:[]},hardGate:'VALIDATION_DISCOVERY_FAILED',blocker:error?.code||error?.message||'VALIDATION_DISCOVERY_FAILED'}}const chosen=normalizeValidationCommands(source);const checks=normalizeBrowserChecks(browserChecks);
+  const checks=normalizeBrowserChecks(browserChecks);if(checks.length>MAX_BROWSER_CHECKS)return {status:'FAILED',passed:false,commands:[],results:[],browser:{required:true,checks:checks.slice(0,MAX_BROWSER_CHECKS),results:[]},hardGate:'BROWSER_CHECK_BUDGET_EXCEEDED',browserBudget:{limit:MAX_BROWSER_CHECKS,observed:checks.length}};
+  let source;try{source=Array.isArray(commands)&&commands.length?commands:inferValidationCommands(workspace)}catch(error){return {status:'FAILED',passed:false,commands:[],results:[],browser:{required:browserRequired||checks.length>0,checks,results:[]},hardGate:'VALIDATION_DISCOVERY_FAILED',blocker:error?.code||error?.message||'VALIDATION_DISCOVERY_FAILED'}}const chosen=normalizeValidationCommands(source);
   if(chosen.length>MAX_VALIDATION_COMMANDS)return {status:'FAILED',passed:false,commands:chosen.slice(0,MAX_VALIDATION_COMMANDS),results:[],browser:{required:browserRequired||checks.length>0,checks,results:[]},hardGate:'VALIDATION_COMMAND_BUDGET_EXCEEDED',validationBudget:{limit:MAX_VALIDATION_COMMANDS,observedAtLeast:chosen.length}};
   if(!chosen.length&&!checks.length&&!browserRequired)return {status:'NO_VALIDATION_EVIDENCE',passed:false,commands:[],results:[],browser:{required:false,checks:[],results:[]},hardGate:'VALIDATION_EVIDENCE_REQUIRED'};
   const validationEnv=buildValidationEnvironment();const results=[];for(const command of chosen){const r=await runCommand(workspace,command,{mode,timeoutMs:120_000,env:validationEnv,inheritProcessEnv:false,isolatedShell:true,containProcessTree:true,maxOutputChars:360000});results.push(r);if(r.code!==0||r.outputLimitExceeded)break}

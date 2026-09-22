@@ -1,0 +1,16 @@
+{
+  "version":"0.11.96",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"c46a7c674eba38b58f7484ffdedfd06ebe42e8fd",
+  "selected_bottleneck":"run-evidence-identity-integrity（运行证据身份完整性）",
+  "selected_problem":"The Evidence Ledger boundary generated an evidence id and timestamp but then spread caller payload after them, allowing caller-supplied id/at values to overwrite the store-owned receipt identity and time while the event ledger trusted the resulting values.（Evidence Ledger 证据账本边界虽然生成 evidence id 与时间戳，但随后把调用方 payload 覆盖在其后，使调用方可用自带 id/at 改写存储拥有的回执身份与时间，而事件账本又会信任这些被覆盖后的值。）",
+  "mode_route":["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate":"AUTONOMOUS（自主）",
+  "verification":{
+    "pre_fix_reality_replay":"1/2 PASS; caller-controlled id/at replaced the generated receipt identity/time（修复前 1/2 通过；调用方 id/at 覆盖了生成的回执身份与时间）",
+    "post_fix_reality_replay":"2/2 PASS; store-owned id/at win while ordinary evidence payload remains unchanged（修复后 2/2 通过；存储生成的 id/at 保持主权，普通证据 payload 不变）",
+    "focused_node_check":"PASS for core/run-store.mjs（语法检查通过）",
+    "github_actions":"not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary":"This protects only the store-generated identity and timestamp of newly appended evidence receipts. It does not authenticate already persisted evidence content or define an external trust root.（本轮只保护新追加证据回执由存储生成的身份与时间戳；不认证已经持久化的证据内容，也不定义外部信任根。）"
+}

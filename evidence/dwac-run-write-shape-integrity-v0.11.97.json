@@ -1,0 +1,16 @@
+{
+  "version":"0.11.97",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"341b7737809ccec55793e6897186450276f4feeb",
+  "selected_bottleneck":"run-write-shape-integrity（运行写入结构完整性）",
+  "selected_problem":"Fresh main now fails closed when durable JSON is externally rewritten outside the published v0.2 structural contract, but RunStore.update itself could still persist a blank goal, cycle < 1, or non-array ledger and create state its own next read rejects or crashes while appending an event.（最新主分支已经会在持久化 JSON 被外部改写出 v0.2 结构契约时失败关闭，但 RunStore.update 自身仍可写入空 goal、cycle < 1 或非数组账本，从而制造自身下一次读取会拒绝、甚至追加事件时直接崩溃的状态。）",
+  "mode_route":["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate":"AUTONOMOUS（自主）",
+  "verification":{
+    "pre_fix_reality_replay":"1/4 PASS; invalid goal/cycle were persisted and a non-array events patch crashed with TypeError instead of failing at the contract boundary（修复前 1/4 通过；非法 goal/cycle 被持久化，非数组 events 补丁在契约边界前以 TypeError 崩溃）",
+    "post_fix_reality_replay":"4/4 PASS; invalid structural writes fail before persistence while valid goal/cycle/changeset updates remain supported（修复后 4/4 通过；非法结构写入在持久化前失败，合法 goal/cycle/changeset 更新保持可用）",
+    "focused_node_check":"PASS for core/run-store.mjs（语法检查通过）",
+    "github_actions":"not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary":"This enforces only the structural invariants already present in the checked-in v0.2 schema on RunStore.update writes. It does not decide which valid ledger replacements should be semantically permitted or make audit history append-only.（本轮只在 RunStore.update 写入侧执行 v0.2 仓库契约中已经存在的结构不变量；不裁决哪些结构合法的账本替换在语义上应被允许，也不把审计历史定义成追加不可变。）"
+}

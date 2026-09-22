@@ -28,6 +28,14 @@ test('autonomous mission schema rejects whitespace-only root goals like the runt
   assert.match(runtimeSource,/typeof mission\?\.rootGoal!=='string'\|\|!mission\.rootGoal\.trim\(\)/);
 });
 
+test('autonomous mission nextGoal is nonblank like the runtime consumer expects',()=>{
+  assert.equal(schema.properties.nextGoal.pattern,'\\S');
+  const contract=new RegExp(schema.properties.nextGoal.pattern);
+  assert.equal(contract.test('repair build'),true);
+  assert.equal(contract.test('   '),false);
+  assert.match(runtimeSource,/mission\.nextGoal!==undefined&&\(typeof mission\.nextGoal!=='string'\|\|!mission\.nextGoal\.trim\(\)\)/);
+});
+
 test('autonomous mission config contract publishes runtime bounds and boolean commit policy',()=>{
   const config=schema.properties.config;
   assert.deepEqual(config.required,['maxCycles','maxRepairs','closureThreshold','autoCommit']);

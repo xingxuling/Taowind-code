@@ -3,6 +3,7 @@ import {isCredentialLikePath} from './repo-context.mjs';
 
 const BLOCKED_SEGMENTS=new Set(['.git','node_modules','.next','dist','build','runtime-data','.venv']);
 const MAX_EXECUTABLE_VALIDATION_COMMANDS=8;
+const SHA256_RE=/^[a-f0-9]{64}$/;
 const compareText=(a,b)=>a<b?-1:a>b?1:0;
 function normalizeRel(p){
   if(typeof p!=='string'||!p.trim())return null;
@@ -17,7 +18,9 @@ function normalizeChange(c){
   const rel=normalizeRel(c?.path);
   if(!c||!['write','delete'].includes(c.op)||!rel)return null;
   if(c.op==='write'&&typeof c.content!=='string')return null;
-  return {op:c.op,path:rel,...(c.op==='write'?{content:c.content}:{}),...(c.expectedSha256?{expectedSha256:String(c.expectedSha256)}:{})};
+  const hasExpected=Object.hasOwn(c,'expectedSha256');
+  if(hasExpected&&(typeof c.expectedSha256!=='string'||!SHA256_RE.test(c.expectedSha256)))return null;
+  return {op:c.op,path:rel,...(c.op==='write'?{content:c.content}:{}),...(hasExpected?{expectedSha256:c.expectedSha256}:{})};
 }
 function changeFingerprint(change){return JSON.stringify([change.op,change.path,change.op==='write'?change.content:'',change.expectedSha256||''])}
 function overlappingChangePaths(paths){

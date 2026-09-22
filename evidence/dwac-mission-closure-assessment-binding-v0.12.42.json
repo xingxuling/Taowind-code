@@ -1,0 +1,23 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.42",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "3141ad3ace4afbcf78b38eb03ab2de774f1079a1",
+  "bottleneck": "mission-closure-assessment-binding",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main now preserves both the completed cycle assessment and the closure assessment envelope, but durable reads still treat those two copies independently. The current supervisor writes the same assessment object into the latest cycle record and closure in every completion path.",
+  "changes": [
+    "Require the completed closure assessment to remain deeply equal to the latest completed cycle assessment.",
+    "Use Node's structural deep comparison so semantically identical JSON values are compared without relying on serialized key ordering.",
+    "Keep assessment payload semantics open and add focused durable-tamper coverage."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: closure.assessment and cycles[-1].assessment could diverge while both envelopes remained individually valid.",
+    "post_fix_source_contract_replay": "PASS: matching assessment values remain valid; a durable closure-only assessment rewrite fails closed.",
+    "focused_regression_contract": "tests/autonomous-mission-closure-assessment-binding.test.mjs exercises matching and drifted assessments at the real store boundary.",
+    "hosted_runtime": "Developer Execution Runtime remained temporarily unavailable with HTTP 502; no hosted full-suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle binds two copies already emitted from the same runtime assessment. It does not define what a valid assessment means or authenticate a consistently rewritten whole mission document."
+}

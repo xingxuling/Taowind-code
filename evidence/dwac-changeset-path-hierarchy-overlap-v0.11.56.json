@@ -1,0 +1,27 @@
+{
+  "version": "0.11.56",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "41a6d28fa3407be20379707cdab071601e73908a",
+  "selected_bottleneck": "changeset-path-hierarchy-overlap-integrity",
+  "selected_problem": "Fresh-main ChangesetStore.stage rejects duplicate canonical targets and existing non-directory ancestors, but two new changes could still target an ancestor path and its descendant (for example node and node/child.txt). Both stage preflights pass against the original empty workspace, then sequential apply necessarily creates a file/directory collision after an earlier mutation.",
+  "mode_route": ["DEEP_DEVELOPMENT"],
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_basis": [
+    "The defect is narrow and directly reproducible as a deterministic partial-apply path after all existing preflight checks pass.",
+    "Existing changeset policy already fails closed on duplicate canonical paths and existing non-directory ancestors, so rejecting an internally contradictory file hierarchy extends the same transaction invariant without inventing a new product architecture.",
+    "Hosted Developer Execution Runtime remained unavailable with transient HTTP 502; this cycle uses DWAC_SOURCE_CONTRACT_REPLAY and does not claim a hosted DWAC success receipt."
+  ],
+  "pre_fix_reality": {
+    "changes": ["write node", "write node/child.txt"],
+    "stage_preflight": "both accepted when node did not yet exist",
+    "apply_reproduction": "first write materialized node as a file; second write then failed with filesystem ancestor collision, leaving the earlier mutation present"
+  },
+  "change": "ChangesetStore.stage now rejects canonical path pairs where either target is an ancestor of the other with OVERLAPPING_CHANGE_PATH before any changeset artifact is staged.",
+  "validation": {
+    "pre_fix_reproduction": "PASS: focused filesystem reproduction showed both ancestor preflights accepted and sequential apply failed after the parent-file mutation.",
+    "focused_overlap_predicate": "PASS in both parent-first and child-first order; unrelated paths remain accepted.",
+    "regression_added": "tests/changeset-overlapping-paths.test.mjs",
+    "github_actions": "not requested"
+  },
+  "truth_boundary": "This closes a deterministic hierarchical target collision before staging. It does not claim filesystem crash atomicity or compensation for arbitrary I/O failure during an otherwise valid multi-file apply, and it does not claim arbitrary complex repository synthesis is solved."
+}

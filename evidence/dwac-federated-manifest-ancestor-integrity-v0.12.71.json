@@ -1,0 +1,24 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.71",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "74c6786bafafde697fc22272f208723165f6dbaa",
+  "bottleneck": "federated-manifest-ancestor-integrity",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh main now accounts for manifest-backed stage byte limits, but ChangeSet staging also rejects a target whenever an existing ancestor component is a non-directory file. Federation already receives a file manifest, so a proposal such as src/config/app.mjs is already known to be non-stageable when src/config is an observed file, yet it could still be selected.",
+  "changes": [
+    "Reuse the existing normalized manifest file map to detect proper ancestor components that are observed files.",
+    "Mark proposals with manifest-known non-directory ancestors non-executable before consensus/winner selection while keeping an exact existing-file target editable.",
+    "Keep ChangesetStore.ancestorState/stage as the authoritative live effect boundary; no new filesystem model or path policy is introduced."
+  ],
+  "verification": {
+    "pre_fix_source_contract_replay": "EXPECTED FAIL: federation did not consult manifest file ancestry while ChangesetStore.stage rejects non-directory ancestors through ancestorState.",
+    "node_check": "PASS on the exact proposed core/federated-generation.mjs.",
+    "focused_bounded_replay": "PASS 5/5 cumulative focused cases: 2 ancestor cases plus the 3 prior manifest-backed byte-budget cases.",
+    "regression_contract": "tests/federated-manifest-ancestor-integrity.test.mjs proves a known file ancestor cannot win while an exact existing-file target remains editable.",
+    "hosted_runtime": "Developer Execution Runtime remained transiently unavailable with HTTP 502; no hosted/full repository suite pass is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "Only file ancestors explicitly present in the existing selection-time manifest are used. Unknown paths, directories, symlink state and concurrent workspace changes remain authoritative at downstream staging."
+}

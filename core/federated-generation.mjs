@@ -131,10 +131,20 @@ function applyManifestStageBudget(proposal,manifest){
   if(stageTotalByteOverflow&&risks.length<20)risks.push(`CHANGESET_STAGE_TOTAL_BUDGET_EXCEEDED:${observedStageBytes}>${MAX_EXECUTABLE_TOTAL_WRITE_BYTES}`);
   return {...proposal,risks,observed_preimage_bytes:observedPreimageBytes,existing_file_byte_overflow:existingFileByteOverflow,oversized_existing_file_count:oversizedExistingFileCount,stage_total_byte_overflow:stageTotalByteOverflow,observed_stage_bytes:observedStageBytes};
 }
+function applyManifestAncestorBoundary(proposal,manifest){
+  const files=manifestFileSizes(manifest);const conflicts=[];
+  for(const change of proposal.changes||[]){
+    const parts=change.path.split('/');
+    for(let i=1;i<parts.length;i++){const ancestor=parts.slice(0,i).join('/');if(files.has(ancestor)){conflicts.push(ancestor);break}}
+  }
+  const nonDirectoryAncestorPaths=[...new Set(conflicts)].sort(compareText);const ancestorConflict=nonDirectoryAncestorPaths.length>0;
+  const risks=[...(proposal.risks||[])];for(const rel of nonDirectoryAncestorPaths){if(risks.length<20)risks.push(`NON_DIRECTORY_CHANGE_ANCESTOR:${rel}`)}
+  return {...proposal,risks,ancestor_conflict:ancestorConflict,non_directory_ancestor_paths:nonDirectoryAncestorPaths};
+}
 function goalTokens(goal){return [...new Set(String(goal||'').toLowerCase().match(/[A-Za-z_][A-Za-z0-9_]{2,}|[\p{Script=Han}]{2,}/gu)||[])]}
 function proposalText(p){return `${p.summary} ${p.changes.map(c=>`${c.path} ${c.op==='write'?c.content.slice(0,800):''}`).join(' ')}`.toLowerCase()}
 function proposalOrigin(proposal){return `${proposal.provider||'unknown'}:${proposal.role||'implementation'}`}
-function executableProposal(p){return !!(p?.changes?.length&&p.validation_commands?.length&&!p.change_overflow&&!p.file_byte_overflow&&!p.total_write_byte_overflow&&!p.existing_file_byte_overflow&&!p.stage_total_byte_overflow&&!p.validation_overflow&&!p.invalid_change_count&&!p.invalid_validation_command_count&&!p.invalid_browser_check_count&&!p.browser_check_overflow&&!p.ambiguous_paths?.length&&!p.overlapping_paths?.length)}
+function executableProposal(p){return !!(p?.changes?.length&&p.validation_commands?.length&&!p.change_overflow&&!p.file_byte_overflow&&!p.total_write_byte_overflow&&!p.existing_file_byte_overflow&&!p.stage_total_byte_overflow&&!p.ancestor_conflict&&!p.validation_overflow&&!p.invalid_change_count&&!p.invalid_validation_command_count&&!p.invalid_browser_check_count&&!p.browser_check_overflow&&!p.ambiguous_paths?.length&&!p.overlapping_paths?.length)}
 function consensusSignals(proposals){
   const executable=(proposals||[]).filter(executableProposal);
   const exactSupport=new Map(),pathVariants=new Map();
@@ -186,7 +196,7 @@ export function scoreProposal(p,{goal='',manifest=[],consensus=null}={}){
   return {score:Number(score.toFixed(3)),coverage:Number(coverage.toFixed(3)),files,existingEdits,risky,ambiguousPaths,overlappingPaths,hasValidation:!!p.validation_commands.length,...agreement};
 }
 export function selectFederatedProposal(candidates,{goal='',manifest=[]}={}){
-  const normalized=(candidates||[]).map((x,i)=>applyManifestStageBudget(normalizeProposal(x.proposal??x,{provider:x.provider||`candidate-${i+1}`,role:x.role||'implementation'}),manifest));
+  const normalized=(candidates||[]).map((x,i)=>applyManifestAncestorBoundary(applyManifestStageBudget(normalizeProposal(x.proposal??x,{provider:x.provider||`candidate-${i+1}`,role:x.role||'implementation'}),manifest),manifest));
   const signals=consensusSignals(normalized);
   const ranked=normalized.map(p=>({...p,evaluation:scoreProposal(p,{goal,manifest,consensus:signals})})).sort((a,b)=>b.evaluation.score-a.evaluation.score||compareText(a.provider,b.provider)||compareText(a.role,b.role));
   const contextRequests=[...new Set(ranked.flatMap(p=>p.needs_more_context||[]))].slice(0,32);

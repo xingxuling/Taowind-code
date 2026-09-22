@@ -1,0 +1,25 @@
+{
+  "version": "0.11.83",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "5661ad4df5c529ab66463cf62dc91ccf2df6ab59",
+  "selected_bottleneck": "changeset-durable-id-binding-integrity（持久化变更集 ID 绑定完整性）",
+  "selected_problem": "Fresh canonical main selects a durable changeset file by the caller-supplied id, but get/apply did not prove that the JSON body's own id still matched that selected artifact. Rewriting only doc.id left the same file address and all effectful semantics usable while returned/audited identity diverged from the artifact actually selected.（最新主分支按调用方传入的 id 选择持久化变更集文件，但 get/apply 未证明 JSON 内部 id 仍与被选工件一致；仅改写 doc.id 即可让文件地址与实际执行保持不变，却让返回/审计身份漂移。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The artifact id is already the storage selector and a required v0.3 contract field, so binding the document body back to the selected file id preserves existing identity semantics rather than inventing a new trust model.（工件 id 已同时是存储选择器与 v0.3 必填契约字段，本轮只是绑定两者，不引入新的信任模型。）",
+    "A bounded real-file replay directly reproduced the mismatch: the pre-fix loader accepted a JSON body whose id differed from the requested file id.（有界真实文件重放直接复现：修复前加载器接受内部 id 与请求文件 id 不一致的 JSON。）"
+  ],
+  "changes": [
+    "Make ChangesetStore.get fail closed with CHANGESET_ID_MISMATCH when a durable document's id differs from the requested artifact id.（当持久化文档内部 id 与请求工件 id 不一致时，ChangesetStore.get 以 CHANGESET_ID_MISMATCH 失败关闭。）",
+    "Because apply/rollback already load through get, the same identity proof now precedes both effectful boundaries without duplicating policy.（apply/rollback 已经通过 get 加载，因此同一身份证明自动前置于两个副作用边界。）",
+    "Add a regression covering get and apply with a rewritten internal id.（新增覆盖 get 与 apply 的内部 id 改写回归。）"
+  ],
+  "verification": {
+    "focused_reality_replay": "PASS: 2/2; pre-fix loader accepts mismatched body id, proposed loader rejects mismatch and accepts matching id（2/2 通过；已同时证实修复前缺陷与修复后行为）",
+    "node_check": "PASS for focused replay script（聚焦重放脚本语法检查通过）",
+    "hosted_runtime": "HTTP 502 transient upstream error; not claimed as passed（托管运行时暂时性 502，未宣称通过）",
+    "github_actions": "not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary": "This binds the durable document's declared id to its selected storage identity. It does not authenticate other coherently rewritten metadata/content, introduce signatures/MACs, or claim crash-atomic application.（本轮只绑定持久化文档声明 id 与存储选择身份；不认证其他可一致改写的元数据/内容，不引入签名或消息认证码，也不声称崩溃原子性。）"
+}

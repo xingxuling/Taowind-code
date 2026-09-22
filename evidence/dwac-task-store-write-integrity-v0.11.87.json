@@ -1,0 +1,26 @@
+{
+  "version": "0.11.87",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "0a945528e6ef2b7dc698d421c4aa2ace59c5f461",
+  "selected_bottleneck": "task-store-durable-write-shape-integrity（任务存储持久化写入形状完整性）",
+  "selected_problem": "Fresh canonical main now fails closed when durable task JSON is unreadable or not an array, but the same TaskStore still allowed replace()/save() to persist a non-array value. The public /api/tasks path passes request tasks into replace(), so a truthy object could make the store write a state that its own next read correctly rejects as corrupt.（最新主分支已经在读取阶段拒绝损坏或非数组任务 JSON，但同一个 TaskStore 仍允许 replace()/save() 持久化非数组值；公开 /api/tasks 路径会把请求中的 tasks 传给 replace()，因此一个真值对象即可让存储写出下一次读取时被自身判定为损坏的状态。）",
+  "mode_route": ["DEEP_DEVELOPMENT（深度开发模式）"],
+  "sovereignty_gate": "AUTONOMOUS（自主）",
+  "decision_basis": [
+    "The existing read boundary and every internal writer already define the durable root as an array, so validating the same invariant before write closes a self-corruption path without inventing a new task model.（现有读取边界与所有内部写入器已经共同定义持久化根值必须是数组，因此在写入前执行同一不变量只是闭合自我损坏路径，不引入新任务模型。）",
+    "A bounded replay reproduced the defect before the fix: replace({tasks:[]}) persisted an object and caused the store's next read to fail as TASK_STORE_CORRUPT.（有界重放在修复前复现：replace({tasks:[]}) 会持久化对象，并使存储下一次读取按 TASK_STORE_CORRUPT 失败。）"
+  ],
+  "changes": [
+    "Require TaskStore.save inputs to be arrays and fail closed with TASKS_REQUIRED_ARRAY before touching durable state.（要求 TaskStore.save 输入必须为数组；否则在触碰持久化状态前以 TASKS_REQUIRED_ARRAY 失败关闭。）",
+    "Because constructor, plan, syncRun, and replace all write through save, the invariant is centralized at the durable write boundary.（constructor、plan、syncRun 与 replace 均通过 save 写入，因此该不变量集中在持久化写边界。）",
+    "Add regressions proving rejected non-array replacement leaves the previous durable bytes intact while normal array replacement still works.（新增回归，证明非数组替换被拒绝后原持久化字节保持不变，同时正常数组替换仍可使用。）"
+  ],
+  "verification": {
+    "pre_fix_reality_replay": "EXPECTED FAIL reproduced: 1/2 PASS; non-array replacement was accepted and durable state changed（修复前已复现：1/2 通过；非数组替换被接受且持久化状态发生改变）",
+    "post_fix_focused_tests": "PASS: 5/5 including the prior read-corruption regressions and new write-boundary cases; 0 skipped（5/5 通过，包含上一轮读取损坏回归与本轮写边界用例；0 跳过）",
+    "node_check": "PASS for core/tasks.mjs（语法检查通过）",
+    "hosted_runtime": "HTTP 502 transient upstream error; not claimed as passed（托管 Developer Execution Runtime 暂时性 502，未宣称通过）",
+    "github_actions": "not requested; commits include [skip ci] [skip actions]（未请求）"
+  },
+  "truth_boundary": "This prevents TaskStore from writing a root shape that its own reader rejects. It does not validate every task object's semantic fields, add schema migration, authenticated storage, or crash recovery.（本轮只阻止 TaskStore 写出其自身读取器会拒绝的根形状；不校验每个任务对象的全部语义字段，不增加模式迁移、认证存储或崩溃恢复。）"
+}

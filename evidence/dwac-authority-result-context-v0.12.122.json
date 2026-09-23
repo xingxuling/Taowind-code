@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.122",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"9be0eb48b1518a68a60389924b98a4a1b9eaf348",
+  "selected_bottleneck":"authority-result-context-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main requires every durable decision to carry an RCL outcome envelope, but a non-error runtime-result envelope can still coexist with context=null. The current writer reaches every result envelope only after authorityContextForMode succeeds, while error envelopes may legitimately be written before context exists.",
+  "changes":["Require non-null authority context for runtime-result RCL envelopes only.","Publish the same result-envelope/context relation in the v0.1 schema without constraining error envelopes beyond existing rules."],
+  "verification":{"bounded_result_context_replay":"3/3 PASS","focused_regression":"Added real _record regression for result+null context while preserving current result-context and early-error null-context writer states","hosted_runtime":"Developer Execution Runtime returned transient HTTP 502; no hosted full-suite pass claimed"},
+  "truth_boundary":"This preserves the writer fact that result envelopes occur after authority context materialization. It does not authenticate the context or add new approval semantics.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

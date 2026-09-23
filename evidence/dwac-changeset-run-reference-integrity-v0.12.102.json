@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.102",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"29d11e23ca166605473b1b41afc8e4b52e9d512b",
+  "selected_bottleneck":"changeset-run-reference-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main now constrains run-ledger changeset references to the existing ChangesetStore identity syntax, but ChangesetStore itself still accepts arbitrary string runId values at stage/read boundaries even though canonical RunStore identities are restricted to run-<letters/digits/hyphens>. A durable changeset can therefore claim a run identity that RunStore would deterministically reject.",
+  "changes":["Reuse the existing RunStore identity syntax at ChangesetStore stage and durable read boundaries.","Publish the same runId pattern in the existing changeset v0.3 contract.","Do not add cross-store existence checks, lifecycle coupling or a new run identity format."],
+  "verification":{"bounded_identity_replay":"6/6 PASS for valid run-a/run-ABC-123 and invalid plain/RUN-abc/run_abc/run- under the exact added predicate.","regression_test_added":"tests/changeset-run-reference-integrity.test.mjs covers stage rejection, durable tamper rejection and compatible references against the real ChangesetStore API.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle closes changeset run-reference syntax parity only. Referential existence, run/changeset lifecycle coupling and authenticated provenance remain separate boundaries."
+}

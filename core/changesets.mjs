@@ -7,6 +7,7 @@ import {isCredentialLikePath} from './repo-context.mjs';
 const MAX_FILES=128,MAX_FILE_BYTES=2_000_000,MAX_TOTAL_BYTES=8_000_000;
 const CHANGESET_PROTOCOL='taowind-code.changeset.v0.3';
 const HASH_RE=/^[a-f0-9]{64}$/;
+const RUN_ID_RE=/^run-[A-Za-z0-9-]+$/;
 const ISO_DATE_TIME_RE=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 const BLOCKED_CHANGE_SEGMENTS=new Set(['.git','node_modules','.next','dist','build','runtime-data','.venv']);
 function now(){return new Date().toISOString()}
@@ -38,7 +39,7 @@ function verifiedReceiptShape(receipt,kind){
 function verifiedChangesetProtocol(doc){
  if(doc?.protocol!==CHANGESET_PROTOCOL)throw new Error('UNSUPPORTED_CHANGESET_PROTOCOL');
  if(!['STAGED','APPLIED','ROLLED_BACK'].includes(doc?.status))throw new Error('INVALID_CHANGESET_STATUS');
- if(typeof doc?.runId!=='string'||typeof doc?.source!=='string'||!validDateTime(doc?.createdAt)||!validDateTime(doc?.updatedAt)||!Array.isArray(doc?.changes)||doc.changes.length<1||doc.changes.length>MAX_FILES)throw new Error('INVALID_CHANGESET_ENVELOPE');
+ if(!RUN_ID_RE.test(doc?.runId)||typeof doc?.source!=='string'||!validDateTime(doc?.createdAt)||!validDateTime(doc?.updatedAt)||!Array.isArray(doc?.changes)||doc.changes.length<1||doc.changes.length>MAX_FILES)throw new Error('INVALID_CHANGESET_ENVELOPE');
  if(!Object.hasOwn(doc,'applyReceipt')||!Object.hasOwn(doc,'rollbackReceipt')||(doc.applyReceipt!==null&&(typeof doc.applyReceipt!=='object'||Array.isArray(doc.applyReceipt)))||(doc.rollbackReceipt!==null&&(typeof doc.rollbackReceipt!=='object'||Array.isArray(doc.rollbackReceipt))))throw new Error('INVALID_CHANGESET_ENVELOPE');
  for(const change of doc.changes)verifiedChangeShape(change);
  verifiedReceiptShape(doc.applyReceipt,'APPLY');verifiedReceiptShape(doc.rollbackReceipt,'ROLLBACK');
@@ -122,7 +123,7 @@ export class ChangesetStore{
  file(id){if(!/^cs-[a-f0-9]+$/.test(id))throw new Error('INVALID_CHANGESET_ID');return path.join(this.dir,`${id}.json`)}
  get(id){const f=this.file(id);if(!fs.existsSync(f))throw new Error('CHANGESET_NOT_FOUND');const doc=JSON.parse(fs.readFileSync(f,'utf8'));if(doc?.id!==id)throw new Error('CHANGESET_ID_MISMATCH');return verifiedDurableChangeset(doc)}
  stage(runId,changes,{source='agent'}={}){
-   if(!Array.isArray(changes)||!changes.length)throw new Error('CHANGES_REQUIRED');if(changes.length>MAX_FILES)throw new Error('TOO_MANY_CHANGES');let total=0;const normalized=[],seenPaths=new Set();
+   if(!RUN_ID_RE.test(runId))throw new Error('INVALID_CHANGESET_RUN_ID');if(!Array.isArray(changes)||!changes.length)throw new Error('CHANGES_REQUIRED');if(changes.length>MAX_FILES)throw new Error('TOO_MANY_CHANGES');let total=0;const normalized=[],seenPaths=new Set();
    for(const raw of changes){const op=raw?.op||'write';if(!['write','delete'].includes(op))throw new Error('UNSUPPORTED_CHANGE_OPERATION');const rel=path.posix.normalize(String(raw.path||'').replaceAll('\\','/')).replace(/\/+$/,'');if(!rel||rel==='.'||rel==='..'||rel.startsWith('../')||rel.startsWith('/')||/^[A-Za-z]:/.test(rel))throw new Error('INVALID_CHANGE_PATH');if(blockedChangePath(rel))throw new Error(`BLOCKED_CHANGE_PATH:${rel}`);if(isCredentialLikePath(rel))throw new Error(`CREDENTIAL_CHANGE_PATH:${rel}`);if(seenPaths.has(rel))throw new Error(`DUPLICATE_CHANGE_PATH:${rel}`);const overlap=[...seenPaths].find(existing=>rel.startsWith(`${existing}/`)||existing.startsWith(`${rel}/`));if(overlap)throw new Error(`OVERLAPPING_CHANGE_PATH:${overlap}:${rel}`);seenPaths.add(rel);const ancestor=this.workspace.ancestorState(rel);if(!ancestor.ok)throw new Error(`UNSUPPORTED_CHANGE_ANCESTOR:${rel}:${ancestor.ancestor}`);const before=this.workspace.stat(rel);if(before.exists&&before.type!=='file')throw new Error(`UNSUPPORTED_CHANGE_TARGET:${rel}`);let beforeBytes=null;if(before.exists){beforeBytes=this.workspace.readBytes(rel,MAX_FILE_BYTES);total+=beforeBytes.length;if(total>MAX_TOTAL_BYTES)throw new Error('CHANGESET_TOO_LARGE')}let after=null;if(op==='write'){after=Buffer.from(String(raw.content??''),'utf8');if(after.length>MAX_FILE_BYTES)throw new Error('CHANGE_FILE_TOO_LARGE');total+=after.length;if(total>MAX_TOTAL_BYTES)throw new Error('CHANGESET_TOO_LARGE')}
      if(raw.expectedSha256!==undefined&&raw.expectedSha256!==before.sha256)throw new Error(`PREIMAGE_MISMATCH:${rel}`);
      normalized.push({op,path:rel,before:{exists:before.exists,type:before.type||null,sha256:before.sha256,size:before.size,identity:before.identity||null,mode:before.mode??null,contentBase64:encode(beforeBytes)},after:{sha256:after?sha256Buffer(after):null,size:after?.length||0,contentBase64:encode(after)}})

@@ -1,0 +1,21 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.126",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"7e98976736308496835f3de07a307c5a439f06a2",
+  "selected_bottleneck":"authority-grant-regression-fixture-coherence-integrity",
+  "mode":"WHOLE_ARTIFACT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"After v0.12.125 repaired stale non-grant controls, fresh main still contains five older granted-authority regression fixtures whose positive baselines omit the context, policyDigest and materializedDigest now required for every runtime-result receipt. Those controls are no longer writer-reachable and can make grant-specific tests fail for unrelated envelope invariants.",
+  "changes":[
+    "Repair five granted-authority regression baselines with the existing workspace-mode context plus lowercase SHA-256 policy/materialized digests.",
+    "Keep the existing granted RCL rule, authority-needs and history semantics unchanged.",
+    "Do not modify production authority logic or the public receipt contract."
+  ],
+  "verification":{
+    "syntax":"node --check on all 5 edited test files: PASS",
+    "bounded_validator_replay":"7/7 PASS for the current grant control plus null/error RCL, wrong rule, empty needs, zero history and wrong reason cases",
+    "hosted_runtime":"Developer Execution Runtime returned HTTP 502; no hosted full-suite pass claimed"
+  },
+  "github_actions":"not requested; all commits use [skip ci] [skip actions]"
+}

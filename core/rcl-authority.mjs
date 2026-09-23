@@ -35,7 +35,7 @@ function objectOrNull(value){return value===null||value===undefined||(typeof val
 function validAuthorityContext(value){if(value===null)return true;if(!value||typeof value!=='object'||Array.isArray(value))return false;return AUTHORITY_CONTEXT_FIELDS.every(field=>typeof value[field]==='boolean')}
 function validAuthorityContextForMode(value,mode){if(!validAuthorityContext(value))return false;if(value===null)return true;const expected=MODES[mode];return !!expected&&Object.entries(expected).every(([field,enabled])=>value[field]===enabled)}
 function validRclPayload(value){
-  if(value===null)return true;if(!value||typeof value!=='object'||Array.isArray(value))return false;
+  if(value===null)return false;if(!value||typeof value!=='object'||Array.isArray(value))return false;
   if(Object.prototype.hasOwnProperty.call(value,'error'))return typeof value.error==='string'&&value.error.length>0&&typeof value.message==='string';
   if(!RCL_RESULT_FIELDS.every(field=>Object.prototype.hasOwnProperty.call(value,field)))return false;
   return Array.isArray(value.witnesses)&&Number.isInteger(value.historyLength)&&value.historyLength>=0;

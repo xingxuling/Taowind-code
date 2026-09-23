@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.121",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"0e44162b7da49c73e246bb2617fefb37d7718b78",
+  "selected_bottleneck":"authority-rcl-envelope-required-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main constrains both RCL result and RCL error envelopes, but still accepts rcl=null for denied receipts. The current decide writer always persists either a runtime-result envelope on the normal path or an error envelope on the catch path, so a null RCL envelope is not a writer-reachable durable state.",
+  "changes":["Reject null RCL envelopes at the durable receipt boundary.","Remove null from the public v0.1 RCL envelope union while preserving the existing result and error families."],
+  "verification":{"bounded_envelope_replay":"3/3 PASS","focused_regression":"Added real _record regression proving rcl=null is rejected while current result/error writer envelopes remain valid","hosted_runtime":"Developer Execution Runtime returned transient HTTP 502; no hosted full-suite pass claimed"},
+  "truth_boundary":"This establishes only that persisted authority decisions carry one of the writer's two existing outcome envelopes. It does not authenticate either envelope or expand their semantics.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

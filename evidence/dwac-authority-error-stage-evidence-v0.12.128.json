@@ -1,0 +1,21 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.128",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"502e077c6c3191251071e625402f7f7c624046e0",
+  "selected_bottleneck":"authority-error-stage-evidence-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main preserves the writer's result reason semantics, exposing a narrower error-path reality gap. In decide(), policyDigest is created before context, and materializedDigest can exist only after both policyDigest and context exist. The durable validator and public schema still accepted error receipts whose evidence fields skipped those writer stages.",
+  "changes":[
+    "Require any non-null authority context to be backed by a non-null policyDigest.",
+    "Require any non-null materializedDigest to be backed by both context and policyDigest.",
+    "Keep all currently reachable error-stage prefixes valid; do not bind specific error codes to a stage."
+  ],
+  "verification":{
+    "bounded_validator_replay":"7/7 PASS: four reachable error-stage prefixes accepted; context-without-policy, materialized-without-policy/context, and materialized-without-context rejected",
+    "focused_regression":"Added durable _record coverage for reachable and skipped error evidence stages",
+    "hosted_runtime":"Developer Execution Runtime returned HTTP 502; no hosted full-suite pass claimed"
+  },
+  "github_actions":"not requested; all commits use [skip ci] [skip actions]"
+}

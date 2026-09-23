@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.107",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"082ca7b139396be452b84d0bb0b4a12c7cb0bf4d",
+  "selected_bottleneck":"authority-receipt-digest-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main authority receipts derive policyDigest and materializedDigest only through crypto SHA-256 hex output, but the durable receipt boundary and public v0.1 contract still accept arbitrary strings. A persisted authority receipt can therefore claim digest representations that its own writer never emits.",
+  "changes":["Constrain policyDigest to null or lowercase 64-hex SHA-256 and materializedDigest to absent/null or the same existing writer format.","Publish the same digest shape in the authority receipt v0.1 contract without changing RCL authority actions, approval modes, signing, trust roots, or policy semantics."],
+  "verification":{"node_check":"PASS","focused_real_store_tests":"2/2 PASS","cases":"Rejects short, uppercase, non-hex and wrong-width digest representations; accepts and persists lowercase 64-hex writer-compatible values."},
+  "truth_boundary":"This verifies digest representation parity only. It does not prove that a durable receipt's digest is cryptographically bound to an independently trusted policy artifact or signer.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

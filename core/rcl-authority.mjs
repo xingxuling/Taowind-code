@@ -22,6 +22,8 @@ const MODES=Object.freeze({
 const AUTHORITY_RECEIPT_ID_RE=/^auth-[a-z0-9]+-[a-f0-9]{10}$/;
 const ISO_DATE_TIME_RE=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 const SHA256_RE=/^[a-f0-9]{64}$/;
+const RCL_IDENT_RE=/^[_\p{L}][_\p{L}\p{N}]*$/u;
+const RCL_PATH_RE=/^[_\p{L}][_\p{L}\p{N}]*(?:\.[_\p{L}][_\p{L}\p{N}]*)*$/u;
 const AUTHORITY_CONTEXT_FIELDS=Object.freeze(['workspace_write','shell_execute','changeset_apply','validation_execute','git_delivery','mission_advance','workspace_boundary','explicit_approval']);
 const RCL_RESULT_FIELDS=Object.freeze(['stateRoot','rule','actor','authority','witnesses','historyLength']);
 function now(){return new Date().toISOString()}
@@ -32,13 +34,15 @@ function sha256(value){return crypto.createHash('sha256').update(value).digest('
 function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const tmp=`${file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(value,null,2));fs.renameSync(tmp,file)}
 function escapeRe(value){return String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
 function objectOrNull(value){return value===null||value===undefined||(typeof value==='object'&&!Array.isArray(value))}
+function validRclIdentifier(value){return typeof value==='string'&&RCL_IDENT_RE.test(value)}
+function validRclPath(value){return typeof value==='string'&&RCL_PATH_RE.test(value)}
 function validAuthorityContext(value){if(value===null)return true;if(!value||typeof value!=='object'||Array.isArray(value))return false;return AUTHORITY_CONTEXT_FIELDS.every(field=>typeof value[field]==='boolean')}
 function validAuthorityContextForMode(value,mode){if(!validAuthorityContext(value))return false;if(value===null)return true;const expected=MODES[mode];return !!expected&&Object.entries(expected).every(([field,enabled])=>value[field]===enabled)}
-function validAuthorityNeed(value){return !!value&&typeof value==='object'&&!Array.isArray(value)&&typeof value.capability==='string'&&value.capability.length>0&&typeof value.target==='string'&&value.target.length>0}
-function validActiveWarrant(value){return !!value&&typeof value==='object'&&!Array.isArray(value)&&typeof value.subject==='string'&&value.subject.length>0&&typeof value.capability==='string'&&value.capability.length>0&&typeof value.target==='string'&&value.target.length>0}
+function validAuthorityNeed(value){return !!value&&typeof value==='object'&&!Array.isArray(value)&&validRclPath(value.capability)&&validRclPath(value.target)}
+function validActiveWarrant(value){return !!value&&typeof value==='object'&&!Array.isArray(value)&&validRclIdentifier(value.subject)&&validRclPath(value.capability)&&validRclPath(value.target)}
 function scopeMatches(granted,required){return granted===required||required.startsWith(`${granted}.`)||granted==='*'}
 function validGrantAuthority(value,actor){
-  if(!value||typeof value!=='object'||Array.isArray(value)||!Array.isArray(value.needs)||value.needs.length===0||!value.needs.every(validAuthorityNeed)||!Array.isArray(value.activeWarrants)||value.activeWarrants.length===0||!value.activeWarrants.every(validActiveWarrant))return false;
+  if(!validRclIdentifier(actor)||!value||typeof value!=='object'||Array.isArray(value)||!Array.isArray(value.needs)||value.needs.length===0||!value.needs.every(validAuthorityNeed)||!Array.isArray(value.activeWarrants)||value.activeWarrants.length===0||!value.activeWarrants.every(validActiveWarrant))return false;
   if(!value.activeWarrants.every(warrant=>warrant.subject===actor))return false;
   return value.needs.every(need=>value.activeWarrants.some(warrant=>warrant.capability===need.capability&&scopeMatches(warrant.target,need.target)));
 }

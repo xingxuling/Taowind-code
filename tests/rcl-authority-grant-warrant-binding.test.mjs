@@ -16,12 +16,12 @@ test('_record rejects granted authority evidence that canonical RCL could not re
     receipt({activeWarrants:[{subject:'operator',capability:'workspace.write',target:'workspace'}]}),
     receipt({activeWarrants:[{subject:'builder',capability:'shell.execute',target:'workspace'}]}),
     receipt({activeWarrants:[{subject:'builder',capability:'workspace.write',target:'workspace.src'}]}),
+    receipt({activeWarrants:[{subject:'builder',capability:'workspace.write',target:'*'}]}),
   ];
   for(const value of invalid)assert.throws(()=>gate._record(value),/INVALID_AUTHORITY_RECEIPT/);
 }));
 
-test('_record preserves exact, ancestor-scope and wildcard grants emitted by canonical RCL semantics',()=>withGate(gate=>{
+test('_record preserves exact and ancestor-scope grants emitted by canonical RCL source semantics',()=>withGate(gate=>{
   gate._record(receipt());
   gate._record(receipt({needs:[{capability:'workspace.write',target:'workspace.src'}],activeWarrants:[{subject:'builder',capability:'workspace.write',target:'workspace'}]}));
-  gate._record(receipt({needs:[{capability:'workspace.write',target:'workspace.src'}],activeWarrants:[{subject:'builder',capability:'workspace.write',target:'*'}]}));
 }));

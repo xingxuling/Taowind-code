@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.95",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"2f01035963fb15aed1f4000fa30b5d0f534d7b61",
+  "selected_bottleneck":"changeset-durable-preimage-file-budget-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main enforces MAX_FILE_BYTES=2,000,000 when stage reads an existing preimage and already enforces the same per-file limit for durable postimages, but verifiedDurableChangeset only applied the aggregate budget to preimages. A self-consistent persisted preimage above 2,000,000 bytes could therefore be returned even though the stage writer cannot produce it under the existing transaction budget.",
+  "changes":["Reuse the existing MAX_FILE_BYTES constant for non-null staged preimage bytes at the shared durable read boundary.","Keep the existing aggregate before+after budget and postimage limit unchanged.","Do not alter storage shape, live workspace policy or product architecture."],
+  "verification":{"bounded_preimage_budget_replay":"2/2 PASS: exactly 2,000,000 bytes accepted; 2,000,001 bytes rejected with CHANGE_FILE_TOO_LARGE under the exact added predicate.","regression_test_added":"tests/changeset-preimage-file-budget-integrity.test.mjs constructs self-consistent durable preimages against the real ChangesetStore get boundary for over-limit and exact-boundary cases.","source_parity":"WorkspaceService.readBytes is already called with MAX_FILE_BYTES by stage for existing preimages, so this is writer/read parity rather than a new budget.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle closes only the existing per-file budget parity for durable preimages. Independent provenance/authentication, temporal ordering, and filesystem identity provenance remain separate boundaries."
+}

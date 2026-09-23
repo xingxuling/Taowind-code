@@ -109,7 +109,7 @@ function verifiedDurableChangeset(doc){
   verifiedChangesetProtocol(doc);verifiedReceiptLifecycle(doc);verifiedChangePaths(doc.changes);
   let total=0;
   for(const change of doc.changes){
-    const beforeBytes=stagedBeforeBytes(change);total+=beforeBytes?.length||0;
+    const beforeBytes=stagedBeforeBytes(change);if(beforeBytes&&beforeBytes.length>MAX_FILE_BYTES)throw new Error('CHANGE_FILE_TOO_LARGE');total+=beforeBytes?.length||0;
     const afterBytes=stagedAfterBytes(change);if(afterBytes&&afterBytes.length>MAX_FILE_BYTES)throw new Error('CHANGE_FILE_TOO_LARGE');total+=afterBytes?.length||0;
     if(total>MAX_TOTAL_BYTES)throw new Error('CHANGESET_TOO_LARGE');
   }

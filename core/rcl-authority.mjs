@@ -55,6 +55,7 @@ function validAuthorityReceipt(receipt){
   if(receipt.rcl&&Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.allowed!==false)return false;
   if(receipt.allowed&&(receipt.rcl===null||Object.prototype.hasOwnProperty.call(receipt.rcl,'error')))return false;
   if(receipt.allowed&&receipt.rcl.rule!==ACTIONS[receipt.action])return false;
+  if(receipt.allowed&&(!receipt.rcl.authority||typeof receipt.rcl.authority!=='object'||Array.isArray(receipt.rcl.authority)||!Array.isArray(receipt.rcl.authority.needs)||receipt.rcl.authority.needs.length===0))return false;
   if(receipt.metadata!==undefined&&(typeof receipt.metadata!=='object'||receipt.metadata===null||Array.isArray(receipt.metadata)))return false;
   return true;
 }

@@ -19,7 +19,7 @@ function validDateTime(value){if(typeof value!=='string'||!ISO_DATE_TIME_RE.test
 function blockedChangePath(value){const rel=path.posix.normalize(String(value||'').replaceAll('\\','/')).replace(/\/+$/,'');return rel.split('/').some(segment=>BLOCKED_CHANGE_SEGMENTS.has(segment.toLowerCase()))}
 function validNullableHash(value){return value===null||(typeof value==='string'&&HASH_RE.test(value))}
 function validNullableString(value){return value===null||typeof value==='string'}
-function validNullableInteger(value){return value===null||Number.isInteger(value)}
+function validNullableInteger(value){return value===null||(Number.isInteger(value)&&value>=0&&value<=0o7777)}
 function verifiedChangeShape(change){
  if(!change||typeof change!=='object'||Array.isArray(change)||!['write','delete'].includes(change.op)||typeof change.path!=='string')throw new Error('INVALID_CHANGESET_CHANGE_SHAPE');
  const before=change.before,after=change.after;

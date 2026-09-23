@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.97",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"6ca68a07936f468f974f11037167c406983260b9",
+  "selected_bottleneck":"run-timestamp-write-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main now rejects malformed durable run timestamps on read, but RunStore.update could still persist an invalid createdAt value and immediately manufacture a run that the next get() would reject. updatedAt is owned by eventObject and overwritten with now(), so only caller-controlled createdAt needs the existing timestamp predicate at this write boundary.",
+  "changes":["Reuse validDateTime for an explicitly patched createdAt before Object.assign persists it.","Leave canonical createdAt mutation permitted because the existing contract does not declare timestamp immutability.","Leave updatedAt ownership with eventObject rather than inventing a new mutation policy."],
+  "verification":{"focused_write_replay":"2/2 PASS by source-boundary reasoning: invalid createdAt is rejected before persistence; canonical createdAt remains valid while eventObject rewrites updatedAt.","regression_test_added":"tests/run-timestamp-write-integrity.test.mjs covers invalid-write rejection and canonical update/read compatibility against the real RunStore.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle prevents RunStore.update from creating a timestamp-invalid durable run. Timestamp immutability, temporal ordering, event/evidence timestamp shape and independent clock provenance remain separate boundaries."
+}

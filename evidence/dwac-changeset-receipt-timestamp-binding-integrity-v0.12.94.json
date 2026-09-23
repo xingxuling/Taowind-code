@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.94",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"859f40e14b55deb1233fe19706058664740d7c1f",
+  "selected_bottleneck":"changeset-receipt-timestamp-binding-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main already validates writer-format timestamps, but its apply writer sets updatedAt and applyReceipt.at from the same value and its rollback writer sets updatedAt and rollbackReceipt.at from the same value while the durable read boundary accepted independently rewritten canonical timestamps. A durable artifact could therefore preserve valid date-time syntax yet contradict the lifecycle write that produced its current state.",
+  "changes":["Bind APPLIED applyReceipt.at to the current updatedAt value at the shared durable receipt lifecycle boundary.","Bind ROLLED_BACK rollbackReceipt.at to the current updatedAt value at the same boundary.","Do not invent broader temporal ordering, clock trust or cross-machine causality policy."],
+  "verification":{"bounded_binding_replay":"4/4 PASS for writer-produced applied binding, applied mismatch, writer-produced rolled-back binding and rollback mismatch.","regression_test_added":"tests/changeset-receipt-timestamp-binding-integrity.test.mjs covers valid canonical-but-mismatched receipt timestamps and intact writer-produced bindings.","branch_diff":"Candidate is exactly two receipt-lifecycle checks plus the focused regression before evidence recording; no architecture or product-shape change.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle binds only the receipt created by the current lifecycle transition to updatedAt. Ordering among createdAt, applyReceipt.at and rollbackReceipt.at, authenticated clock provenance and whole-artifact provenance remain separate boundaries."
+}

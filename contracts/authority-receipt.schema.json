@@ -23,6 +23,7 @@
   "allOf":[
     {"if":{"properties":{"approvalMode":{"const":"read_only"}},"required":["approvalMode"]},"then":{"properties":{"context":{"anyOf":[{"type":"null"},{"type":"object","properties":{"workspace_write":{"const":false},"shell_execute":{"const":false},"changeset_apply":{"const":false},"validation_execute":{"const":false},"git_delivery":{"const":false},"mission_advance":{"const":true}}}]}}}},
     {"if":{"properties":{"approvalMode":{"const":"workspace"}},"required":["approvalMode"]},"then":{"properties":{"context":{"anyOf":[{"type":"null"},{"type":"object","properties":{"workspace_write":{"const":true},"shell_execute":{"const":true},"changeset_apply":{"const":true},"validation_execute":{"const":true},"git_delivery":{"const":false},"mission_advance":{"const":true}}}]}}}},
-    {"if":{"properties":{"approvalMode":{"const":"full_access"}},"required":["approvalMode"]},"then":{"properties":{"context":{"anyOf":[{"type":"null"},{"type":"object","properties":{"workspace_write":{"const":true},"shell_execute":{"const":true},"changeset_apply":{"const":true},"validation_execute":{"const":true},"git_delivery":{"const":true},"mission_advance":{"const":true}}}]}}}}
+    {"if":{"properties":{"approvalMode":{"const":"full_access"}},"required":["approvalMode"]},"then":{"properties":{"context":{"anyOf":[{"type":"null"},{"type":"object","properties":{"workspace_write":{"const":true},"shell_execute":{"const":true},"changeset_apply":{"const":true},"validation_execute":{"const":true},"git_delivery":{"const":true},"mission_advance":{"const":true}}}]}}}},
+    {"if":{"properties":{"rcl":{"type":"object","required":["error"]}},"required":["rcl"]},"then":{"properties":{"allowed":{"const":false}}}}
   ]
 }

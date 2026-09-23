@@ -1,0 +1,28 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.85",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "8527d6cae5f0963b1654826fdd03b89b40b2f35a",
+  "selected_bottleneck": "changeset-read-image-self-consistency-integrity",
+  "selected_problem": "Fresh-main inspection after v0.12.84 found that Base64 canonicality and byte/hash self-consistency were enforced only when apply/rollback consumed a changeset. ChangesetStore.get still returned durable before/after images whose Base64, size or SHA-256 disagreed with the persisted bytes, allowing ordinary readers to consume a changeset that the side-effect path would later reject as corrupt.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_basis": [
+    "The repository already treats get() as the shared protocol/shape read boundary, so extending the same read boundary with the already-existing stagedBeforeBytes/stagedAfterBytes invariants is parity rather than a new storage architecture.",
+    "No new integrity algorithm or trust model is introduced; the repair reuses the existing canonical Base64, byte-count and SHA-256 checks.",
+    "The defect is directly falsifiable by modifying only persisted image metadata while leaving the public shape valid."
+  ],
+  "changes": [
+    "core/changesets.mjs adds verifiedDurableChangeset(), which runs the existing protocol/shape verifier and then validates every persisted before/after image before get() returns it.",
+    "ChangesetStore.get now fails closed on image corruption rather than exposing a structurally valid but semantically corrupt durable changeset.",
+    "tests/changeset-read-image-integrity.test.mjs adds corrupted postimage, corrupted preimage and intact-read regressions."
+  ],
+  "verification": {
+    "pre_fix_observation": "PASS: fresh main get() invoked only verifiedChangesetProtocol(), while stagedBeforeBytes/stagedAfterBytes were deferred to apply/rollback.",
+    "bounded_image_replay": "3/3 PASS: postimage hash mutation rejected; preimage size mutation rejected; intact before/after images accepted using the exact existing decode/size/SHA-256 predicates.",
+    "regression_test_added": "tests/changeset-read-image-integrity.test.mjs exercises the real ChangesetStore.get boundary for both image directions.",
+    "hosted_runtime": "Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted DWAC execution success is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle validates durable image self-consistency on read. Independent provenance/authentication, full durable resource-budget revalidation and stronger temporal semantics remain separate boundaries."
+}

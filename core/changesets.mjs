@@ -47,6 +47,20 @@ function verifiedReceiptLifecycle(doc){
   if(!valid)throw new Error('INVALID_CHANGESET_RECEIPT_STATE');
   return doc;
 }
+function verifiedChangePaths(changes){
+  const seenPaths=new Set();
+  for(const change of changes){
+    const rel=path.posix.normalize(String(change.path||'').replaceAll('\\','/')).replace(/\/+$/,'');
+    if(!rel||rel==='.'||rel==='..'||rel.startsWith('../')||rel.startsWith('/')||/^[A-Za-z]:/.test(rel)||rel!==change.path)throw new Error('INVALID_CHANGE_PATH');
+    if(blockedChangePath(rel))throw new Error(`BLOCKED_CHANGE_PATH:${rel}`);
+    if(isCredentialLikePath(rel))throw new Error(`CREDENTIAL_CHANGE_PATH:${rel}`);
+    if(seenPaths.has(rel))throw new Error(`DUPLICATE_CHANGE_PATH:${rel}`);
+    const overlap=[...seenPaths].find(existing=>rel.startsWith(`${existing}/`)||existing.startsWith(`${rel}/`));
+    if(overlap)throw new Error(`OVERLAPPING_CHANGE_PATH:${overlap}:${rel}`);
+    seenPaths.add(rel);
+  }
+  return changes;
+}
 function stagedAfterBytes(change){
   if(change.op==='delete'){
     if(change.after?.sha256!==null||change.after?.contentBase64!==null||change.after?.size!==0)throw new Error(`CHANGESET_POSTIMAGE_CORRUPT:${change.path}`);
@@ -88,7 +102,7 @@ function stagedBeforeBytes(change){
   return bytes;
 }
 function verifiedDurableChangeset(doc){
-  verifiedChangesetProtocol(doc);verifiedReceiptLifecycle(doc);
+  verifiedChangesetProtocol(doc);verifiedReceiptLifecycle(doc);verifiedChangePaths(doc.changes);
   let total=0;
   for(const change of doc.changes){
     const beforeBytes=stagedBeforeBytes(change);total+=beforeBytes?.length||0;

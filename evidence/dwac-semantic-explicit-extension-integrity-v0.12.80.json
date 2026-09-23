@@ -1,0 +1,28 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.80",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "13b7136a408aa19bf576093f0a69aee00059ff45",
+  "selected_bottleneck": "semantic-explicit-extension-fallback-integrity",
+  "selected_problem": "After the authentication boundary became externally blocked, fresh-main inspection returned to the current semantic-repository truth boundary. The existing resolver had a narrower directly falsifiable defect: an explicit relative specifier such as './foo.js' could resolve to 'foo.js.map' or 'foo.js/index.js' when the exact 'foo.js' file did not exist, because extension and index inference was applied even after the caller had already supplied an extension.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_basis": [
+    "The parent semantic boundary remains broad, but this child defect is narrow, evidence-rich and independent of choosing a complete parser, bundler or package-resolution architecture.",
+    "Explicitly named file extensions already express a concrete path intent; failing closed when that exact path is absent avoids inventing a second suffix or directory-index interpretation.",
+    "Extensionless relative imports retain the existing bounded inference behavior, so this change does not replace the current resolver architecture."
+  ],
+  "changes": [
+    "core/semantic-repo-graph.mjs now detects whether the normalized relative import basename already has an explicit extension.",
+    "For explicit-extension imports, the semantic graph links only an exact repository path and otherwise records no import edge; extension and index fallback remain available for extensionless imports.",
+    "tests/semantic-import-target-resolution.test.mjs adds regressions for source-map/index lookalikes and preserves exact/extensionless behavior."
+  ],
+  "verification": {
+    "pre_fix_reproduction": "PASS: current-main resolver logic mapped ./foo.js to src/foo.js.map when the exact file was absent, reproducing a false semantic edge.",
+    "syntax_check": "PASS: the patched semantic-repo-graph.mjs parses under node --check in a faithful local source replay.",
+    "focused_module_replay": "3/3 PASS: extensionless inference still resolves foo.js; explicit foo.js rejects foo.js.map and foo.js/index.js lookalikes; explicit foo.js still resolves the exact foo.js path when present.",
+    "hosted_runtime": "Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted DWAC execution success is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "Filesystem case/Unicode identity, conflicting-content aliases outside the current lexical canonicalization model, complete parser-grade Node/TypeScript/bundler/package module resolution, and arbitrary complex repository synthesis remain UNRESOLVED. This cycle closes only the false extra-suffix/index fallback for explicit-extension relative imports."
+}

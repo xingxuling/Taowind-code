@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.93",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"b86c580061580bc010b5813b2ca98866b08dee5b",
+  "selected_bottleneck":"changeset-durable-timestamp-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main publishes createdAt/updatedAt and receipt.at as date-time fields and every existing writer emits new Date().toISOString(), but the durable read boundary only checked typeof string. A coherently rewritten artifact could therefore carry non-date or impossible timestamps while remaining otherwise structurally and semantically valid.",
+  "changes":["Add a writer-faithful ISO timestamp validator for durable changeset envelope and receipt timestamps.","Reject non-canonical, impossible or non-date timestamp strings before ordinary readers consume the artifact.","Keep broader ordering/causality semantics separate; this cycle does not invent clock trust, monotonicity or cross-machine temporal policy."],
+  "verification":{"bounded_timestamp_replay":"5/5 PASS for canonical writer timestamp, non-date text, impossible calendar date, missing-millisecond form and offset form under the exact validator.","regression_test_added":"tests/changeset-durable-timestamp-integrity.test.mjs covers createdAt, updatedAt, applyReceipt.at and intact writer-produced timestamps.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle closes writer-format timestamp integrity only. Temporal ordering between createdAt, updatedAt, applyReceipt.at and rollbackReceipt.at, independent clock provenance and authenticated artifact provenance remain separate boundaries."
+}

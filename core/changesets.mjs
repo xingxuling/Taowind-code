@@ -7,12 +7,14 @@ import {isCredentialLikePath} from './repo-context.mjs';
 const MAX_FILES=128,MAX_FILE_BYTES=2_000_000,MAX_TOTAL_BYTES=8_000_000;
 const CHANGESET_PROTOCOL='taowind-code.changeset.v0.3';
 const HASH_RE=/^[a-f0-9]{64}$/;
+const ISO_DATE_TIME_RE=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 const BLOCKED_CHANGE_SEGMENTS=new Set(['.git','node_modules','.next','dist','build','runtime-data','.venv']);
 function now(){return new Date().toISOString()}
 function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const tmp=`${file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(value,null,2));fs.renameSync(tmp,file)}
 function changeId(runId,changes){return `cs-${sha256Text(`${runId}:${Date.now()}:${JSON.stringify(changes)}`).slice(0,20)}`}
 function encode(bytes){return bytes?bytes.toString('base64'):null}
 function decode(value){if(value===null)return null;const bytes=Buffer.from(value,'base64');return bytes.toString('base64')===value?bytes:null}
+function validDateTime(value){if(typeof value!=='string'||!ISO_DATE_TIME_RE.test(value))return false;try{return new Date(value).toISOString()===value}catch{return false}}
 function blockedChangePath(value){const rel=path.posix.normalize(String(value||'').replaceAll('\\','/')).replace(/\/+$/,'');return rel.split('/').some(segment=>BLOCKED_CHANGE_SEGMENTS.has(segment.toLowerCase()))}
 function validNullableHash(value){return value===null||(typeof value==='string'&&HASH_RE.test(value))}
 function validNullableString(value){return value===null||typeof value==='string'}
@@ -26,7 +28,7 @@ function verifiedChangeShape(change){
 }
 function verifiedReceiptShape(receipt,kind){
  if(receipt===null)return null;
- if(!receipt||typeof receipt!=='object'||Array.isArray(receipt)||typeof receipt.at!=='string'||!Array.isArray(receipt.files)||receipt.files.length>MAX_FILES||typeof receipt.receiptSha256!=='string'||!HASH_RE.test(receipt.receiptSha256))throw new Error('INVALID_CHANGESET_RECEIPT_SHAPE');
+ if(!receipt||typeof receipt!=='object'||Array.isArray(receipt)||!validDateTime(receipt.at)||!Array.isArray(receipt.files)||receipt.files.length>MAX_FILES||typeof receipt.receiptSha256!=='string'||!HASH_RE.test(receipt.receiptSha256))throw new Error('INVALID_CHANGESET_RECEIPT_SHAPE');
  for(const file of receipt.files){
   const common=file&&typeof file==='object'&&!Array.isArray(file)&&typeof file.path==='string'&&typeof file.exists==='boolean'&&validNullableHash(file.sha256)&&validNullableString(file.identity)&&validNullableInteger(file.mode);
   if(!common||(kind==='APPLY'&&!['write','delete'].includes(file.op)))throw new Error('INVALID_CHANGESET_RECEIPT_SHAPE');
@@ -36,7 +38,7 @@ function verifiedReceiptShape(receipt,kind){
 function verifiedChangesetProtocol(doc){
  if(doc?.protocol!==CHANGESET_PROTOCOL)throw new Error('UNSUPPORTED_CHANGESET_PROTOCOL');
  if(!['STAGED','APPLIED','ROLLED_BACK'].includes(doc?.status))throw new Error('INVALID_CHANGESET_STATUS');
- if(typeof doc?.runId!=='string'||typeof doc?.source!=='string'||typeof doc?.createdAt!=='string'||typeof doc?.updatedAt!=='string'||!Array.isArray(doc?.changes)||doc.changes.length<1||doc.changes.length>MAX_FILES)throw new Error('INVALID_CHANGESET_ENVELOPE');
+ if(typeof doc?.runId!=='string'||typeof doc?.source!=='string'||!validDateTime(doc?.createdAt)||!validDateTime(doc?.updatedAt)||!Array.isArray(doc?.changes)||doc.changes.length<1||doc.changes.length>MAX_FILES)throw new Error('INVALID_CHANGESET_ENVELOPE');
  if(!Object.hasOwn(doc,'applyReceipt')||!Object.hasOwn(doc,'rollbackReceipt')||(doc.applyReceipt!==null&&(typeof doc.applyReceipt!=='object'||Array.isArray(doc.applyReceipt)))||(doc.rollbackReceipt!==null&&(typeof doc.rollbackReceipt!=='object'||Array.isArray(doc.rollbackReceipt))))throw new Error('INVALID_CHANGESET_ENVELOPE');
  for(const change of doc.changes)verifiedChangeShape(change);
  verifiedReceiptShape(doc.applyReceipt,'APPLY');verifiedReceiptShape(doc.rollbackReceipt,'ROLLBACK');

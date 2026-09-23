@@ -17,7 +17,7 @@
     "policyDigest":{"type":["string","null"],"pattern":"^[a-f0-9]{64}$"},
     "materializedDigest":{"type":["string","null"],"pattern":"^[a-f0-9]{64}$"},
     "context":{"anyOf":[{"type":"null"},{"type":"object","required":["workspace_write","shell_execute","changeset_apply","validation_execute","git_delivery","mission_advance","workspace_boundary","explicit_approval"],"properties":{"workspace_write":{"type":"boolean"},"shell_execute":{"type":"boolean"},"changeset_apply":{"type":"boolean"},"validation_execute":{"type":"boolean"},"git_delivery":{"type":"boolean"},"mission_advance":{"type":"boolean"},"workspace_boundary":{"type":"boolean"},"explicit_approval":{"type":"boolean"}}}]},
-    "rcl":{"anyOf":[{"type":"object","required":["error","message"],"properties":{"error":{"type":"string","minLength":1},"message":{"type":"string"}}},{"type":"object","required":["stateRoot","rule","actor","authority","witnesses","historyLength"],"properties":{"stateRoot":{"type":"string","pattern":"^[a-f0-9]{64}$"},"witnesses":{"type":"array"},"historyLength":{"type":"integer","minimum":0}}}]},
+    "rcl":{"anyOf":[{"type":"object","required":["error","message"],"properties":{"error":{"type":"string","minLength":1},"message":{"type":"string"}}},{"type":"object","required":["stateRoot","rule","actor","authority","witnesses","historyLength"],"properties":{"stateRoot":{"type":"string","pattern":"^[a-f0-9]{64}$"},"rule":{"type":["string","null"]},"actor":{"type":["string","null"]},"witnesses":{"type":"array","items":{"type":"string"}},"historyLength":{"type":"integer","minimum":0}}}]},
     "metadata":{"type":"object"}
   },
   "allOf":[

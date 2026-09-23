@@ -14,7 +14,7 @@
     "createdAt":{"type":"string","format":"date-time"},
     "updatedAt":{"type":"string","format":"date-time"},
     "changesets":{"type":"array","items":{"type":"string"}},
-    "events":{"type":"array"},
+    "events":{"type":"array","items":{"type":"object","required":["seq","at","type","data"],"properties":{"seq":{"type":"integer","minimum":1},"at":{"type":"string","format":"date-time"},"type":{"type":"string","minLength":1,"pattern":"\\S"},"data":{}}}},
     "evidence":{"type":"array"},
     "dwac":{"type":["object","null"]},
     "validation":{"type":["object","null"]},

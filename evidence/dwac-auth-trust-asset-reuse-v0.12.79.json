@@ -1,0 +1,54 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.79",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "ec42a4feb5ac3232abf31488d9bc3e4ad9baa243",
+  "bottleneck": "truth-boundary-auth-canonical-integrity",
+  "mode": "WHOLE_ARTIFACT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "observation": "Fresh canonical main still selects the surviving whole-artifact changeset authenticity boundary. Cross-asset archaeology now shows that TaoWind already has mature verification-only authority primitives: RNCS Agent Authority Fabric provides canonical JSON plus Ed25519 signed-object verification, and TINP already demonstrates a bounded adapter that reuses those primitives without owning signing, identity enrollment, leases, RNCS grants, or world commits. The remaining uncertainty is therefore narrower than choosing or inventing a cryptographic mechanism: Taowind Code still lacks an independently authorized trust-anchor enrollment/configuration and revocation source for any such verifier.",
+  "changes": [
+    "Register the existing RNCS Agent Authority Fabric and TINP verification-only integration as preferred reusable assets for any future authenticated changeset closure instead of reimplementing signing primitives.",
+    "Supersede the prior generic authentication boundary with a narrower boundary that separates reusable verification machinery from the still-external trust-anchor decision.",
+    "Do not vendor code, generate keys, enroll identities, configure a trusted signer, handle private key material, or choose a production key-custody/revocation architecture in this autonomous cycle."
+  ],
+  "asset_reuse": [
+    {
+      "repository": "xingxuling/RNCS-Unified-Platform-",
+      "commit": "4cbbeae5fc5e4bad5c7b4fef6621bc3cfe6eb6f1",
+      "path": "packages/control/agent-authority-fabric/src/signatures.mjs",
+      "evidence": "Existing AAF verifySignedObject/requireValidSignature use Ed25519 over canonical JSON and a caller-supplied public-key keyring."
+    },
+    {
+      "repository": "xingxuling/RNCS-Unified-Platform-",
+      "commit": "4cbbeae5fc5e4bad5c7b4fef6621bc3cfe6eb6f1",
+      "path": "packages/control/agent-authority-fabric/src/canonical.mjs",
+      "evidence": "Existing AAF canonicalJson/hash implementation supplies deterministic signed-object serialization."
+    },
+    {
+      "repository": "xingxuling/TINP",
+      "ref": "codex/next-internet-v01",
+      "path": "adapters/aaf-operator.mjs",
+      "evidence": "Existing bounded adapter verifies signer identity, public-key fingerprint, scope, role, time, revocation metadata, AAF root and Ed25519 signature while consuming only externally supplied public-key material."
+    },
+    {
+      "repository": "xingxuling/TINP",
+      "ref": "codex/next-internet-v01",
+      "path": "docs/AAF_OPERATOR_OWNER.md",
+      "evidence": "Ownership document explicitly states that AAF retains signature-format/verification ownership, the adapter has no signing or identity enrollment interface, and bootstrap trust-anchor selection does not establish real-world identity."
+    }
+  ],
+  "resolves": [
+    {"source": "evidence/dwac-truth-boundary-auth-canonical-v0.12.78.json", "path": "truth_boundary"}
+  ],
+  "verification": {
+    "fresh_main_source_contract": "PASS: v0.12.78 is the newest actionable authentication truth boundary on ec42a4f and is selected before older resolved formulations.",
+    "aaf_verifier_reuse": "PASS: RNCS main-95 commit 4cbbeae contains canonicalJson plus Ed25519 verifySignedObject/requireValidSignature using only Node crypto and caller-supplied public keys.",
+    "bounded_integration_precedent": "PASS: TINP's AAF operator adapter verifies an externally supplied pinned public key and AAF signature while explicitly excluding signing, identity enrollment, leases, RNCS grants and world commits.",
+    "trust_boundary_preserved": "PASS: TINP ownership documentation explicitly says bootstrap pinning chooses a trust anchor but does not establish real-world identity, and current keyring/revocation metadata is caller-supplied rather than independently authenticated.",
+    "routing_integrity": "PASS by current bridge source contract: the new boundary is explicitly BLOCKED_EXTERNAL, so it remains observable but cannot starve other actionable internal truth-boundary candidates.",
+    "hosted_runtime": "Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted DWAC execution success is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "BLOCKED_EXTERNAL: reusable AAF/TINP canonicalization and Ed25519 verification machinery is available, but authenticated whole-artifact integrity still requires an independently authorized trust anchor plus signer enrollment/configuration and revocation/custody policy. Taowind Code must not invent, generate, or silently trust such credentials or identities without a separately authorized authority decision."
+}

@@ -53,6 +53,7 @@ function validAuthorityReceipt(receipt){
   if(!validSha256OrAbsentOrNull(receipt.materializedDigest))return false;
   if(!validAuthorityContextForMode(receipt.context,receipt.approvalMode)||!validRclPayload(receipt.rcl))return false;
   if(receipt.rcl&&Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.allowed!==false)return false;
+  if(receipt.allowed&&(receipt.rcl===null||Object.prototype.hasOwnProperty.call(receipt.rcl,'error')))return false;
   if(receipt.metadata!==undefined&&(typeof receipt.metadata!=='object'||receipt.metadata===null||Array.isArray(receipt.metadata)))return false;
   return true;
 }

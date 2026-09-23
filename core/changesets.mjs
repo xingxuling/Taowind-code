@@ -93,7 +93,7 @@ function verifiedRollbackReceiptFiles(doc){
 }
 function stagedBeforeBytes(change){
   if(change.before?.exists!==true){
-    if(change.before?.sha256!==null||change.before?.contentBase64!==null||change.before?.size!==0)throw new Error(`CHANGESET_PREIMAGE_CORRUPT:${change.path}`);
+    if(change.before?.type!==null||change.before?.sha256!==null||change.before?.size!==0||change.before?.identity!==null||change.before?.mode!==null||change.before?.contentBase64!==null)throw new Error(`CHANGESET_PREIMAGE_CORRUPT:${change.path}`);
     return null;
   }
   if(change.before?.type!=='file')throw new Error(`CHANGESET_PREIMAGE_CORRUPT:${change.path}`);

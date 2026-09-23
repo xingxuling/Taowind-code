@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.91",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"f7c11419e1a9b1464e7e0582df5b829b59f47696",
+  "selected_bottleneck":"changeset-absent-preimage-metadata-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main now validates durable path and image content truth, but an absent staged preimage can still carry non-null type, identity or mode metadata. WorkspaceService.stat explicitly returns type/identity/mode absence for a missing target, while the persisted reader previously checked only sha256/content/size for the absent case.",
+  "changes":["Extend the existing absent-preimage corruption predicate to require type, identity and mode to remain null when exists=false.","Keep existing-file semantics unchanged, including nullable identity/mode allowances already present in the contract."],
+  "verification":{"bounded_absence_replay":"4/4 PASS for canonical absent metadata plus forged type, identity and mode cases.","regression_test_added":"tests/changeset-absent-preimage-metadata.test.mjs exercises writer-produced and tampered durable absent preimages.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle only closes impossible metadata on an absent staged target. Filesystem identity provenance, independent artifact authentication and broader temporal semantics remain separate boundaries."
+}

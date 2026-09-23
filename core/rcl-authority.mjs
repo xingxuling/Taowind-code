@@ -50,7 +50,7 @@ function validAuthorityReceipt(receipt){
   if(typeof receipt.allowed!=='boolean'||typeof receipt.reason!=='string'||receipt.reason.length===0)return false;
   if(receipt.allowed&&receipt.reason!=='RCL_AUTHORITY_GRANTED')return false;
   if(!validSha256OrNull(receipt.policyDigest))return false;
-  if(!validSha256OrAbsentOrNull(receipt.materializedDigest))return false;
+  if(!validSha256OrNull(receipt.materializedDigest))return false;
   if(!validAuthorityContextForMode(receipt.context,receipt.approvalMode)||!validRclPayload(receipt.rcl))return false;
   if(Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.reason!==receipt.rcl.error)return false;
   if(!Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.context===null)return false;

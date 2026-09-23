@@ -23,6 +23,7 @@ const AUTHORITY_RECEIPT_ID_RE=/^auth-[a-z0-9]+-[a-f0-9]{10}$/;
 const ISO_DATE_TIME_RE=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 const SHA256_RE=/^[a-f0-9]{64}$/;
 const AUTHORITY_CONTEXT_FIELDS=Object.freeze(['workspace_write','shell_execute','changeset_apply','validation_execute','git_delivery','mission_advance','workspace_boundary','explicit_approval']);
+const RCL_RESULT_FIELDS=Object.freeze(['stateRoot','rule','actor','authority','witnesses','historyLength']);
 function now(){return new Date().toISOString()}
 function validDateTime(value){if(typeof value!=='string'||!ISO_DATE_TIME_RE.test(value))return false;try{return new Date(value).toISOString()===value}catch{return false}}
 function validSha256OrNull(value){return value===null||(typeof value==='string'&&SHA256_RE.test(value))}
@@ -33,6 +34,12 @@ function escapeRe(value){return String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\$
 function objectOrNull(value){return value===null||value===undefined||(typeof value==='object'&&!Array.isArray(value))}
 function validAuthorityContext(value){if(value===null)return true;if(!value||typeof value!=='object'||Array.isArray(value))return false;return AUTHORITY_CONTEXT_FIELDS.every(field=>typeof value[field]==='boolean')}
 function validAuthorityContextForMode(value,mode){if(!validAuthorityContext(value))return false;if(value===null)return true;const expected=MODES[mode];return !!expected&&Object.entries(expected).every(([field,enabled])=>value[field]===enabled)}
+function validRclPayload(value){
+  if(value===null)return true;if(!value||typeof value!=='object'||Array.isArray(value))return false;
+  if(Object.prototype.hasOwnProperty.call(value,'error'))return typeof value.error==='string'&&value.error.length>0&&typeof value.message==='string';
+  if(!RCL_RESULT_FIELDS.every(field=>Object.prototype.hasOwnProperty.call(value,field)))return false;
+  return Array.isArray(value.witnesses)&&Number.isInteger(value.historyLength)&&value.historyLength>=0;
+}
 function validAuthorityReceipt(receipt){
   if(!receipt||typeof receipt!=='object'||Array.isArray(receipt))return false;
   if(typeof receipt.id!=='string'||!AUTHORITY_RECEIPT_ID_RE.test(receipt.id))return false;
@@ -43,7 +50,7 @@ function validAuthorityReceipt(receipt){
   if(typeof receipt.allowed!=='boolean'||typeof receipt.reason!=='string'||receipt.reason.length===0)return false;
   if(!validSha256OrNull(receipt.policyDigest))return false;
   if(!validSha256OrAbsentOrNull(receipt.materializedDigest))return false;
-  if(!validAuthorityContextForMode(receipt.context,receipt.approvalMode)||!objectOrNull(receipt.rcl))return false;
+  if(!validAuthorityContextForMode(receipt.context,receipt.approvalMode)||!validRclPayload(receipt.rcl))return false;
   if(receipt.metadata!==undefined&&(typeof receipt.metadata!=='object'||receipt.metadata===null||Array.isArray(receipt.metadata)))return false;
   return true;
 }

@@ -11,8 +11,8 @@ test('materialization ignores commented facet lookalikes and rewrites the real d
   const out=materializeAuthorityPolicy(source,authorityContextForMode('read_only'),'workspace_write');
   assert.match(out,/^# facet authority\.workspace_write : Truth = true$/m);
   assert.match(out,/^\/\/ facet authority\.shell_execute : Truth = true$/m);
-  assert.match(out(/^\s*facet authority\.workspace_write\s*:\s*Truth\s*=\s*false$/m));
-  assert.match(out(/^\s*facet authority\.shell_execute\s*:\s*Truth\s*=\s*false$/m));
+  assert.match(out,/^\s*facet authority\.workspace_write\s*:\s*Truth\s*=\s*false$/m);
+  assert.match(out,/^\s*facet authority\.shell_execute\s*:\s*Truth\s*=\s*false$/m);
 });
 
 test('a comment cannot satisfy a missing required authority facet',()=>{

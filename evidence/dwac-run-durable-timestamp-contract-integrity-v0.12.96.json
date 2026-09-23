@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.96",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"b42735b48787fa3a25bacec6090a9c02c8efeb7e",
+  "selected_bottleneck":"run-durable-timestamp-contract-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main creates and updates every durable North Star run with new Date().toISOString() timestamps, and RunStore.list orders durable runs by updatedAt, yet the public v0.2 run contract omitted createdAt/updatedAt and RunStore.get returned arbitrary or impossible timestamp strings. The repository therefore had neither contract parity nor a trustworthy durable time shape for ordinary run readers.",
+  "changes":["Publish createdAt and updatedAt as required date-time properties in the existing North Star Run v0.2 contract.","Reuse the writer-faithful canonical ISO timestamp predicate at RunStore.get before ordinary readers or list ordering consume the run.","Do not invent cross-machine clock trust, monotonicity or event causality semantics."],
+  "verification":{"bounded_timestamp_replay":"4/4 PASS for canonical writer timestamp, non-date text, impossible calendar date and offset form under the exact validator.","regression_test_added":"tests/run-durable-timestamp-contract-integrity.test.mjs covers createdAt, updatedAt and intact writer-produced run timestamps against the real RunStore.","contract_parity":"contracts/north-star-run.schema.json now requires and publishes the two timestamp fields already emitted by every runtime writer.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle closes timestamp shape and public-contract parity only. Timestamp mutation policy, event/evidence timestamp semantics, temporal ordering and independent clock provenance remain separate boundaries."
+}

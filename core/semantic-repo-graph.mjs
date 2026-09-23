@@ -29,6 +29,8 @@ function normalizeImport(from,spec){
   return base.replace(/^\.\//,'');
 }
 function resolveImportTarget(nodePaths,imp){
+  const explicitExtension=path.posix.extname(path.posix.basename(imp))!=='';
+  if(explicitExtension)return nodePaths.includes(imp)?imp:null;
   const directExt=p=>{if(!p.startsWith(`${imp}.`))return false;const suffix=p.slice(imp.length+1);return !!suffix&&!suffix.includes('.')&&!suffix.includes('/')};
   const indexPrefix=`${imp}/index.`;
   const indexExt=p=>{if(!p.startsWith(indexPrefix))return false;const suffix=p.slice(indexPrefix.length);return !!suffix&&!suffix.includes('.')&&!suffix.includes('/')};

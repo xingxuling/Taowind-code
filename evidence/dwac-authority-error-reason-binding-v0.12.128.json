@@ -1,0 +1,21 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.128",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"502e077c6c3191251071e625402f7f7c624046e0",
+  "selected_bottleneck":"authority-error-reason-binding-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main preserves the writer-owned denied-result reason, but an RCL error envelope can still persist with a different top-level reason. The current catch writer derives one code and writes that exact value into both reason and rcl.error, so disagreement is not writer-reachable durable reality.",
+  "changes":[
+    "Reject durable RCL error envelopes when reason differs from rcl.error.",
+    "Do not enumerate or redefine error codes; preserve current writer-owned error vocabulary and result-envelope behavior.",
+    "Leave the public JSON Schema unchanged because draft 2020-12 cannot express arbitrary cross-field equality without inventing an error enumeration."
+  ],
+  "verification":{
+    "bounded_binding_replay":"4/4 PASS: matching error accepted; mismatched error rejected; denied result unaffected; granted result unaffected",
+    "focused_regression":"Added durable _record regression for matching and mismatched error reasons",
+    "hosted_runtime":"Developer Execution Runtime returned HTTP 502; no hosted full-suite pass claimed"
+  },
+  "github_actions":"not requested; all commits use [skip ci] [skip actions]"
+}

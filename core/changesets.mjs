@@ -69,6 +69,14 @@ function verifiedApplyReceiptFiles(doc){
   for(const change of doc.changes){const file=byPath.get(change.path);const expectedExists=change.op!=='delete';const expectedSha=expectedExists?change.after?.sha256:null;if(!file||file.op!==change.op||file.exists!==expectedExists||file.sha256!==expectedSha)throw new Error('CHANGESET_APPLY_RECEIPT_CORRUPT')}
   return files;
 }
+function verifiedRollbackReceiptFiles(doc){
+  const files=verifiedReceiptFiles(doc.rollbackReceipt,'ROLLBACK');
+  if(!Array.isArray(doc.changes)||files.length!==doc.changes.length)throw new Error('CHANGESET_ROLLBACK_RECEIPT_CORRUPT');
+  const byPath=new Map();
+  for(const file of files){if(!file||typeof file.path!=='string'||byPath.has(file.path))throw new Error('CHANGESET_ROLLBACK_RECEIPT_CORRUPT');byPath.set(file.path,file)}
+  for(const change of doc.changes){const file=byPath.get(change.path);const expectedExists=change.before?.exists===true;const expectedSha=expectedExists?change.before?.sha256:null;if(!file||file.exists!==expectedExists||file.sha256!==expectedSha)throw new Error('CHANGESET_ROLLBACK_RECEIPT_CORRUPT')}
+  return files;
+}
 function stagedBeforeBytes(change){
   if(change.before?.exists!==true){
     if(change.before?.sha256!==null||change.before?.contentBase64!==null||change.before?.size!==0)throw new Error(`CHANGESET_PREIMAGE_CORRUPT:${change.path}`);
@@ -88,7 +96,7 @@ function verifiedDurableChangeset(doc){
     if(total>MAX_TOTAL_BYTES)throw new Error('CHANGESET_TOO_LARGE');
   }
   if(doc.applyReceipt!==null)verifiedApplyReceiptFiles(doc);
-  if(doc.rollbackReceipt!==null)verifiedReceiptFiles(doc.rollbackReceipt,'ROLLBACK');
+  if(doc.rollbackReceipt!==null)verifiedRollbackReceiptFiles(doc);
   return doc;
 }
 export class ChangesetStore{

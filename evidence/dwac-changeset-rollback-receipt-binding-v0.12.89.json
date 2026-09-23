@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.89",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"ab56e1de7160e06fbbf2fceae96645d60d4ae156",
+  "selected_bottleneck":"changeset-rollback-receipt-binding-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main now verifies rollbackReceipt hash self-consistency and lifecycle presence, but a coherently rehashed rollback receipt can still claim different restored paths or restored hashes from the staged before-images. The rollback writer already emits one receipt file per change after restoring the before-image, so path coverage plus exists/sha binding are existing writer semantics, not a new receipt design.",
+  "changes":["Add verifiedRollbackReceiptFiles using the existing receipt hash verifier, exact path coverage/uniqueness, and the staged before.exists/before.sha256 expectations.","Use that verifier at the durable read boundary for any non-null rollbackReceipt.","Do not bind runtime-dependent identity/mode fields whose post-restore values are observations rather than purely derivable staged constants."],
+  "verification":{"bounded_binding_replay":"4/4 PASS for intact binding, hash mismatch, forged path and duplicate path coverage predicates.","regression_test_added":"tests/changeset-rollback-receipt-binding.test.mjs exercises coherently rehashed durable rollback receipts against the real store lifecycle.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle binds rollback receipt path/existence/content hash semantics to the original preimages. Independent provenance/authentication, runtime identity provenance and broader temporal semantics remain separate boundaries."
+}

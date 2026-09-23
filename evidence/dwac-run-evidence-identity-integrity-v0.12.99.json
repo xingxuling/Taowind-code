@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.99",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"9340fe5eabd576a8c9162bcfe652d6a37062404c",
+  "selected_bottleneck":"run-evidence-identity-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main now protects event trace structure but still treats run evidence as an untyped array. addEvidence already owns every evidence item's ev-<12 lowercase hex> identity and canonical timestamp while preserving arbitrary caller payload, so durable readers and update replacements could still accept evidence identities/times that the storage writer never emits.",
+  "changes":["Add a shared run evidence-ledger validator for object shape, storage-owned evidence id and canonical timestamp.","Use it at RunStore.get and when update explicitly replaces evidence.","Publish only id/at in the public evidence item contract and leave all payload fields open-ended."],
+  "verification":{"focused_evidence_replay":"4 focused real-store regressions encode forged id, malformed timestamp, invalid replacement ledger, and addEvidence id/time ownership with arbitrary payload preservation.","reuse":"The invariant matches the already-hardened Autonomous Mission evidence boundary instead of inventing a second evidence identity model.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle closes run evidence identity/timestamp envelope integrity only. Evidence payload semantics, evidence-event cross-binding and independent provenance remain separate boundaries."
+}

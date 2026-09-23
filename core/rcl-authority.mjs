@@ -103,7 +103,7 @@ export class RclAuthorityGate{
   _record(receipt){if(!validAuthorityReceipt(receipt))throw Object.assign(new Error('INVALID_AUTHORITY_RECEIPT'),{code:'INVALID_AUTHORITY_RECEIPT'});atomicJson(this._receiptFile(receipt.id),receipt);return receipt}
   async decide(action,{approvalMode='workspace',workspaceBoundary=true,explicitApproval=false,requestId=null,workspace=null,metadata={}}={}){
     const id=`auth-${Date.now().toString(36)}-${crypto.randomBytes(5).toString('hex')}`;const at=now();let policy='';let policyDigest=null,context=null,materialized=null;
-    const base={id,protocol:RECEIPT_PROTOCOL,at,requestId:requestId||id,action,approvalMode,workspace,metadata,allowed:false,reason:null,policyDigest:null,materializedDigest:null,context:null,rcl:null};
+    const base={id,protocol:RECEIPT_PROTOCOL,at,requestId:requestId||id,action,approvalMode,workspace,metadata,allowed:false,reason:null,policyDigest:null,materializedDigest:null,rcl:null};
     try{
       policy=this._policy();policyDigest=sha256(policy);context=authorityContextForMode(approvalMode,{workspaceBoundary,explicitApproval});materialized=materializeAuthorityPolicy(policy,context,action);const runtime=await this._runtime();const result=await runtime.runReality(materialized);const transition=result.history?.at(-1);const expected=ACTIONS[action];
       const allowed=transition?.status==='realized'&&transition?.rule===expected&&transition?.authority?.needs?.length>0;

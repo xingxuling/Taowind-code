@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.120",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"4516971a870b14e0038403b431c60e9c4fb54aa0",
+  "selected_bottleneck":"authority-grant-history-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main preserves the writer's granted action/rule and non-empty authority-needs conditions, but allowed=true can still carry historyLength=0. The current writer derives the grant from the last runtime history transition, so any granted writer output necessarily has at least one history entry.",
+  "changes":["Require positive runtime history length whenever a durable authority receipt is granted.","Publish the same writer-owned grant/history relation in the v0.1 schema without defining new runtime-history semantics."],
+  "verification":{"bounded_grant_history_replay":"4/4 PASS","focused_regression":"Added real _record regression for historyLength=0 on grants and the current writer-compatible positive history envelope","hosted_runtime":"Developer Execution Runtime returned transient HTTP 502; no hosted full-suite pass claimed"},
+  "truth_boundary":"This preserves only the current writer fact that a grant was derived from an observed last transition. It does not authenticate the history or prove the transition semantics beyond existing writer checks.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

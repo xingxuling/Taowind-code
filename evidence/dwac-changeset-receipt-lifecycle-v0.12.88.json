@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.88",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"5120406d0e378b35c8d6e11eae6fdb459f574b25",
+  "selected_bottleneck":"changeset-receipt-lifecycle-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main validates receipt structure/hash/binding on durable read, but does not enforce the receipt presence pattern already produced by the existing state machine: STAGED has no receipts, APPLIED has applyReceipt only, ROLLED_BACK has both. Durable documents can therefore advertise an impossible status/receipt combination while remaining individually well-shaped.",
+  "changes":["Add a shared durable receipt-lifecycle verifier derived only from the existing stage/apply/rollback writer transitions.","Reject impossible status/receipt combinations before ordinary readers consume them.","Add focused real-store lifecycle regressions without introducing new states, recovery policy, receipt format or trust architecture."],
+  "verification":{"bounded_lifecycle_replay":"8/8 PASS for the exact three valid and five invalid status/receipt combinations.","regression_test_added":"tests/changeset-receipt-lifecycle.test.mjs covers invalid durable combinations plus the normal STAGED -> APPLIED -> ROLLED_BACK lifecycle.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle enforces only lifecycle coherence already implied by existing writers. Deeper rollback-receipt semantic binding, independent provenance/authentication and broader temporal ordering remain separate boundaries."
+}

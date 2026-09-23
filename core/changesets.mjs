@@ -42,6 +42,11 @@ function verifiedChangesetProtocol(doc){
  verifiedReceiptShape(doc.applyReceipt,'APPLY');verifiedReceiptShape(doc.rollbackReceipt,'ROLLBACK');
  return doc
 }
+function verifiedReceiptLifecycle(doc){
+  const valid=(doc.status==='STAGED'&&doc.applyReceipt===null&&doc.rollbackReceipt===null)||(doc.status==='APPLIED'&&doc.applyReceipt!==null&&doc.rollbackReceipt===null)||(doc.status==='ROLLED_BACK'&&doc.applyReceipt!==null&&doc.rollbackReceipt!==null);
+  if(!valid)throw new Error('INVALID_CHANGESET_RECEIPT_STATE');
+  return doc;
+}
 function stagedAfterBytes(change){
   if(change.op==='delete'){
     if(change.after?.sha256!==null||change.after?.contentBase64!==null||change.after?.size!==0)throw new Error(`CHANGESET_POSTIMAGE_CORRUPT:${change.path}`);
@@ -75,7 +80,7 @@ function stagedBeforeBytes(change){
   return bytes;
 }
 function verifiedDurableChangeset(doc){
-  verifiedChangesetProtocol(doc);
+  verifiedChangesetProtocol(doc);verifiedReceiptLifecycle(doc);
   let total=0;
   for(const change of doc.changes){
     const beforeBytes=stagedBeforeBytes(change);total+=beforeBytes?.length||0;

@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.112",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"dc54f07ce5966ceb302f42677333788c7e19308e",
+  "selected_bottleneck":"authority-context-shape-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main requires the writer-owned context field to exist, but durable validation and the public v0.1 contract still accept any object. authorityContextForMode() actually emits eight named boolean facets, so malformed or incomplete context can be persisted even though the current writer never produces it.",
+  "changes":["Validate non-null authority contexts as the eight existing boolean facets emitted by authorityContextForMode().","Publish the same nullable context shape in the v0.1 contract without changing approval modes, RCL policy, trust roots or credential handling."],
+  "verification":{"bounded_predicate_replay":"4/4 PASS across null, empty object, mistyped facet and current writer-produced context","focused_regression":"Added real _record regression for incomplete/mistyped context and writer-produced context persistence","hosted_runtime":"Developer Execution Runtime returned transient HTTP 502; no hosted full-suite pass claimed"},
+  "truth_boundary":"This only aligns durable context shape with the current writer. It does not prove receipt authenticity or independently attest RCL execution.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

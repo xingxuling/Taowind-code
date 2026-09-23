@@ -30,3 +30,13 @@ test('explicit extension imports still resolve the exact requested path',()=>{
   assert.ok(graph.edges.some(edge=>edge.type==='imports'&&edge.from==='src/main.js'&&edge.to==='src/foo.js'));
   assert.equal(graph.edges.some(edge=>edge.type==='imports'&&edge.from==='src/main.js'&&edge.to==='src/foo.js.map'),false);
 });
+
+test('trailing slash relative imports preserve directory intent and resolve only index targets',()=>{
+  const graph=buildSemanticRepoGraph([
+    {path:'src/foo.js',content:'export const fileLookalike=1'},
+    {path:'src/foo/index.js',content:'export const directoryEntry=1'},
+    {path:'src/main.js',content:"import {directoryEntry} from './foo/';\nexport const main=directoryEntry;"},
+  ]);
+  assert.ok(graph.edges.some(edge=>edge.type==='imports'&&edge.from==='src/main.js'&&edge.to==='src/foo/index.js'));
+  assert.equal(graph.edges.some(edge=>edge.type==='imports'&&edge.from==='src/main.js'&&edge.to==='src/foo.js'),false);
+});

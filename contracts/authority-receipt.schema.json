@@ -14,8 +14,8 @@
     "workspace":{"type":["string","null"]},
     "allowed":{"type":"boolean"},
     "reason":{"type":["string","null"]},
-    "policyDigest":{"type":["string","null"]},
-    "materializedDigest":{"type":["string","null"]},
+    "policyDigest":{"type":["string","null"],"pattern":"^[a-f0-9]{64}$"},
+    "materializedDigest":{"type":["string","null"],"pattern":"^[a-f0-9]{64}$"},
     "context":{"type":["object","null"]},
     "rcl":{"type":["object","null"]},
     "metadata":{"type":"object"}

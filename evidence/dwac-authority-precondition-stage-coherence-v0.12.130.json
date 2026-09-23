@@ -1,0 +1,21 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.130",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"f25d99abea37b002c2eb85a3a4dc0021530806ba",
+  "selected_bottleneck":"authority-precondition-stage-coherence-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main validates each authority preprocessing field independently, but the current writer reaches them in a strict monotonic order: policy digest first, then authority context, then materialized digest. Durable receipts can still claim impossible partial states such as a policy digest without context, context without policy digest, or a materialized digest before either prerequisite exists.",
+  "changes":[
+    "Require policyDigest and context to share presence for persistable receipts under the existing valid action/mode envelope.",
+    "Require a non-null materializedDigest to imply the existing policy/context stage has already been reached.",
+    "Publish the same lifecycle relations in the v0.1 JSON Schema without changing policy, RCL, or approval semantics."
+  ],
+  "verification":{
+    "bounded_stage_replay":"6/6 PASS across initial error state, two impossible policy/context half-states, impossible materialized-before-context state, valid pre-materialization error state, and valid post-materialization state",
+    "focused_regression":"Added _record regression covering rejected impossible states and preserved writer-reachable pre/post-materialization errors",
+    "hosted_runtime":"Developer Execution Runtime returned HTTP 502; no hosted full-suite pass claimed"
+  },
+  "github_actions":"not requested; all commits use [skip ci] [skip actions]"
+}

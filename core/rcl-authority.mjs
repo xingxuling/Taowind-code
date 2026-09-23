@@ -52,6 +52,8 @@ function validAuthorityReceipt(receipt){
   if(!validSha256OrNull(receipt.policyDigest))return false;
   if(!validSha256OrNull(receipt.materializedDigest))return false;
   if(!validAuthorityContextForMode(receipt.context,receipt.approvalMode)||!validRclPayload(receipt.rcl))return false;
+  if((receipt.policyDigest===null)!==(receipt.context===null))return false;
+  if(receipt.materializedDigest!==null&&receipt.context===null)return false;
   if(Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.reason!==receipt.rcl.error)return false;
   if(!Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.context===null)return false;
   if(!Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.policyDigest===null)return false;

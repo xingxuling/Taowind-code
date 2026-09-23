@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.115",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"9dabc558780806a48e26e19b8da8165eb7c7c33c",
+  "selected_bottleneck":"authority-rcl-error-outcome-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main validates the two writer-owned RCL envelope families but still permits an error envelope to coexist with allowed=true. The current catch path always materializes RCL errors as denied receipts, so such a durable state contradicts the existing writer.",
+  "changes":["Fail closed when a non-null RCL error envelope is paired with an allowed outcome.","Publish the same error-envelope/denied-outcome relation in the v0.1 contract without changing RCL execution, error taxonomy or trust architecture."],
+  "verification":{"bounded_outcome_replay":"4/4 PASS","focused_regression":"Added real _record regression proving an error envelope cannot claim allowed=true while the current denied error outcome persists","hosted_runtime":"Developer Execution Runtime returned transient HTTP 502; no hosted full-suite pass claimed"},
+  "truth_boundary":"This binds the current writer's error envelope to denial only. It does not prove reason/error equality, independently verify RCL execution or define new RCL semantics.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

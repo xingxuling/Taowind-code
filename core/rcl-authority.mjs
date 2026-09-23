@@ -36,7 +36,12 @@ function validAuthorityContext(value){if(value===null)return true;if(!value||typ
 function validAuthorityContextForMode(value,mode){if(!validAuthorityContext(value))return false;if(value===null)return true;const expected=MODES[mode];return !!expected&&Object.entries(expected).every(([field,enabled])=>value[field]===enabled)}
 function validAuthorityNeed(value){return !!value&&typeof value==='object'&&!Array.isArray(value)&&typeof value.capability==='string'&&value.capability.length>0&&typeof value.target==='string'&&value.target.length>0}
 function validActiveWarrant(value){return !!value&&typeof value==='object'&&!Array.isArray(value)&&typeof value.subject==='string'&&value.subject.length>0&&typeof value.capability==='string'&&value.capability.length>0&&typeof value.target==='string'&&value.target.length>0}
-function validGrantAuthority(value){return !!value&&typeof value==='object'&&!Array.isArray(value)&&Array.isArray(value.needs)&&value.needs.length>0&&value.needs.every(validAuthorityNeed)&&Array.isArray(value.activeWarrants)&&value.activeWarrants.every(validActiveWarrant)}
+function scopeMatches(granted,required){return granted===required||required.startsWith(`${granted}.`)||granted==='*'}
+function validGrantAuthority(value,actor){
+  if(!value||typeof value!=='object'||Array.isArray(value)||!Array.isArray(value.needs)||value.needs.length===0||!value.needs.every(validAuthorityNeed)||!Array.isArray(value.activeWarrants)||value.activeWarrants.length===0||!value.activeWarrants.every(validActiveWarrant))return false;
+  if(!value.activeWarrants.every(warrant=>warrant.subject===actor))return false;
+  return value.needs.every(need=>value.activeWarrants.some(warrant=>warrant.capability===need.capability&&scopeMatches(warrant.target,need.target)));
+}
 function validRclPayload(value){
   if(value===null)return false;if(!value||typeof value!=='object'||Array.isArray(value))return false;
   if(Object.prototype.hasOwnProperty.call(value,'error'))return typeof value.error==='string'&&value.error.length>0&&typeof value.message==='string';
@@ -69,7 +74,7 @@ function validAuthorityReceipt(receipt){
   if(receipt.rcl&&Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.allowed!==false)return false;
   if(receipt.allowed&&(receipt.rcl===null||Object.prototype.hasOwnProperty.call(receipt.rcl,'error')))return false;
   if(receipt.allowed&&receipt.rcl.rule!==ACTIONS[receipt.action])return false;
-  if(receipt.allowed&&!validGrantAuthority(receipt.rcl.authority))return false;
+  if(receipt.allowed&&!validGrantAuthority(receipt.rcl.authority,receipt.rcl.actor))return false;
   if(receipt.allowed&&receipt.rcl.historyLength<1)return false;
   if(receipt.metadata!==undefined&&(typeof receipt.metadata!=='object'||receipt.metadata===null||Array.isArray(receipt.metadata)))return false;
   return true;

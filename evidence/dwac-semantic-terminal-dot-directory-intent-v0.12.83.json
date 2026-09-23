@@ -1,0 +1,28 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.83",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "8d1a09eec271448328b95bd153061b23b3b2345d",
+  "selected_bottleneck": "semantic-terminal-dot-directory-intent-integrity",
+  "selected_problem": "Fresh-main inspection after v0.12.82 found that terminal dot segments still lose directory intent during path normalization. A relative require/import such as '.' can normalize to 'src' and incorrectly prefer a sibling src.js over src/index.js, while '..' from src/main can normalize to the repository root and lose the root-directory index candidate entirely.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_basis": [
+    "The defect is determined by the resolver's already-established directory-index behavior; no parser, bundler, package-resolution or filesystem identity architecture needs to be chosen.",
+    "Terminal '.' and '..' segments are directory references, so preserving that intent is a local path-semantics invariant rather than a new product feature.",
+    "The repair keeps ordinary file-extension and extensionless inference unchanged while making current-directory and parent-directory intent explicit after normalization."
+  ],
+  "changes": [
+    "normalizeImport now preserves directory intent when the source specifier ends in '/', '.' or '..', including dot segments that disappear during lexical normalization.",
+    "Repository-root directory intent is represented explicitly and index inference can resolve root index.* candidates without treating sibling files as direct targets.",
+    "tests/semantic-import-target-resolution.test.mjs adds regressions for require('.') and require('..') while retaining all prior resolver cases."
+  ],
+  "verification": {
+    "pre_fix_reproduction": "PASS: v0.12.82 source replay showed require('.') from src/main could normalize to 'src' and rank src.js above src/index.js; require('..') from src/main lost the repository-root index candidate.",
+    "syntax_check": "PASS: patched core/semantic-repo-graph.mjs parses under node --check in local faithful replay.",
+    "focused_test_replay": "7/7 PASS under node --test: the five prior resolver regressions plus current-directory and root-parent directory intent cases all pass.",
+    "hosted_runtime": "Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted DWAC execution success is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "Filesystem case/Unicode identity, parser-grade language/package resolution, query/hash semantics, comment/string parser precision and arbitrary complex repository synthesis remain UNRESOLVED. This cycle closes only terminal dot-segment directory intent inside the existing bounded relative-import resolver."
+}

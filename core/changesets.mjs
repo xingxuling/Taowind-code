@@ -47,6 +47,8 @@ function verifiedChangesetProtocol(doc){
 function verifiedReceiptLifecycle(doc){
   const valid=(doc.status==='STAGED'&&doc.applyReceipt===null&&doc.rollbackReceipt===null)||(doc.status==='APPLIED'&&doc.applyReceipt!==null&&doc.rollbackReceipt===null)||(doc.status==='ROLLED_BACK'&&doc.applyReceipt!==null&&doc.rollbackReceipt!==null);
   if(!valid)throw new Error('INVALID_CHANGESET_RECEIPT_STATE');
+  if(doc.status==='APPLIED'&&doc.applyReceipt.at!==doc.updatedAt)throw new Error('INVALID_CHANGESET_RECEIPT_TIMESTAMP_BINDING');
+  if(doc.status==='ROLLED_BACK'&&doc.rollbackReceipt.at!==doc.updatedAt)throw new Error('INVALID_CHANGESET_RECEIPT_TIMESTAMP_BINDING');
   return doc;
 }
 function verifiedChangePaths(changes){

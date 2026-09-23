@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.92",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"3615de37079684a7e38aefd8ba2dc403b87f77c5",
+  "selected_bottleneck":"changeset-absent-receipt-metadata-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main binds apply/rollback receipt exists and sha256 to the real transaction semantics, but an absent receipt file can still carry non-null identity or mode. WorkspaceService.stat on an absent post-state returns identity=null and mode=null, so a coherently rehashed receipt can currently claim metadata that the writer could not have observed.",
+  "changes":["Extend existing apply and rollback receipt semantic binding so any receipt file with exists=false must also have identity=null and mode=null.","Keep identity/mode unconstrained for exists=true because those values are runtime observations rather than derivable constants."],
+  "verification":{"bounded_absence_replay":"4/4 PASS for canonical absence, forged identity, forged mode and existing-file control.","regression_test_added":"tests/changeset-absent-receipt-metadata.test.mjs exercises apply-delete and rollback-to-absence receipts with coherently recomputed hashes.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle closes only impossible metadata on absent receipt post-states. Existing-file identity provenance, independent authentication and broader temporal semantics remain separate boundaries."
+}

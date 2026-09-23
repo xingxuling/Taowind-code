@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.105",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"d88ee8f3842a73b4f927da74819bff1e417e58f3",
+  "selected_bottleneck":"mission-event-write-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main durable mission reads already reject empty event types and the public mission v0.1 contract requires event type minLength 1, but AutonomousMissionStore.eventObject accepted an empty type. update() could therefore manufacture a state that the same store would reject on the next read.",
+  "changes":["Fail closed in the store-owned event append boundary when event type is not a non-empty string.","Reuse the existing read/contract invariant without introducing a new event taxonomy or naming policy."],
+  "verification":{"bounded_write_replay":"2/2 PASS by construction: empty type is rejected before atomic persistence; non-empty type remains accepted.","regression_test_added":"tests/mission-event-write-integrity.test.mjs proves failed empty-type update leaves durable state unchanged and normal event writes remain readable.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle closes mission event-type write/read parity only. Event taxonomy, semantic meaning, ordering and authenticated provenance remain separate boundaries."
+}

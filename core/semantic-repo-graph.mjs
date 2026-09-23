@@ -32,7 +32,7 @@ function resolveImportTarget(nodePaths,imp){
   const directoryIntent=imp.endsWith('/');
   const target=directoryIntent?imp.replace(/\/+$/,''):imp;
   const explicitExtension=path.posix.extname(path.posix.basename(target))!=='';
-  if(explicitExtension)return nodePaths.includes(target)?target:null;
+  if(!directoryIntent&&explicitExtension)return nodePaths.includes(target)?target:null;
   const directExt=p=>{if(directoryIntent||!p.startsWith(`${target}.`))return false;const suffix=p.slice(target.length+1);return !!suffix&&!suffix.includes('.')&&!suffix.includes('/')};
   const indexPrefix=`${target}/index.`;
   const indexExt=p=>{if(!p.startsWith(indexPrefix))return false;const suffix=p.slice(indexPrefix.length);return !!suffix&&!suffix.includes('.')&&!suffix.includes('/')};

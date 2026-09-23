@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.118",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"580acedeb650fa54f287359c1667882f9ff15ebc",
+  "selected_bottleneck":"authority-grant-action-rule-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main requires a runtime-result RCL envelope for granted receipts, but a granted workspace_write receipt can still carry the runtime rule for a different action. The current writer grants only when the realized transition rule equals ACTIONS[action], so such a durable grant cannot be emitted by the writer.",
+  "changes":["Bind granted durable receipts to the existing requested-action/runtime-rule relation.","Publish the same relation in the v0.1 schema for all existing authority actions without changing RCL execution or adding new authority semantics."],
+  "verification":{"bounded_action_rule_replay":"5/5 PASS","focused_regression":"Added real _record regression for a mismatched granted runtime rule and the current writer-compatible workspace_write grant","hosted_runtime":"Developer Execution Runtime returned transient HTTP 502; no hosted full-suite pass claimed"},
+  "truth_boundary":"This proves only that a granted receipt names the runtime rule the current writer already requires for that requested action. It does not prove that the runtime result is authentic or semantically sufficient beyond existing writer conditions.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

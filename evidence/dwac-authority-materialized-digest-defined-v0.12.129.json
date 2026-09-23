@@ -1,0 +1,22 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.129",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"f2f34f6d232003c87cf99c083a03b6a17256971f",
+  "selected_bottleneck":"authority-materialized-digest-defined-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main requires the materializedDigest property to exist, but the validator still accepts an explicitly undefined value. JSON serialization then omits that property entirely, so a receipt can pass _record validation and be persisted in a shape that violates the public required-field contract and is never emitted by the current writer.",
+  "changes":[
+    "Require materializedDigest to be exactly null or a lowercase SHA-256 value, matching the current writer and public v0.1 schema.",
+    "Preserve null for pre-materialization error states and a digest for post-materialization states.",
+    "Do not alter policy/materialization semantics or introduce a new digest format."
+  ],
+  "verification":{
+    "bounded_digest_replay":"4/4 PASS: undefined rejected; null accepted; lowercase SHA-256 accepted; uppercase SHA-256 rejected",
+    "serialization_probe":"CONFIRMED: JSON.stringify omits an explicitly undefined materializedDigest property",
+    "focused_regression":"Added _record regression proving undefined is rejected while writer-owned null remains durable",
+    "hosted_runtime":"Developer Execution Runtime returned HTTP 502; no hosted full-suite pass claimed"
+  },
+  "github_actions":"not requested; all commits use [skip ci] [skip actions]"
+}

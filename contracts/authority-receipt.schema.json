@@ -8,7 +8,7 @@
     "id":{"type":"string","pattern":"^auth-[a-z0-9]+-[a-f0-9]{10}$"},
     "protocol":{"const":"taowind-code.rcl-authority-receipt.v0.1"},
     "at":{"type":"string","format":"date-time"},
-    "requestId":{"type":"string"},
+    "requestId":{"type":"string","minLength":1},
     "action":{"enum":["workspace_write","shell_execute","changeset_apply","changeset_rollback","validation_execute","git_commit","mission_advance","external_side_effect"]},
     "approvalMode":{"enum":["read_only","workspace","full_access"]},
     "workspace":{"type":["string","null"]},

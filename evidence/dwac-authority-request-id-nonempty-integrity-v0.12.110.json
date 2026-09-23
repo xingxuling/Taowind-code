@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.110",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"b67b45ff2749fc6cc260a6f72088496da557089c",
+  "selected_bottleneck":"authority-receipt-request-id-nonempty-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main decide() persists requestId as requestId || receipt id, so an empty requestId can never be emitted by the real writer; the durable _record boundary and public v0.1 contract still accept the empty string.",
+  "changes":["Require requestId to be a non-empty string at the durable authority receipt boundary.","Publish minLength 1 for requestId without trimming or inventing a new request identity policy; whitespace remains permitted because the current caller can truthfully supply it."],
+  "verification":{"node_check":"PASS","focused_real_store_tests":"10/10 PASS across request-id, reason, id-path, timestamp and digest integrity regressions","request_id_cases":"empty string, null and number rejected; req persists normally"},
+  "truth_boundary":"This aligns presence with current writer fallback semantics only. It does not impose global request-id uniqueness, format, or external identity binding.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

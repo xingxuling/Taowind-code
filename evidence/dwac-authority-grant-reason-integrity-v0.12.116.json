@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.116",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"e87918834bb8f9cc219fec9eb1c169d14b969edb",
+  "selected_bottleneck":"authority-grant-reason-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main binds RCL errors to denial but still permits allowed=true with any non-empty reason. The current successful writer path emits exactly RCL_AUTHORITY_GRANTED when allowed is true, so other granted-reason combinations are impossible writer states.",
+  "changes":["Require the existing RCL_AUTHORITY_GRANTED reason for allowed=true durable receipts.","Publish the same granted-outcome/reason relation in the v0.1 contract without constraining denied error codes or changing RCL policy."],
+  "verification":{"bounded_reason_replay":"4/4 PASS","focused_regression":"Added real _record regression for granted outcome reason mismatch and current writer-compatible grant reason","hosted_runtime":"Developer Execution Runtime returned transient HTTP 502; no hosted full-suite pass claimed"},
+  "truth_boundary":"This only binds a granted durable outcome to the writer's existing reason literal. It does not independently prove that RCL actually granted authority.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

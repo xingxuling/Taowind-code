@@ -1,0 +1,27 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.135",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"54151852f3cda164e91eb46cd9e2727eac0c5b1e",
+  "selected_bottleneck":"authority-rcl-lexical-identity-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main binds granted actors, warrants and needs using canonical RCL runtime semantics, but the durable receipt boundary still accepts arbitrary nonempty strings for actor, subject, capability and target. Canonical RCL source cannot emit many of those strings: subjects and causes are IDENT tokens, while needs/warrant capabilities and targets are parser paths made from dot-separated IDENT tokens.",
+  "reused_assets":[
+    "xingxuling/RCL src/lexer.mjs: IDENT starts with underscore or Unicode Letter and continues with underscore, Unicode Letter or Unicode Number",
+    "xingxuling/RCL src/parser.mjs: parsePath is one or more dot-separated IDENT tokens; subject names are IDENT; warrant capability and target use parsePath",
+    "xingxuling/RCL src/runtime.mjs: Taowind Code passes materialized RCL source into runReality, so the source lexer/parser is the relevant emission boundary"
+  ],
+  "changes":[
+    "Require granted actor and active-warrant subjects to satisfy canonical RCL IDENT lexical grammar.",
+    "Require granted need and active-warrant capability/target values to satisfy canonical dot-separated RCL path grammar.",
+    "Correct the prior bounded regression that treated '*' target scope as source-emittable; runtime scopeMatches understands '*', but the canonical source parser used by this gate cannot parse '*' as a warrant target."
+  ],
+  "verification":{
+    "bounded_lexical_replay":"11/11 PASS: ASCII, underscore and Unicode identifiers plus dotted/Unicode paths accepted; leading digit, hyphen, empty segment, slash, wildcard and whitespace forms rejected",
+    "focused_regression":"Added _record lexical-identity regression and corrected the v0.12.134 wildcard expectation to match canonical RCL source reality",
+    "hosted_runtime":"Developer Execution Runtime / Compute Router returned HTTP 502; no hosted full-suite pass claimed",
+    "container_clone":"Unavailable because the isolated execution container could not resolve github.com; no repository-wide local suite claimed"
+  },
+  "github_actions":"not requested; all commits use [skip ci] [skip actions]"
+}

@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.114",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"5a4d04f9f1b4c47e7fe867b17b63a21f308b7346",
+  "selected_bottleneck":"authority-rcl-envelope-integrity",
+  "mode":"WHOLE_ARTIFACT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main still treats the writer-owned rcl field as any object or null. decide() actually emits only two envelope families: an error envelope with error/message, or a runtime-result envelope with stateRoot/rule/actor/authority/witnesses/historyLength. Empty or structurally impossible objects can therefore be persisted even though the current writer never produces them.",
+  "changes":["Validate non-null rcl payloads as either the existing error envelope or the existing runtime-result envelope, preserving currently unconstrained nested runtime values.","Publish the same envelope union in the v0.1 schema without defining new RCL result semantics or a trust architecture."],
+  "verification":{"bounded_envelope_replay":"7/7 PASS across null, empty object, valid/invalid error envelope and valid/invalid runtime-result envelopes","focused_regression":"Added real _record regression for impossible RCL envelopes and both current writer-produced envelope families","hosted_runtime":"Developer Execution Runtime returned transient HTTP 502; no hosted full-suite pass claimed"},
+  "truth_boundary":"This proves durable envelope-shape parity with the current writer. It does not independently verify RCL result authenticity, stateRoot meaning, authority semantics or witnesses.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

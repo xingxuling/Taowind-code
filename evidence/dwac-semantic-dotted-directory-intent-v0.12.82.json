@@ -1,0 +1,28 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.82",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "d89ef4c1564a5248c556aca5d9bc63151eb4cde4",
+  "selected_bottleneck": "semantic-dotted-directory-intent-integrity",
+  "selected_problem": "Fresh-main inspection after v0.12.81 found a direct child contradiction in the new directory-intent path: a trailing-slash import such as './foo.bar/' carries explicit directory intent, but the resolver derives an apparent extension from the dotted directory basename and returns through the explicit-file branch before index inference can run. Dotted directory names are therefore incorrectly treated as file-extension intent.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_basis": [
+    "The contradiction is fully determined by the existing directory-intent rule introduced on fresh main and does not require a new module-resolution architecture.",
+    "A trailing slash is the stronger local signal: once directory intent is explicit, a dot in the directory basename must not reclassify the target as an explicit file.",
+    "The repair only changes the precedence between two existing local predicates and leaves ordinary explicit-extension and extensionless resolution behavior intact."
+  ],
+  "changes": [
+    "core/semantic-repo-graph.mjs now applies the explicit-extension exact-file branch only when directory intent is not present.",
+    "Dotted directory names with trailing-slash intent continue into the existing bounded index inference instead of being rejected as apparent files.",
+    "tests/semantic-import-target-resolution.test.mjs adds a regression for './foo.bar/' resolving src/foo.bar/index.js."
+  ],
+  "verification": {
+    "pre_fix_reproduction": "PASS: source replay of v0.12.81 logic classified target='src/foo.bar' as explicitExtension=true and returned null before index inference for an existing src/foo.bar/index.js.",
+    "syntax_check": "PASS: patched core/semantic-repo-graph.mjs parses under node --check in local faithful replay.",
+    "focused_test_replay": "5/5 PASS under node --test: all four prior resolver regressions plus the dotted-directory case pass.",
+    "hosted_runtime": "Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted DWAC execution success is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "Filesystem case/Unicode identity, conflicting-content aliases outside lexical canonicalization, parser-grade Node/TypeScript/bundler/package resolution, query/hash semantics, and arbitrary complex repository synthesis remain UNRESOLVED. This cycle closes only the dotted-directory contradiction inside the already-established trailing-slash directory-intent rule."
+}

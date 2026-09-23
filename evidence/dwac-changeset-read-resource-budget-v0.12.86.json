@@ -1,0 +1,28 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.86",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "c8adbcf5e6386f229f6896c6bece7cbfb143a814",
+  "selected_bottleneck": "changeset-read-resource-budget-integrity",
+  "selected_problem": "Fresh-main inspection after v0.12.85 found that ChangesetStore.get now verifies durable image canonicality, byte counts and hashes, but it still returns self-consistent durable postimages above the existing MAX_FILE_BYTES=2,000,000 limit and aggregate before+after images above MAX_TOTAL_BYTES=8,000,000. The same persisted artifacts are rejected later by the existing apply preflight, so ordinary readers can still consume a durable changeset that the side-effect path already considers outside the transaction resource contract.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_basis": [
+    "MAX_FILE_BYTES and MAX_TOTAL_BYTES are existing stage/apply transaction constraints, so reusing them at the shared durable read boundary is parity rather than a new storage or product architecture.",
+    "The v0.12.85 truth boundary explicitly left full durable resource-budget revalidation as a separate unresolved internal boundary after image self-consistency moved to get().",
+    "The defect is directly falsifiable with self-consistent persisted images whose Base64, size and SHA-256 all agree while their byte volume exceeds the already-established limits."
+  ],
+  "changes": [
+    "core/changesets.mjs now reuses the same verified preimage/postimage bytes at ChangesetStore.get time to enforce the existing per-write postimage limit and aggregate transaction byte budget.",
+    "Self-consistent durable changesets above either established budget fail closed before they are returned to ordinary readers.",
+    "tests/changeset-read-resource-budget.test.mjs adds per-file, aggregate-overflow and exact-boundary regressions against the real ChangesetStore.get boundary."
+  ],
+  "verification": {
+    "source_diff": "PASS: the core diff only extends verifiedDurableChangeset with existing MAX_FILE_BYTES/MAX_TOTAL_BYTES predicates; no protocol, storage shape, trust model or product form changed.",
+    "bounded_budget_replay": "3/3 PASS under local Node replay of the exact new budget predicates: 2,000,001-byte postimage rejected; five 1,700,000-byte postimages rejected at 8,500,000 aggregate bytes; exactly 8,000,000 bytes accepted.",
+    "regression_test_added": "tests/changeset-read-resource-budget.test.mjs exercises the real store contract for the same three cases.",
+    "hosted_runtime": "Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted DWAC/full-suite success is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle closes only durable read-side parity for already-established transaction resource budgets. Independent provenance/authentication, receipt/status temporal coherence and broader persistence hardening remain separate boundaries."
+}

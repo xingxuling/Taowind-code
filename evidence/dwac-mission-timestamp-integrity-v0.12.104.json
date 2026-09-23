@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.104",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"cf4c012da0630f324f416c7187aba14f6f893541",
+  "selected_bottleneck":"mission-timestamp-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main mission writers use new Date().toISOString() for mission, cycle, event, evidence and closure timestamps, but durable mission validation and the public v0.1 contract accept arbitrary non-empty strings. Corrupted time values can therefore enter mission reality even though the writer never emits them.",
+  "changes":["Reuse the existing canonical ISO UTC millisecond predicate already established in run/changeset storage for all mission-owned timestamps.","Publish date-time format constraints for mission createdAt/updatedAt, cycle closedAt, event/evidence at and closure at.","Do not impose temporal ordering or monotonic-clock policy beyond representation validity."],
+  "verification":{"bounded_timestamp_replay":"5/5 PASS for canonical UTC milliseconds versus non-date, missing milliseconds, impossible calendar date and offset representation.","regression_test_added":"tests/mission-timestamp-integrity.test.mjs covers mission, event, evidence and cycle timestamp tampering plus writer-produced values.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle closes timestamp representation parity only. Cross-record temporal ordering, monotonicity, clock provenance and authenticated provenance remain separate boundaries."
+}

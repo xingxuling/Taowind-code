@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.109",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"a2a988c69cd3dae16282f0a310132a1e76e8e0a6",
+  "selected_bottleneck":"authority-receipt-reason-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main decide() always records a non-empty reason: RCL_AUTHORITY_GRANTED, RCL_TRANSITION_NOT_REALIZED, or a derived error code. The durable _record boundary and public v0.1 contract still allow null/empty reasons, weakening auditability with states the real writer never emits.",
+  "changes":["Require authority receipt reason to be a non-empty string at the durable write boundary.","Publish the same non-empty reason contract and align focused direct-store fixtures; no new reason taxonomy or policy semantics are introduced."],
+  "verification":{"node_check":"PASS","focused_real_store_tests":"8/8 PASS across reason, id-path, timestamp and digest integrity regressions","reason_cases":"null, undefined and empty string rejected; RCL_RUNTIME_UNBOUND persists normally"},
+  "truth_boundary":"This aligns durable reason presence with current writer reality only. It does not claim semantic completeness of reason codes or introduce a new error taxonomy.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.98",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"a0220be1c4ff662d2402992157b7b6ce46500aab",
+  "selected_bottleneck":"run-event-ledger-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main validates the run envelope and timestamps but still treats events as an untyped array. eventObject already emits a contiguous 1-based seq, canonical at timestamp, non-empty event type at all repository call sites and an explicit data field. Durable readers and update replacement writes could therefore accept an event ledger that contradicts the writer's traceability structure.",
+  "changes":["Add a shared event-ledger validator for object shape, contiguous sequence, canonical timestamp, nonblank type and explicit data presence.","Use it at RunStore.get and for an explicitly replaced events ledger in update.","Reject a blank event type at eventObject before it creates an unreadable event; leave event data payload unconstrained rather than inventing a new payload schema.","Publish the existing event item structure in North Star Run v0.2 while keeping data open-ended."],
+  "verification":{"focused_event_replay":"4 focused real-store regressions encode broken sequence, invalid timestamp, malformed replacement/blank event type, and intact writer-produced sequential events.","contract_parity":"The public v0.2 events item now publishes seq/at/type/data fields already emitted by eventObject; runtime additionally enforces sequence continuity.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle closes run event-ledger shape and sequence parity only. Event data semantics, cross-event causality, evidence-ledger identity and independent clock provenance remain separate boundaries."
+}

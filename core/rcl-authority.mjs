@@ -101,7 +101,7 @@ export function materializeAuthorityPolicy(source,context,action){
   };
   let out=String(source);
   for(const [facet,value] of Object.entries(values)){
-    const re=new RegExp(`(facet\\s+${escapeRe(facet)}\\s*:\\s*Truth\\s*=\\s*)(true|false)`);
+    const re=new RegExp(`^(\\s*facet\\s+${escapeRe(facet)}\\s*:\\s*Truth\\s*=\\s*)(true|false)`,'m');
     if(!re.test(out))throw Object.assign(new Error(`RCL_POLICY_FACET_MISSING:${facet}`),{code:'RCL_POLICY_INVALID'});
     out=out.replace(re,`$1${value?'true':'false'}`);
   }

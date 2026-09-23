@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.103",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"cc51f7d6f72cb7a9163eab2bbbb2325c14c192fa",
+  "selected_bottleneck":"changeset-mode-range-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main validates changeset mode fields only as nullable integers, while WorkspaceService is the sole mode observer for staged preimages and lifecycle receipts and emits fileMode(st)=st.mode & 0o7777. Durable artifacts can therefore carry negative or above-4095 mode values that the existing writer cannot observe or emit.",
+  "changes":["Constrain the existing nullable mode predicate to integer values from 0 through 0o7777 while preserving null.","Publish the same 0..4095 range through the existing changeset v0.3 nullableInteger definition used by mode fields.","Do not infer permission semantics, portability or filesystem policy beyond the writer's existing bit mask."],
+  "verification":{"bounded_mode_replay":"6/6 PASS for null, 0, 4095, -1, 4096 and non-integer 1.5 under the exact added predicate.","regression_test_added":"tests/changeset-mode-range-integrity.test.mjs covers staged preimage, apply receipt, rollback receipt and intact writer-produced mode values against the real ChangesetStore API.","writer_parity":"WorkspaceService.fileMode returns st.mode & 0o7777 and all persisted mode observations flow through WorkspaceService.stat.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle closes numeric mode-range parity only. Permission interpretation, cross-platform equivalence, filesystem identity provenance and authenticated provenance remain separate boundaries."
+}

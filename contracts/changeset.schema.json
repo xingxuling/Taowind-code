@@ -33,7 +33,7 @@
   "$defs": {
     "nullableHash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
     "nullableString": {"type": ["string", "null"]},
-    "nullableInteger": {"type": ["integer", "null"]},
+    "nullableInteger": {"type": ["integer", "null"], "minimum": 0, "maximum": 4095},
     "beforeImage": {
       "type": "object",
       "required": ["exists", "type", "sha256", "size", "identity", "mode", "contentBase64"],

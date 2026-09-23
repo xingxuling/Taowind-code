@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.106",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"2c69bd1eea388c482bbea18eab706e420eb146be",
+  "selected_bottleneck":"authority-receipt-timestamp-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main RCL authority receipts are always assembled with now() = new Date().toISOString(), but _record and the public receipt v0.1 contract accept any string in at. The authority boundary can therefore persist a receipt timestamp representation that its own writer never emits.",
+  "changes":["Reuse the canonical ISO UTC millisecond predicate already established across run, changeset and mission durable stores at the authority receipt write boundary.","Publish date-time format for authority receipt at without altering authority actions, modes or RCL policy semantics."],
+  "verification":{"bounded_timestamp_replay":"5/5 PASS for canonical UTC milliseconds versus non-date, missing milliseconds, impossible calendar date and offset representation.","regression_test_added":"tests/rcl-authority-receipt-timestamp-integrity.test.mjs covers invalid representations and canonical durable persistence through _record.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle closes receipt timestamp representation parity only. Clock provenance, temporal ordering and cryptographic receipt provenance remain separate boundaries."
+}

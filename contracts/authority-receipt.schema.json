@@ -7,7 +7,7 @@
   "properties":{
     "id":{"type":"string","pattern":"^auth-"},
     "protocol":{"const":"taowind-code.rcl-authority-receipt.v0.1"},
-    "at":{"type":"string"},
+    "at":{"type":"string","format":"date-time"},
     "requestId":{"type":"string"},
     "action":{"enum":["workspace_write","shell_execute","changeset_apply","changeset_rollback","validation_execute","git_commit","mission_advance","external_side_effect"]},
     "approvalMode":{"enum":["read_only","workspace","full_access"]},

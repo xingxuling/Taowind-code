@@ -19,7 +19,9 @@ const MODES=Object.freeze({
   workspace:{workspace_write:true,shell_execute:true,changeset_apply:true,validation_execute:true,git_delivery:false,mission_advance:true},
   full_access:{workspace_write:true,shell_execute:true,changeset_apply:true,validation_execute:true,git_delivery:true,mission_advance:true},
 });
+const ISO_DATE_TIME_RE=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 function now(){return new Date().toISOString()}
+function validDateTime(value){if(typeof value!=='string'||!ISO_DATE_TIME_RE.test(value))return false;try{return new Date(value).toISOString()===value}catch{return false}}
 function sha256(value){return crypto.createHash('sha256').update(value).digest('hex')}
 function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const tmp=`${file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(value,null,2));fs.renameSync(tmp,file)}
 function escapeRe(value){return String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
@@ -27,7 +29,7 @@ function objectOrNull(value){return value===null||value===undefined||(typeof val
 function validAuthorityReceipt(receipt){
   if(!receipt||typeof receipt!=='object'||Array.isArray(receipt))return false;
   if(typeof receipt.id!=='string'||!/^auth-/.test(receipt.id))return false;
-  if(receipt.protocol!==RECEIPT_PROTOCOL||typeof receipt.at!=='string')return false;
+  if(receipt.protocol!==RECEIPT_PROTOCOL||!validDateTime(receipt.at))return false;
   if(typeof receipt.requestId!=='string'||!Object.prototype.hasOwnProperty.call(ACTIONS,receipt.action)||!Object.prototype.hasOwnProperty.call(MODES,receipt.approvalMode))return false;
   if(receipt.workspace!==null&&receipt.workspace!==undefined&&typeof receipt.workspace!=='string')return false;
   if(typeof receipt.allowed!=='boolean'||(receipt.reason!==null&&typeof receipt.reason!=='string'))return false;

@@ -55,6 +55,7 @@ function validAuthorityReceipt(receipt){
   if(!Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.context===null)return false;
   if(!Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.policyDigest===null)return false;
   if(!Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.materializedDigest===null)return false;
+  if(!Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.allowed===false&&receipt.reason!=='RCL_TRANSITION_NOT_REALIZED')return false;
   if(receipt.rcl&&Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.allowed!==false)return false;
   if(receipt.allowed&&(receipt.rcl===null||Object.prototype.hasOwnProperty.call(receipt.rcl,'error')))return false;
   if(receipt.allowed&&receipt.rcl.rule!==ACTIONS[receipt.action])return false;

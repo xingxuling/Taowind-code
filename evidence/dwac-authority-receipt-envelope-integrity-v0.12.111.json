@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.111",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"185f560125aacf5ec6561329bd6ff4926c82bc49",
+  "selected_bottleneck":"authority-receipt-envelope-integrity",
+  "mode":"WHOLE_ARTIFACT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main shows a cross-field envelope mismatch: decide() always constructs workspace, materializedDigest, context, rcl and metadata fields, while the durable validator and public contract still allow those fields to be absent. The gap spans the whole receipt artifact rather than one field value.",
+  "changes":["Require the five existing writer-owned envelope fields to be present before durable persistence while preserving their current nullable/value semantics.","Publish the same complete envelope in the v0.1 required set without changing authority policy, field meanings, signing, or trust architecture."],
+  "verification":{"node_check":"PASS","focused_real_store_tests":"12/12 PASS across envelope, request-id, reason, id-path, timestamp and digest regressions","envelope_cases":"each writer-owned field missing is rejected; the complete current envelope persists"},
+  "truth_boundary":"This proves envelope presence parity with the existing writer. Nullable semantics remain unchanged and no independent authenticity guarantee is added.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

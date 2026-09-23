@@ -20,8 +20,11 @@ const MODES=Object.freeze({
   full_access:{workspace_write:true,shell_execute:true,changeset_apply:true,validation_execute:true,git_delivery:true,mission_advance:true},
 });
 const ISO_DATE_TIME_RE=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+const SHA256_RE=/^[a-f0-9]{64}$/;
 function now(){return new Date().toISOString()}
 function validDateTime(value){if(typeof value!=='string'||!ISO_DATE_TIME_RE.test(value))return false;try{return new Date(value).toISOString()===value}catch{return false}}
+function validSha256OrNull(value){return value===null||(typeof value==='string'&&SHA256_RE.test(value))}
+function validSha256OrAbsentOrNull(value){return value===undefined||validSha256OrNull(value)}
 function sha256(value){return crypto.createHash('sha256').update(value).digest('hex')}
 function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const tmp=`${file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(value,null,2));fs.renameSync(tmp,file)}
 function escapeRe(value){return String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
@@ -33,8 +36,8 @@ function validAuthorityReceipt(receipt){
   if(typeof receipt.requestId!=='string'||!Object.prototype.hasOwnProperty.call(ACTIONS,receipt.action)||!Object.prototype.hasOwnProperty.call(MODES,receipt.approvalMode))return false;
   if(receipt.workspace!==null&&receipt.workspace!==undefined&&typeof receipt.workspace!=='string')return false;
   if(typeof receipt.allowed!=='boolean'||(receipt.reason!==null&&typeof receipt.reason!=='string'))return false;
-  if(receipt.policyDigest!==null&&typeof receipt.policyDigest!=='string')return false;
-  if(receipt.materializedDigest!==null&&receipt.materializedDigest!==undefined&&typeof receipt.materializedDigest!=='string')return false;
+  if(!validSha256OrNull(receipt.policyDigest))return false;
+  if(!validSha256OrAbsentOrNull(receipt.materializedDigest))return false;
   if(!objectOrNull(receipt.context)||!objectOrNull(receipt.rcl))return false;
   if(receipt.metadata!==undefined&&(typeof receipt.metadata!=='object'||receipt.metadata===null||Array.isArray(receipt.metadata)))return false;
   return true;

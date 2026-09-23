@@ -35,7 +35,8 @@ function validAuthorityReceipt(receipt){
   if(typeof receipt.id!=='string'||!AUTHORITY_RECEIPT_ID_RE.test(receipt.id))return false;
   if(receipt.protocol!==RECEIPT_PROTOCOL||!validDateTime(receipt.at))return false;
   if(typeof receipt.requestId!=='string'||receipt.requestId.length===0||!Object.prototype.hasOwnProperty.call(ACTIONS,receipt.action)||!Object.prototype.hasOwnProperty.call(MODES,receipt.approvalMode))return false;
-  if(receipt.workspace!==null&&receipt.workspace!==undefined&&typeof receipt.workspace!=='string')return false;
+  for(const field of ['workspace','materializedDigest','context','rcl','metadata'])if(!Object.prototype.hasOwnProperty.call(receipt,field))return false;
+  if(receipt.workspace!==null&&typeof receipt.workspace!=='string')return false;
   if(typeof receipt.allowed!=='boolean'||typeof receipt.reason!=='string'||receipt.reason.length===0)return false;
   if(!validSha256OrNull(receipt.policyDigest))return false;
   if(!validSha256OrAbsentOrNull(receipt.materializedDigest))return false;

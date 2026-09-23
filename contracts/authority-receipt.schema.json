@@ -3,7 +3,7 @@
   "$id":"https://taowind.company/schemas/taowind-code-rcl-authority-receipt-v0.1.json",
   "title":"Taowind Code RCL Authority Receipt v0.1",
   "type":"object",
-  "required":["id","protocol","at","requestId","action","approvalMode","allowed","reason","policyDigest"],
+  "required":["id","protocol","at","requestId","action","approvalMode","workspace","allowed","reason","policyDigest","materializedDigest","context","rcl","metadata"],
   "properties":{
     "id":{"type":"string","pattern":"^auth-[a-z0-9]+-[a-f0-9]{10}$"},
     "protocol":{"const":"taowind-code.rcl-authority-receipt.v0.1"},

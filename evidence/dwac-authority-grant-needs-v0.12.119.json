@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.119",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"6983ecfab6520e7e0d530c77687d005c1a79d958",
+  "selected_bottleneck":"authority-grant-needs-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main binds granted receipts to the requested action's realized rule, but allowed=true can still carry authority=null or an empty authority.needs array. The current writer grants only when transition.authority.needs.length > 0, so those durable grants cannot be emitted by the writer.",
+  "changes":["Require the existing non-empty authority.needs evidence whenever a receipt is granted.","Publish the same granted-envelope requirement in the v0.1 schema without defining new need names or authority semantics."],
+  "verification":{"bounded_authority_needs_replay":"5/5 PASS","focused_regression":"Added real _record regression for null/empty grant authority evidence and the current writer-compatible non-empty needs envelope","hosted_runtime":"Developer Execution Runtime returned transient HTTP 502; no hosted full-suite pass claimed"},
+  "truth_boundary":"This preserves only the writer's existing non-empty-needs precondition for grants. It does not prove that the named needs are semantically correct or that the runtime result is authentic.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

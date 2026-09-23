@@ -1,0 +1,28 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.87",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "40ebdfa9b83cd506b2ed1c988d53bb7cb8c9c8a2",
+  "selected_bottleneck": "changeset-read-receipt-integrity",
+  "selected_problem": "Fresh-main inspection after v0.12.86 found that ChangesetStore.get verifies durable change images and transaction budgets, but receipt integrity is still weaker at the shared read boundary. Existing applyReceipt verification already checks receiptSha256 and binds receipt files back to the staged changes before rollback, while rollbackReceipt carries the same receiptSha256 self-consistency field. Ordinary readers can therefore still consume durable receipts that later side-effect logic would reject or whose own recorded hash disagrees with their files.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_basis": [
+    "The repository already contains verifiedReceiptFiles and verifiedApplyReceiptFiles; invoking them from the shared durable read boundary reuses existing invariants instead of creating a new receipt or trust architecture.",
+    "Apply receipt hash/binding checks are already required before rollback can act, so accepting a weaker ordinary read view creates an avoidable truth-boundary split.",
+    "Rollback receipt hash validation uses the writer's existing receiptSha256 semantics and does not invent new fields or provenance claims."
+  ],
+  "changes": [
+    "ChangesetStore.get now validates any non-null applyReceipt with the existing apply receipt hash-and-binding verifier.",
+    "ChangesetStore.get now validates any non-null rollbackReceipt with the existing generic receipt hash verifier.",
+    "tests/changeset-read-receipt-integrity.test.mjs adds durable apply-hash, apply-binding, rollback-hash and intact controls."
+  ],
+  "verification": {
+    "source_diff": "PASS: verifiedDurableChangeset only invokes already-existing receipt verifiers after existing image/budget checks.",
+    "bounded_receipt_replay": "4/4 PASS under local Node replay of the exact existing receipt predicates: valid apply accepted; bad apply receipt hash rejected; coherently rehashed but path-unbound apply receipt rejected; bad rollback receipt hash rejected.",
+    "regression_test_added": "tests/changeset-read-receipt-integrity.test.mjs exercises the real ChangesetStore lifecycle and durable get boundary.",
+    "hosted_runtime": "Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted DWAC/full-suite success is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "This cycle closes read-side parity for receipt self-consistency and the already-existing apply receipt binding. Status/receipt lifecycle coherence, deeper rollback-receipt semantic binding, independent provenance/authentication and broader temporal semantics remain separate boundaries."
+}

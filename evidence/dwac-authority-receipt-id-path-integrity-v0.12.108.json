@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.108",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"6a00ce1a8d5ddadc01276661c0e68656632e1400",
+  "selected_bottleneck":"authority-receipt-id-path-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main constructs authority receipt ids only as auth-<base36 timestamp>-<10 lowercase hex>, but the durable _record boundary accepts any string beginning auth-. Because receipt ids are interpolated into a filesystem path, forged separator/dot-segment ids can leave the store-owned filename shape and can traverse outside the authority-receipts directory before this change.",
+  "changes":["Constrain authority receipt ids at the durable boundary to the existing writer-owned auth-<base36>-<10 lower hex> shape before path construction.","Publish the same id shape in the v0.1 contract and align focused timestamp/digest fixtures with real writer-compatible ids."],
+  "verification":{"node_check":"PASS","focused_real_store_tests":"6/6 PASS across id-path, timestamp and digest integrity regressions","path_escape_probe":"auth-x/../../escaped is rejected before persistence and no escaped file is created"},
+  "truth_boundary":"This hardens the receipt store path/identity boundary using the existing writer format. It does not add cross-receipt uniqueness, external identity attestation, signing, or trust-root semantics.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

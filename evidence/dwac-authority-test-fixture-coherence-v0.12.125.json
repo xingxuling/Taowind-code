@@ -1,0 +1,21 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.125",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"3aed11e070d08f22c36766bf320e03d86beab3ad",
+  "selected_bottleneck":"authority-regression-fixture-coherence-integrity",
+  "mode":"WHOLE_ARTIFACT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main has tightened durable authority receipts through v0.12.124, but a family of older regression fixtures still used rcl=null or otherwise unreachable control envelopes. Because package test executes the whole tests/*.test.mjs artifact family, those stale controls can fail for unrelated newer invariants or make negative assertions pass for the wrong reason.",
+  "changes":[
+    "Repair nine legacy non-grant authority regression fixtures to use current writer-reachable early-error, runtime-error, or denied-result envelopes.",
+    "Do not change production authority code, public receipt schema, product shape, or authority policy.",
+    "Preserve each test's original target invariant while removing unrelated stale-envelope failure causes."
+  ],
+  "verification":{
+    "syntax":"node --check on all 9 edited test files: PASS",
+    "bounded_validator_replay":"10/10 PASS across current early-error, denied-result and runtime-error controls plus targeted malformed request/timestamp/id/envelope/context/digest/RCL cases",
+    "hosted_runtime":"Developer Execution Runtime returned HTTP 502; no hosted full-suite pass claimed"
+  },
+  "github_actions":"not requested; all commits use [skip ci] [skip actions]"
+}

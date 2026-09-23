@@ -7,7 +7,7 @@ import {RclAuthorityGate,authorityContextForMode} from '../core/rcl-authority.mj
 
 const TEST_ID='auth-mgabc123-0123456789';
 function withGate(fn){const root=fs.mkdtempSync(path.join(os.tmpdir(),'taowind-auth-context-'));const gate=new RclAuthorityGate({runtimeDir:root,policyPath:path.join(root,'policy.rcl')});try{return fn(gate,root)}finally{fs.rmSync(root,{recursive:true,force:true})}}
-function receipt(overrides={}){return {id:TEST_ID,protocol:'taowind-code.rcl-authority-receipt.v0.1',at:'2026-09-23T08:00:00.123Z',requestId:'req',action:'workspace_write',approvalMode:'workspace',workspace:null,allowed:false,reason:'TEST_REASON',policyDigest:null,materializedDigest:null,context:null,rcl:null,metadata:{},...overrides}}
+function receipt(overrides={}){return {id:TEST_ID,protocol:'taowind-code.rcl-authority-receipt.v0.1',at:'2026-09-23T08:00:00.123Z',requestId:'req',action:'workspace_write',approvalMode:'workspace',workspace:null,allowed:false,reason:'RCL_TRANSITION_NOT_REALIZED',policyDigest:'a'.repeat(64),materializedDigest:'b'.repeat(64),context:authorityContextForMode('workspace'),rcl:{stateRoot:null,rule:'authorize_workspace_write',actor:null,authority:null,witnesses:[],historyLength:1},metadata:{},...overrides}}
 
 test('_record rejects incomplete or non-boolean authority contexts',()=>withGate(gate=>{
   assert.throws(()=>gate._record(receipt({context:{}})),/INVALID_AUTHORITY_RECEIPT/);

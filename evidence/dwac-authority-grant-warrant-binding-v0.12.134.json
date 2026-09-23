@@ -1,0 +1,26 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.134",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"4d5b0441a014639056b5f9f39fcfa204311adf41",
+  "selected_bottleneck":"authority-grant-warrant-binding-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main validates the shape of granted RCL needs and activeWarrants, but it still accepts durable grant evidence with no active warrant, a warrant for another actor, or warrants that do not cover the declared needs. Canonical RCL verifyAuthority filters grants to the realized actor and requires every need to be covered before a transition can be realized, then records those same grants as activeWarrants.",
+  "reused_assets":[
+    "xingxuling/RCL src/runtime.mjs verifyAuthority: grants are filtered by actor and every need must be covered by exact capability plus scopeMatches target semantics",
+    "xingxuling/RCL src/runtime.mjs executeRule: realized transition actor comes from actorFor(rule) and activeWarrants is the mapped verified grants array"
+  ],
+  "changes":[
+    "Require at least one active warrant for a granted receipt with nonempty authority needs.",
+    "Bind every active warrant subject to the realized RCL actor.",
+    "Require every declared need to be covered by an active warrant using canonical RCL capability equality and target-scope semantics.",
+    "Publish the statically expressible subset in authority-receipt v0.1: nonempty granted actor and nonempty activeWarrants."
+  ],
+  "verification":{
+    "bounded_grant_binding_replay":"8/8 PASS: exact, ancestor-scope and wildcard grants accepted; empty warrants, null actor, subject mismatch, capability mismatch and too-narrow target rejected",
+    "focused_regression":"Added _record regression for realized RCL actor/warrant/need binding semantics",
+    "hosted_runtime":"Developer Execution Runtime / Compute Router returned HTTP 502; no hosted full-suite pass claimed"
+  },
+  "github_actions":"not requested; all commits use [skip ci] [skip actions]"
+}

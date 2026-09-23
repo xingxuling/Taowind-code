@@ -13,7 +13,7 @@
     "approvalMode":{"enum":["read_only","workspace","full_access"]},
     "workspace":{"type":["string","null"]},
     "allowed":{"type":"boolean"},
-    "reason":{"type":["string","null"]},
+    "reason":{"type":"string","minLength":1},
     "policyDigest":{"type":["string","null"],"pattern":"^[a-f0-9]{64}$"},
     "materializedDigest":{"type":["string","null"],"pattern":"^[a-f0-9]{64}$"},
     "context":{"type":["object","null"]},

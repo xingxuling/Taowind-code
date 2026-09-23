@@ -19,6 +19,7 @@ const MODES=Object.freeze({
   workspace:{workspace_write:true,shell_execute:true,changeset_apply:true,validation_execute:true,git_delivery:false,mission_advance:true},
   full_access:{workspace_write:true,shell_execute:true,changeset_apply:true,validation_execute:true,git_delivery:true,mission_advance:true},
 });
+const AUTHORITY_RECEIPT_ID_RE=/^auth-[a-z0-9]+-[a-f0-9]{10}$/;
 const ISO_DATE_TIME_RE=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 const SHA256_RE=/^[a-f0-9]{64}$/;
 function now(){return new Date().toISOString()}
@@ -31,7 +32,7 @@ function escapeRe(value){return String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\$
 function objectOrNull(value){return value===null||value===undefined||(typeof value==='object'&&!Array.isArray(value))}
 function validAuthorityReceipt(receipt){
   if(!receipt||typeof receipt!=='object'||Array.isArray(receipt))return false;
-  if(typeof receipt.id!=='string'||!/^auth-/.test(receipt.id))return false;
+  if(typeof receipt.id!=='string'||!AUTHORITY_RECEIPT_ID_RE.test(receipt.id))return false;
   if(receipt.protocol!==RECEIPT_PROTOCOL||!validDateTime(receipt.at))return false;
   if(typeof receipt.requestId!=='string'||!Object.prototype.hasOwnProperty.call(ACTIONS,receipt.action)||!Object.prototype.hasOwnProperty.call(MODES,receipt.approvalMode))return false;
   if(receipt.workspace!==null&&receipt.workspace!==undefined&&typeof receipt.workspace!=='string')return false;

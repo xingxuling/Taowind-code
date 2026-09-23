@@ -40,3 +40,11 @@ test('trailing slash relative imports preserve directory intent and resolve only
   assert.ok(graph.edges.some(edge=>edge.type==='imports'&&edge.from==='src/main.js'&&edge.to==='src/foo/index.js'));
   assert.equal(graph.edges.some(edge=>edge.type==='imports'&&edge.from==='src/main.js'&&edge.to==='src/foo.js'),false);
 });
+
+test('trailing slash directory intent survives dotted directory names',()=>{
+  const graph=buildSemanticRepoGraph([
+    {path:'src/foo.bar/index.js',content:'export const directoryEntry=1'},
+    {path:'src/main.js',content:"import {directoryEntry} from './foo.bar/';\nexport const main=directoryEntry;"},
+  ]);
+  assert.ok(graph.edges.some(edge=>edge.type==='imports'&&edge.from==='src/main.js'&&edge.to==='src/foo.bar/index.js'));
+});

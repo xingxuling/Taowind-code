@@ -82,6 +82,8 @@ function verifiedDurableChangeset(doc){
     const afterBytes=stagedAfterBytes(change);if(afterBytes&&afterBytes.length>MAX_FILE_BYTES)throw new Error('CHANGE_FILE_TOO_LARGE');total+=afterBytes?.length||0;
     if(total>MAX_TOTAL_BYTES)throw new Error('CHANGESET_TOO_LARGE');
   }
+  if(doc.applyReceipt!==null)verifiedApplyReceiptFiles(doc);
+  if(doc.rollbackReceipt!==null)verifiedReceiptFiles(doc.rollbackReceipt,'ROLLBACK');
   return doc;
 }
 export class ChangesetStore{

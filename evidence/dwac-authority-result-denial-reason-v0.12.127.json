@@ -1,0 +1,21 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.127",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"855bb19849f4c8cec32b270bdf3b548762aeebc5",
+  "selected_bottleneck":"authority-result-denial-reason-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main now has coherent authority regression controls, exposing a narrower writer-contract gap: the normal RCL result path emits exactly RCL_TRANSITION_NOT_REALIZED whenever a realized grant is not obtained, but the durable validator and public v0.1 schema still accept any non-empty reason on an allowed=false runtime-result receipt.",
+  "changes":[
+    "Reject denied runtime-result receipts whose reason is not RCL_TRANSITION_NOT_REALIZED.",
+    "Publish the same existing writer invariant in the authority receipt v0.1 schema.",
+    "Leave RCL error-envelope reasons and granted outcomes unchanged."
+  ],
+  "verification":{
+    "bounded_validator_replay":"3/3 PASS: canonical denied-result reason accepted, arbitrary denied-result reason rejected, early RCL error unaffected",
+    "focused_regression":"Added durable _record regression for the writer-owned denied result reason",
+    "hosted_runtime":"Developer Execution Runtime returned HTTP 502; no hosted full-suite pass claimed"
+  },
+  "github_actions":"not requested; all commits use [skip ci] [skip actions]"
+}

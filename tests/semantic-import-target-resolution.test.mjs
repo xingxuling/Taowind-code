@@ -48,3 +48,21 @@ test('trailing slash directory intent survives dotted directory names',()=>{
   ]);
   assert.ok(graph.edges.some(edge=>edge.type==='imports'&&edge.from==='src/main.js'&&edge.to==='src/foo.bar/index.js'));
 });
+
+test('terminal dot relative imports preserve current-directory intent',()=>{
+  const graph=buildSemanticRepoGraph([
+    {path:'src.js',content:'export const siblingFile=1'},
+    {path:'src/index.js',content:'export const directoryEntry=1'},
+    {path:'src/main.cjs',content:"const directoryEntry=require('.');\nmodule.exports=directoryEntry;"},
+  ]);
+  assert.ok(graph.edges.some(edge=>edge.type==='imports'&&edge.from==='src/main.cjs'&&edge.to==='src/index.js'));
+  assert.equal(graph.edges.some(edge=>edge.type==='imports'&&edge.from==='src/main.cjs'&&edge.to==='src.js'),false);
+});
+
+test('terminal parent segment can resolve the repository-root index',()=>{
+  const graph=buildSemanticRepoGraph([
+    {path:'index.js',content:'export const rootEntry=1'},
+    {path:'src/main.cjs',content:"const rootEntry=require('..');\nmodule.exports=rootEntry;"},
+  ]);
+  assert.ok(graph.edges.some(edge=>edge.type==='imports'&&edge.from==='src/main.cjs'&&edge.to==='index.js'));
+});

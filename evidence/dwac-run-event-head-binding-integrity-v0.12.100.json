@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.100",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"3f8dd9c4a311ab8caa49ce9efa9867a4de1e830e",
+  "selected_bottleneck":"run-event-head-binding-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main validates run timestamps and event item shape independently, but every repository write transition is finalized through eventObject, which appends an event and assigns run.updatedAt to that exact event timestamp. A durable run could therefore keep valid canonical timestamps while making updatedAt disagree with its own latest trace event, or erase the event ledger entirely, neither of which the writer emits.",
+  "changes":["Require at least one durable run event and bind the latest event.at to run.updatedAt at the shared read boundary.","Publish the existing non-empty event-ledger reality with minItems=1 in North Star Run v0.2.","Do not impose historical event time ordering beyond the writer-owned current head binding."],
+  "verification":{"focused_head_binding_replay":"3 focused real-store regressions encode canonical-but-mismatched updatedAt, empty event ledger, and intact create/update/addEvidence head bindings.","writer_parity":"create, update and addEvidence all persist only after eventObject assigns updatedAt from the newly appended event.at.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle binds only the current durable run head to updatedAt. Historical temporal ordering, evidence-event cross-binding and independent clock provenance remain separate boundaries."
+}

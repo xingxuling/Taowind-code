@@ -1,0 +1,26 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.131",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"7c6ba12e55254427652bf8da4b0a7c692c6b47af",
+  "selected_bottleneck":"authority-rcl-state-root-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main still accepted arbitrary stateRoot values inside non-error RCL authority result envelopes. Cross-asset archaeology against canonical xingxuling/RCL shows runReality returns stateRoot as realityRoot(state), and realityRoot is lowercase SHA-256 over canonical reality. Taowind Code should not persist a result root that the bound formal runtime cannot emit.",
+  "reused_assets":[
+    "xingxuling/RCL src/runtime.mjs: runReality result includes stateRoot: realityRoot(state)",
+    "xingxuling/RCL src/canonical.mjs: realityRoot(value) = SHA-256(canonicalReality(value)).digest('hex')"
+  ],
+  "changes":[
+    "Require result-envelope rcl.stateRoot to be a lowercase 64-hex SHA-256 root.",
+    "Publish the same stateRoot shape in the authority-receipt v0.1 JSON Schema.",
+    "Leave RCL computation, authority decisions, action routing and error envelopes unchanged."
+  ],
+  "verification":{
+    "rcl_asset_contract":"PASS: canonical RCL current main computes runReality stateRoot through realityRoot(state), and realityRoot uses SHA-256 hex",
+    "bounded_root_replay":"4/4 PASS: lowercase 64-hex accepted; uppercase, short and null rejected",
+    "focused_regression":"Added _record regression covering invalid roots and one writer-shaped root",
+    "hosted_runtime":"Developer Execution Runtime / Compute Router returned HTTP 502; no hosted full-suite pass claimed"
+  },
+  "github_actions":"not requested; all commits use [skip ci] [skip actions]"
+}

@@ -38,6 +38,7 @@ function validRclPayload(value){
   if(value===null)return false;if(!value||typeof value!=='object'||Array.isArray(value))return false;
   if(Object.prototype.hasOwnProperty.call(value,'error'))return typeof value.error==='string'&&value.error.length>0&&typeof value.message==='string';
   if(!RCL_RESULT_FIELDS.every(field=>Object.prototype.hasOwnProperty.call(value,field)))return false;
+  if(typeof value.stateRoot!=='string'||!SHA256_RE.test(value.stateRoot))return false;
   return Array.isArray(value.witnesses)&&Number.isInteger(value.historyLength)&&value.historyLength>=0;
 }
 function validAuthorityReceipt(receipt){

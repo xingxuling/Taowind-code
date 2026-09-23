@@ -3,7 +3,7 @@
   "$id":"https://taowind.company/schemas/taowind-code-north-star-run-v0.2.json",
   "title":"Taowind Code North Star Run v0.2",
   "type":"object",
-  "required":["id","protocol","goal","status","mode","cycle","events","evidence","changesets"],
+  "required":["id","protocol","goal","status","mode","cycle","createdAt","updatedAt","events","evidence","changesets"],
   "properties":{
     "id":{"type":"string","pattern":"^run-[A-Za-z0-9-]+$"},
     "protocol":{"const":"taowind-code.north-star-run.v0.2"},
@@ -11,6 +11,8 @@
     "mode":{"enum":["NORTH_STAR","NORTH_STAR_BURST","WHOLE_ARTIFACT","DEEP_DEVELOPMENT"]},
     "status":{"enum":["OBSERVING","PLANNED","WAITING_PROVIDER","CHANGESET_STAGED","CHANGES_APPLIED","VALIDATING","REPAIR_REQUIRED","READY_FOR_DELIVERY","DELIVERED_LOCAL","ROLLED_BACK","FAILED"]},
     "cycle":{"type":"integer","minimum":1},
+    "createdAt":{"type":"string","format":"date-time"},
+    "updatedAt":{"type":"string","format":"date-time"},
     "changesets":{"type":"array","items":{"type":"string"}},
     "events":{"type":"array"},
     "evidence":{"type":"array"},

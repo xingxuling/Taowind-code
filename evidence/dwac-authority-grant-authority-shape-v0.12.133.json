@@ -1,0 +1,25 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.133",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"68db3881b533cc0d3126e19d1144064ff4371dce",
+  "selected_bottleneck":"authority-grant-authority-shape-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main validates that a granted RCL result has a nonempty authority.needs array, but does not validate the formal runtime's need item shape or require the activeWarrants array emitted by canonical RCL. This allows durable grant evidence the bound RCL runtime cannot emit.",
+  "reused_assets":[
+    "xingxuling/RCL src/runtime.mjs: realized transition authority contains needs: rule.needs and activeWarrants mapped to subject/capability/target",
+    "xingxuling/RCL src/parser.mjs: every needs clause produces capability and target paths"
+  ],
+  "changes":[
+    "Require every granted authority need to contain nonempty string capability and target.",
+    "Require activeWarrants to be an array and every present warrant to contain nonempty string subject, capability and target.",
+    "Publish the same existing runtime shape in authority-receipt v0.1 without forbidding future extra fields or requiring a nonempty warrant count."
+  ],
+  "verification":{
+    "bounded_authority_shape_replay":"4/4 PASS: canonical grant shape accepted; malformed need, missing activeWarrants, and malformed warrant rejected",
+    "focused_regression":"Added _record regression for canonical and impossible grant authority envelopes",
+    "hosted_runtime":"Developer Execution Runtime / Compute Router returned HTTP 502; no hosted full-suite pass claimed"
+  },
+  "github_actions":"not requested; all commits use [skip ci] [skip actions]"
+}

@@ -29,13 +29,15 @@ function normalizeImport(from,spec){
   return base.replace(/^\.\//,'');
 }
 function resolveImportTarget(nodePaths,imp){
-  const explicitExtension=path.posix.extname(path.posix.basename(imp))!=='';
-  if(explicitExtension)return nodePaths.includes(imp)?imp:null;
-  const directExt=p=>{if(!p.startsWith(`${imp}.`))return false;const suffix=p.slice(imp.length+1);return !!suffix&&!suffix.includes('.')&&!suffix.includes('/')};
-  const indexPrefix=`${imp}/index.`;
+  const directoryIntent=imp.endsWith('/');
+  const target=directoryIntent?imp.replace(/\/+$/,''):imp;
+  const explicitExtension=path.posix.extname(path.posix.basename(target))!=='';
+  if(explicitExtension)return nodePaths.includes(target)?target:null;
+  const directExt=p=>{if(directoryIntent||!p.startsWith(`${target}.`))return false;const suffix=p.slice(target.length+1);return !!suffix&&!suffix.includes('.')&&!suffix.includes('/')};
+  const indexPrefix=`${target}/index.`;
   const indexExt=p=>{if(!p.startsWith(indexPrefix))return false;const suffix=p.slice(indexPrefix.length);return !!suffix&&!suffix.includes('.')&&!suffix.includes('/')};
-  const rank=p=>p===imp?0:directExt(p)?1:2;
-  const candidates=nodePaths.filter(p=>p===imp||directExt(p)||indexExt(p));
+  const rank=p=>p===target?0:directExt(p)?1:2;
+  const candidates=nodePaths.filter(p=>(!directoryIntent&&p===target)||directExt(p)||indexExt(p));
   if(!candidates.length)return null;
   const bestRank=Math.min(...candidates.map(rank));
   const best=candidates.filter(p=>rank(p)===bestRank);

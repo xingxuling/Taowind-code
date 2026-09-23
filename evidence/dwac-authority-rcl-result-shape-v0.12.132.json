@@ -1,0 +1,26 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.132",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"bf386d8405a397c63c2b33bf1b6e7d628c189fc3",
+  "selected_bottleneck":"authority-rcl-result-shape-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main now binds RCL result stateRoot to the formal runtime, but still accepts arbitrary JSON types for transition rule, actor and witness entries. Canonical RCL uses identifier-derived string rule names, string-or-absent actors, and parser-produced string witnesses; Taowind Code already projects absent transition fields to null and absent witnesses to an empty array.",
+  "reused_assets":[
+    "xingxuling/RCL src/runtime.mjs: transition records carry rule.name and rule.witnesses",
+    "xingxuling/RCL src/parser.mjs: witness clauses append STRING token values",
+    "xingxuling/RCL rule lowering/effects: actors derive from cause/from identifiers or absence"
+  ],
+  "changes":[
+    "Require result rcl.rule and rcl.actor to be string or null.",
+    "Require every result rcl.witnesses entry to be a string.",
+    "Publish those existing runtime shapes in authority-receipt v0.1 JSON Schema without constraining future witness vocabulary."
+  ],
+  "verification":{
+    "bounded_shape_replay":"5/5 PASS: writer-shaped nulls and strings accepted; numeric rule, object actor and non-string witness rejected",
+    "focused_regression":"Added _record regression for impossible scalar/witness shapes and writer-shaped controls",
+    "hosted_runtime":"Developer Execution Runtime / Compute Router returned HTTP 502; no hosted full-suite pass claimed"
+  },
+  "github_actions":"not requested; all commits use [skip ci] [skip actions]"
+}

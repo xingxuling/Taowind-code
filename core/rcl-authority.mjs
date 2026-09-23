@@ -22,6 +22,7 @@ const MODES=Object.freeze({
 const AUTHORITY_RECEIPT_ID_RE=/^auth-[a-z0-9]+-[a-f0-9]{10}$/;
 const ISO_DATE_TIME_RE=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 const SHA256_RE=/^[a-f0-9]{64}$/;
+const AUTHORITY_CONTEXT_FIELDS=Object.freeze(['workspace_write','shell_execute','changeset_apply','validation_execute','git_delivery','mission_advance','workspace_boundary','explicit_approval']);
 function now(){return new Date().toISOString()}
 function validDateTime(value){if(typeof value!=='string'||!ISO_DATE_TIME_RE.test(value))return false;try{return new Date(value).toISOString()===value}catch{return false}}
 function validSha256OrNull(value){return value===null||(typeof value==='string'&&SHA256_RE.test(value))}
@@ -30,6 +31,7 @@ function sha256(value){return crypto.createHash('sha256').update(value).digest('
 function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const tmp=`${file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(value,null,2));fs.renameSync(tmp,file)}
 function escapeRe(value){return String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
 function objectOrNull(value){return value===null||value===undefined||(typeof value==='object'&&!Array.isArray(value))}
+function validAuthorityContext(value){if(value===null)return true;if(!value||typeof value!=='object'||Array.isArray(value))return false;return AUTHORITY_CONTEXT_FIELDS.every(field=>typeof value[field]==='boolean')}
 function validAuthorityReceipt(receipt){
   if(!receipt||typeof receipt!=='object'||Array.isArray(receipt))return false;
   if(typeof receipt.id!=='string'||!AUTHORITY_RECEIPT_ID_RE.test(receipt.id))return false;
@@ -40,7 +42,7 @@ function validAuthorityReceipt(receipt){
   if(typeof receipt.allowed!=='boolean'||typeof receipt.reason!=='string'||receipt.reason.length===0)return false;
   if(!validSha256OrNull(receipt.policyDigest))return false;
   if(!validSha256OrAbsentOrNull(receipt.materializedDigest))return false;
-  if(!objectOrNull(receipt.context)||!objectOrNull(receipt.rcl))return false;
+  if(!validAuthorityContext(receipt.context)||!objectOrNull(receipt.rcl))return false;
   if(receipt.metadata!==undefined&&(typeof receipt.metadata!=='object'||receipt.metadata===null||Array.isArray(receipt.metadata)))return false;
   return true;
 }

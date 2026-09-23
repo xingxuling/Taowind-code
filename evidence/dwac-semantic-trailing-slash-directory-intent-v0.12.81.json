@@ -1,0 +1,28 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.81",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "0e932f6eba27a312c715cc36e4551869da686bed",
+  "selected_bottleneck": "semantic-trailing-slash-directory-intent-integrity",
+  "selected_problem": "Fresh-main inspection of the current semantic-repository truth boundary found a narrower directly falsifiable defect inside the resolver's existing index-inference model: a relative import with explicit directory intent such as './foo/' normalizes to a trailing-slash target, but the current index-prefix construction adds another slash, so an existing 'foo/index.js' is not linked at all. Simply stripping the slash globally would be incorrect because it could instead link the import to a sibling 'foo.js' file and erase the caller's directory intent.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_basis": [
+    "The defect is a local contradiction inside the resolver behavior already present on main: extensionless paths support bounded index inference, while the same inference becomes unreachable when the specifier explicitly carries a trailing slash.",
+    "The repair does not choose a new parser, bundler, TypeScript, Node package-resolution stack, filesystem identity policy, or product shape.",
+    "Directory intent can be preserved by allowing index fallback for the normalized directory target while refusing direct-file and added-extension fallbacks for that same trailing-slash import."
+  ],
+  "changes": [
+    "core/semantic-repo-graph.mjs now preserves whether the normalized import carried trailing-slash directory intent and resolves that intent only against index candidates under the target directory.",
+    "Direct-file and added-extension candidates remain available for ordinary extensionless imports but are excluded when directory intent is explicit.",
+    "tests/semantic-import-target-resolution.test.mjs adds a regression proving './foo/' resolves 'foo/index.js' without incorrectly linking a sibling 'foo.js'."
+  ],
+  "verification": {
+    "pre_fix_reproduction": "PASS: faithful replay of the main-branch normalizeImport/resolveImportTarget logic produced imp='src/foo/' and hit=null even when nodePaths contained 'src/foo/index.js'.",
+    "syntax_check": "PASS: patched core/semantic-repo-graph.mjs parses under node --check in a faithful local source replay.",
+    "focused_test_replay": "4/4 PASS under node --test: the three prior explicit/extensionless resolution regressions still pass and the new trailing-slash directory-intent regression resolves only src/foo/index.js.",
+    "hosted_runtime": "Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted DWAC execution success is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "Filesystem case/Unicode identity, conflicting-content aliases outside the current lexical canonicalization model, parser-grade Node/TypeScript/bundler/package module resolution, query/hash import semantics, and arbitrary complex repository synthesis remain UNRESOLVED. This cycle closes only the trailing-slash directory-intent contradiction inside the existing bounded relative-import resolver."
+}

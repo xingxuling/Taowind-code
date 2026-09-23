@@ -80,7 +80,7 @@ function verifiedApplyReceiptFiles(doc){
   if(!Array.isArray(doc.changes)||files.length!==doc.changes.length)throw new Error('CHANGESET_APPLY_RECEIPT_CORRUPT');
   const byPath=new Map();
   for(const file of files){if(!file||typeof file.path!=='string'||byPath.has(file.path))throw new Error('CHANGESET_APPLY_RECEIPT_CORRUPT');byPath.set(file.path,file)}
-  for(const change of doc.changes){const file=byPath.get(change.path);const expectedExists=change.op!=='delete';const expectedSha=expectedExists?change.after?.sha256:null;if(!file||file.op!==change.op||file.exists!==expectedExists||file.sha256!==expectedSha)throw new Error('CHANGESET_APPLY_RECEIPT_CORRUPT')}
+  for(const change of doc.changes){const file=byPath.get(change.path);const expectedExists=change.op!=='delete';const expectedSha=expectedExists?change.after?.sha256:null;if(!file||file.op!==change.op||file.exists!==expectedExists||file.sha256!==expectedSha||(!expectedExists&&(file.identity!==null||file.mode!==null)))throw new Error('CHANGESET_APPLY_RECEIPT_CORRUPT')}
   return files;
 }
 function verifiedRollbackReceiptFiles(doc){
@@ -88,7 +88,7 @@ function verifiedRollbackReceiptFiles(doc){
   if(!Array.isArray(doc.changes)||files.length!==doc.changes.length)throw new Error('CHANGESET_ROLLBACK_RECEIPT_CORRUPT');
   const byPath=new Map();
   for(const file of files){if(!file||typeof file.path!=='string'||byPath.has(file.path))throw new Error('CHANGESET_ROLLBACK_RECEIPT_CORRUPT');byPath.set(file.path,file)}
-  for(const change of doc.changes){const file=byPath.get(change.path);const expectedExists=change.before?.exists===true;const expectedSha=expectedExists?change.before?.sha256:null;if(!file||file.exists!==expectedExists||file.sha256!==expectedSha)throw new Error('CHANGESET_ROLLBACK_RECEIPT_CORRUPT')}
+  for(const change of doc.changes){const file=byPath.get(change.path);const expectedExists=change.before?.exists===true;const expectedSha=expectedExists?change.before?.sha256:null;if(!file||file.exists!==expectedExists||file.sha256!==expectedSha||(!expectedExists&&(file.identity!==null||file.mode!==null)))throw new Error('CHANGESET_ROLLBACK_RECEIPT_CORRUPT')}
   return files;
 }
 function stagedBeforeBytes(change){

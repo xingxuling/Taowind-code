@@ -7,7 +7,7 @@
   "properties": {
     "id": {"type": "string", "pattern": "^cs-[a-f0-9]+$"},
     "protocol": {"const": "taowind-code.changeset.v0.3"},
-    "runId": {"type": "string"},
+    "runId": {"type": "string", "pattern": "^run-[A-Za-z0-9-]+$"},
     "source": {"type": "string"},
     "status": {"enum": ["STAGED", "APPLIED", "ROLLED_BACK"]},
     "createdAt": {"type": "string", "format": "date-time"},

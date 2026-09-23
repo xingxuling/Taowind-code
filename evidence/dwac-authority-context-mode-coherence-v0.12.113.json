@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.113",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"9620fea9c4b8fb9a85f3200dfa247a95ecb416f9",
+  "selected_bottleneck":"authority-context-mode-coherence",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main validates the eight context facet types but still accepts capability values that contradict approvalMode. The current writer always derives those six capability facets from MODES before materializing RCL, so a durable read_only receipt can otherwise claim workspace_write=true or a workspace receipt can claim git_delivery=true even though the writer never emits those combinations.",
+  "changes":["Bind non-null durable context capability facets to the existing MODES projection for the receipt approvalMode while leaving workspace_boundary and explicit_approval independently variable as they are today.","Publish the same mode/context relation in the v0.1 schema without changing RCL policy or approval semantics."],
+  "verification":{"bounded_coherence_replay":"4/4 PASS across valid read_only/full_access contexts and two escalation mismatches","focused_regression":"Added real _record regression for read_only/workspace capability contradictions and current writer projections","hosted_runtime":"Developer Execution Runtime returned transient HTTP 502; no hosted full-suite pass claimed"},
+  "truth_boundary":"This proves writer-mode/context parity only. It does not independently authenticate the receipt or duplicate RCL policy evaluation in JavaScript.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

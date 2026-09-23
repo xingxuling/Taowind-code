@@ -19,5 +19,10 @@
     "context":{"anyOf":[{"type":"null"},{"type":"object","required":["workspace_write","shell_execute","changeset_apply","validation_execute","git_delivery","mission_advance","workspace_boundary","explicit_approval"],"properties":{"workspace_write":{"type":"boolean"},"shell_execute":{"type":"boolean"},"changeset_apply":{"type":"boolean"},"validation_execute":{"type":"boolean"},"git_delivery":{"type":"boolean"},"mission_advance":{"type":"boolean"},"workspace_boundary":{"type":"boolean"},"explicit_approval":{"type":"boolean"}}}]},
     "rcl":{"type":["object","null"]},
     "metadata":{"type":"object"}
-  }
+  },
+  "allOf":[
+    {"if":{"properties":{"approvalMode":{"const":"read_only"}},"required":["approvalMode"]},"then":{"properties":{"context":{"anyOf":[{"type":"null"},{"type":"object","properties":{"workspace_write":{"const":false},"shell_execute":{"const":false},"changeset_apply":{"const":false},"validation_execute":{"const":false},"git_delivery":{"const":false},"mission_advance":{"const":true}}}]}}}},
+    {"if":{"properties":{"approvalMode":{"const":"workspace"}},"required":["approvalMode"]},"then":{"properties":{"context":{"anyOf":[{"type":"null"},{"type":"object","properties":{"workspace_write":{"const":true},"shell_execute":{"const":true},"changeset_apply":{"const":true},"validation_execute":{"const":true},"git_delivery":{"const":false},"mission_advance":{"const":true}}}]}}}},
+    {"if":{"properties":{"approvalMode":{"const":"full_access"}},"required":["approvalMode"]},"then":{"properties":{"context":{"anyOf":[{"type":"null"},{"type":"object","properties":{"workspace_write":{"const":true},"shell_execute":{"const":true},"changeset_apply":{"const":true},"validation_execute":{"const":true},"git_delivery":{"const":true},"mission_advance":{"const":true}}}]}}}}
+  ]
 }

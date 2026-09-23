@@ -32,6 +32,7 @@ function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true}
 function escapeRe(value){return String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
 function objectOrNull(value){return value===null||value===undefined||(typeof value==='object'&&!Array.isArray(value))}
 function validAuthorityContext(value){if(value===null)return true;if(!value||typeof value!=='object'||Array.isArray(value))return false;return AUTHORITY_CONTEXT_FIELDS.every(field=>typeof value[field]==='boolean')}
+function validAuthorityContextForMode(value,mode){if(!validAuthorityContext(value))return false;if(value===null)return true;const expected=MODES[mode];return !!expected&&Object.entries(expected).every(([field,enabled])=>value[field]===enabled)}
 function validAuthorityReceipt(receipt){
   if(!receipt||typeof receipt!=='object'||Array.isArray(receipt))return false;
   if(typeof receipt.id!=='string'||!AUTHORITY_RECEIPT_ID_RE.test(receipt.id))return false;
@@ -42,7 +43,7 @@ function validAuthorityReceipt(receipt){
   if(typeof receipt.allowed!=='boolean'||typeof receipt.reason!=='string'||receipt.reason.length===0)return false;
   if(!validSha256OrNull(receipt.policyDigest))return false;
   if(!validSha256OrAbsentOrNull(receipt.materializedDigest))return false;
-  if(!validAuthorityContext(receipt.context)||!objectOrNull(receipt.rcl))return false;
+  if(!validAuthorityContextForMode(receipt.context,receipt.approvalMode)||!objectOrNull(receipt.rcl))return false;
   if(receipt.metadata!==undefined&&(typeof receipt.metadata!=='object'||receipt.metadata===null||Array.isArray(receipt.metadata)))return false;
   return true;
 }

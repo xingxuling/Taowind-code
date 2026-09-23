@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.90",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"56b5f816b492a34fa9fa64e651c766da1d677494",
+  "selected_bottleneck":"changeset-read-path-safety-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main verifies durable image, budget, receipt and lifecycle integrity, but durable change paths are still weaker at ordinary read than at apply. A persisted document can carry non-canonical, escaping, blocked, credential-like, duplicate or overlapping paths and be returned by get() even though the existing apply path rejects the same path reality before side effects.",
+  "changes":["Add verifiedChangePaths using the existing apply path normalization/safety/duplicate/overlap predicates.","Invoke the shared path verifier from verifiedDurableChangeset before returning a document.","Do not add live-workspace ancestor/target checks to ordinary read because those are current-workspace conflict checks rather than durable path invariants."],
+  "verification":{"bounded_path_replay":"6/6 PASS for safe, non-canonical dot path, parent escape, blocked segment, duplicate and overlap cases.","regression_test_added":"tests/changeset-read-path-safety.test.mjs exercises durable get() against the real ChangesetStore.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle moves only durable path syntax and static safety invariants to the read truth boundary. Live workspace ancestor/identity conflicts, independent provenance/authentication and broader filesystem identity semantics remain separate boundaries."
+}

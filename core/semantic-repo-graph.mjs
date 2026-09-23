@@ -25,8 +25,12 @@ function tokens(text){return [...new Set((String(text||'').match(TOKEN_RE)||[]).
 function collect(re,text){const out=[];re.lastIndex=0;let m;while((m=re.exec(text)))out.push(m[1]);return out}
 function normalizeImport(from,spec){
   if(!spec?.startsWith('.'))return null;
+  const directoryIntent=spec.endsWith('/')||/(^|\/)\.{1,2}$/.test(spec);
   const base=path.posix.normalize(path.posix.join(path.posix.dirname(from),spec));
-  return base.replace(/^\.\//,'');
+  const normalized=base.replace(/^\.\//,'');
+  if(!directoryIntent)return normalized;
+  if(!normalized||normalized==='.')return './';
+  return normalized.endsWith('/')?normalized:`${normalized}/`;
 }
 function resolveImportTarget(nodePaths,imp){
   const directoryIntent=imp.endsWith('/');
@@ -34,7 +38,7 @@ function resolveImportTarget(nodePaths,imp){
   const explicitExtension=path.posix.extname(path.posix.basename(target))!=='';
   if(!directoryIntent&&explicitExtension)return nodePaths.includes(target)?target:null;
   const directExt=p=>{if(directoryIntent||!p.startsWith(`${target}.`))return false;const suffix=p.slice(target.length+1);return !!suffix&&!suffix.includes('.')&&!suffix.includes('/')};
-  const indexPrefix=`${target}/index.`;
+  const indexPrefix=directoryIntent&&(target===''||target==='.')?'index.':`${target}/index.`;
   const indexExt=p=>{if(!p.startsWith(indexPrefix))return false;const suffix=p.slice(indexPrefix.length);return !!suffix&&!suffix.includes('.')&&!suffix.includes('/')};
   const rank=p=>p===target?0:directExt(p)?1:2;
   const candidates=nodePaths.filter(p=>(!directoryIntent&&p===target)||directExt(p)||indexExt(p));

@@ -12,7 +12,7 @@ function now(){return new Date().toISOString()}
 function validDateTime(value){if(typeof value!=='string'||!ISO_DATE_TIME_RE.test(value))return false;try{return new Date(value).toISOString()===value}catch{return false}}
 function id(){return `run-${Date.now().toString(36)}-${crypto.randomBytes(5).toString('hex')}`}
 function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const tmp=`${file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(value,null,2));fs.renameSync(tmp,file)}
-function validChangesetLedger(value){return Array.isArray(value)&&value.every(item=>typeof item==='string')}
+function validChangesetLedger(value){return Array.isArray(value)&&value.every(item=>typeof item==='string'&&/^cs-[a-f0-9]+$/.test(item))}
 function validEventLedger(value){return Array.isArray(value)&&value.every((item,index)=>item&&typeof item==='object'&&!Array.isArray(item)&&item.seq===index+1&&validDateTime(item.at)&&typeof item.type==='string'&&!!item.type.trim()&&Object.hasOwn(item,'data'))}
 function validEvidenceLedger(value){return Array.isArray(value)&&value.every(item=>item&&typeof item==='object'&&!Array.isArray(item)&&typeof item.id==='string'&&EVIDENCE_ID_RE.test(item.id)&&validDateTime(item.at))}
 function validOptionalObject(value){return value===undefined||value===null||(typeof value==='object'&&!Array.isArray(value))}

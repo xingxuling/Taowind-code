@@ -1,0 +1,13 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.101",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"70b7725f1e8aa487aa2e7ce72141b8e583aedb21",
+  "selected_bottleneck":"run-changeset-reference-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main validates run changesets only as strings even though every repository changeset identity accepted by ChangesetStore.file is constrained to lowercase cs-<hex>. A durable run can therefore claim arbitrary string references that downstream ChangesetStore consumers will deterministically reject.",
+  "changes":["Reuse the existing ChangesetStore identity syntax at the run changeset-ledger read/write boundary.","Publish the same lowercase cs-<hex> reference pattern in North Star Run v0.2.","Do not add cross-store existence checks or tighten to the current 20-hex generator width because those would impose stronger lifecycle or identity policy than the existing store accepts."],
+  "verification":{"focused_reference_replay":"4/4 PASS against the exact patched RunStore: arbitrary string, uppercase prefix/suffix and empty suffix are rejected; ChangesetStore-compatible cs-1/cs-a0f9 remain accepted.","writer_parity":"NorthStarRunner appends only cs.id values produced by ChangesetStore.stage, while ChangesetStore.file accepts /^cs-[a-f0-9]+$/.","hosted_runtime":"Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted/full-suite success is claimed.","github_actions":"must remain untriggered"},
+  "truth_boundary":"This cycle closes run-ledger reference syntax parity only. Referential existence, lifecycle coupling, append-only history and authenticated provenance remain separate boundaries."
+}

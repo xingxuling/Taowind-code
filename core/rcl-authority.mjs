@@ -54,6 +54,7 @@ function validAuthorityReceipt(receipt){
   if(!validAuthorityContextForMode(receipt.context,receipt.approvalMode)||!validRclPayload(receipt.rcl))return false;
   if(!Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.context===null)return false;
   if(!Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.policyDigest===null)return false;
+  if(!Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.materializedDigest===null)return false;
   if(receipt.rcl&&Object.prototype.hasOwnProperty.call(receipt.rcl,'error')&&receipt.allowed!==false)return false;
   if(receipt.allowed&&(receipt.rcl===null||Object.prototype.hasOwnProperty.call(receipt.rcl,'error')))return false;
   if(receipt.allowed&&receipt.rcl.rule!==ACTIONS[receipt.action])return false;

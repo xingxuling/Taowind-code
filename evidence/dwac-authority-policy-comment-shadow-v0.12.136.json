@@ -1,0 +1,25 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.136",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"ed875a0ad3a2c0d61982e1289c283b7789ebe128",
+  "selected_bottleneck":"authority-policy-comment-shadow-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main materializes authority facets with an unanchored regex. A comment containing a facet-shaped lookalike before the real declaration can absorb the replacement, leaving the executable facet unchanged. In a configurable policy this can make the recorded authority context disagree with the RCL source actually executed and can preserve a permissive executable facet when a restrictive mode was requested.",
+  "reused_assets":[
+    "Taowind Code contracts/approval-policy.rcl line-oriented facet declarations",
+    "RCL lexer comment semantics: # and // comments are non-executable source text"
+  ],
+  "changes":[
+    "Anchor authority facet materialization to the beginning of a real declaration line while preserving indentation.",
+    "Prevent # or // comment lookalikes from satisfying the required-facet check or receiving the replacement."
+  ],
+  "verification":{
+    "bounded_materialization_replay":"5/5 PASS: # and // decoys remain unchanged; real workspace_write and shell_execute facets are rewritten; a comment alone cannot satisfy a missing real facet",
+    "focused_regression":"Added materialization regression covering comment shadowing and missing-real-facet failure",
+    "repair":"An initial regression-test syntax typo was corrected on the candidate branch before review/merge",
+    "hosted_runtime":"Developer Execution Runtime / Compute Router returned HTTP 502; no hosted full-suite pass claimed"
+  },
+  "github_actions":"not requested; all commits use [skip ci] [skip actions]"
+}

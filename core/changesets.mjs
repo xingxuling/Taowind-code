@@ -74,10 +74,15 @@ function stagedBeforeBytes(change){
   if(!Buffer.isBuffer(bytes)||bytes.length!==change.before?.size||sha256Buffer(bytes)!==change.before?.sha256)throw new Error(`CHANGESET_PREIMAGE_CORRUPT:${change.path}`);
   return bytes;
 }
+function verifiedDurableChangeset(doc){
+  verifiedChangesetProtocol(doc);
+  for(const change of doc.changes){stagedBeforeBytes(change);stagedAfterBytes(change)}
+  return doc;
+}
 export class ChangesetStore{
  constructor(runtimeDir,workspace){this.dir=path.join(runtimeDir,'changesets');fs.mkdirSync(this.dir,{recursive:true});this.workspace=new WorkspaceService(workspace)}
  file(id){if(!/^cs-[a-f0-9]+$/.test(id))throw new Error('INVALID_CHANGESET_ID');return path.join(this.dir,`${id}.json`)}
- get(id){const f=this.file(id);if(!fs.existsSync(f))throw new Error('CHANGESET_NOT_FOUND');const doc=JSON.parse(fs.readFileSync(f,'utf8'));if(doc?.id!==id)throw new Error('CHANGESET_ID_MISMATCH');return verifiedChangesetProtocol(doc)}
+ get(id){const f=this.file(id);if(!fs.existsSync(f))throw new Error('CHANGESET_NOT_FOUND');const doc=JSON.parse(fs.readFileSync(f,'utf8'));if(doc?.id!==id)throw new Error('CHANGESET_ID_MISMATCH');return verifiedDurableChangeset(doc)}
  stage(runId,changes,{source='agent'}={}){
    if(!Array.isArray(changes)||!changes.length)throw new Error('CHANGES_REQUIRED');if(changes.length>MAX_FILES)throw new Error('TOO_MANY_CHANGES');let total=0;const normalized=[],seenPaths=new Set();
    for(const raw of changes){const op=raw?.op||'write';if(!['write','delete'].includes(op))throw new Error('UNSUPPORTED_CHANGE_OPERATION');const rel=path.posix.normalize(String(raw.path||'').replaceAll('\\','/')).replace(/\/+$/,'');if(!rel||rel==='.'||rel==='..'||rel.startsWith('../')||rel.startsWith('/')||/^[A-Za-z]:/.test(rel))throw new Error('INVALID_CHANGE_PATH');if(blockedChangePath(rel))throw new Error(`BLOCKED_CHANGE_PATH:${rel}`);if(isCredentialLikePath(rel))throw new Error(`CREDENTIAL_CHANGE_PATH:${rel}`);if(seenPaths.has(rel))throw new Error(`DUPLICATE_CHANGE_PATH:${rel}`);const overlap=[...seenPaths].find(existing=>rel.startsWith(`${existing}/`)||existing.startsWith(`${rel}/`));if(overlap)throw new Error(`OVERLAPPING_CHANGE_PATH:${overlap}:${rel}`);seenPaths.add(rel);const ancestor=this.workspace.ancestorState(rel);if(!ancestor.ok)throw new Error(`UNSUPPORTED_CHANGE_ANCESTOR:${rel}:${ancestor.ancestor}`);const before=this.workspace.stat(rel);if(before.exists&&before.type!=='file')throw new Error(`UNSUPPORTED_CHANGE_TARGET:${rel}`);let beforeBytes=null;if(before.exists){beforeBytes=this.workspace.readBytes(rel,MAX_FILE_BYTES);total+=beforeBytes.length;if(total>MAX_TOTAL_BYTES)throw new Error('CHANGESET_TOO_LARGE')}let after=null;if(op==='write'){after=Buffer.from(String(raw.content??''),'utf8');if(after.length>MAX_FILE_BYTES)throw new Error('CHANGE_FILE_TOO_LARGE');total+=after.length;if(total>MAX_TOTAL_BYTES)throw new Error('CHANGESET_TOO_LARGE')}

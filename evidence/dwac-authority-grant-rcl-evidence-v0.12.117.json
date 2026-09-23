@@ -1,0 +1,14 @@
+{
+  "protocol":"taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle":"v0.12.117",
+  "canonical_repository":"xingxuling/Taowind-code",
+  "base_main":"108f10632c3ecab71e92547751ad69cb8eab2186",
+  "selected_bottleneck":"authority-grant-rcl-evidence-integrity",
+  "mode":"DEEP_DEVELOPMENT",
+  "sovereignty_gate":"AUTONOMOUS",
+  "observation":"Fresh main binds granted outcomes to the writer's grant reason, but allowed=true can still coexist with rcl=null. The current writer computes allowed only from a realized runtime transition and then persists the runtime-result envelope, so a grant without that envelope is an impossible writer state.",
+  "changes":["Require a non-error runtime-result RCL envelope whenever allowed is true.","Publish the same grant/evidence-envelope relation in the v0.1 contract without defining new semantics for nested RCL result fields."],
+  "verification":{"bounded_grant_evidence_replay":"4/4 PASS","focused_regression":"Added real _record regression for grant+rcl null/error and current runtime-result grant envelope","hosted_runtime":"Developer Execution Runtime returned transient HTTP 502; no hosted full-suite pass claimed"},
+  "truth_boundary":"This requires the writer's existing runtime-result evidence shape for grants. It does not prove the evidence is authentic or that the transition semantically authorizes the action.",
+  "github_actions":"not requested; all candidate commits use [skip ci] [skip actions]"
+}

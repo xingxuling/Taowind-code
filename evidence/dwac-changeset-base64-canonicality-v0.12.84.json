@@ -1,0 +1,28 @@
+{
+  "protocol": "taowind.dwac.autonomous-cycle-evidence.v0.1",
+  "cycle": "v0.12.84",
+  "canonical_repository": "xingxuling/Taowind-code",
+  "base_main": "e9b0d0c243cb37c80ff5f710bbf781056f7ce92d",
+  "selected_bottleneck": "changeset-base64-canonicality-integrity",
+  "selected_problem": "Fresh-main inspection moved from the now-narrower semantic resolver boundary to the transactional changeset truth boundary. ChangesetStore.stage already emits one canonical Base64 representation through Buffer.toString('base64'), but durable reload used Node's permissive Buffer.from(value,'base64'). A persisted representation such as 'Zg' therefore decoded to the same byte as canonical 'Zg==' and could still satisfy the recorded byte length and SHA-256, leaving durable before/after images textually malleable while remaining self-consistent under the existing checks.",
+  "mode": "DEEP_DEVELOPMENT",
+  "sovereignty_gate": "AUTONOMOUS",
+  "decision_basis": [
+    "The writer already defines the canonical representation, so enforcing decode->encode equality is a parity repair rather than a new serialization or cryptographic architecture.",
+    "The defect is directly falsifiable with two textual Base64 encodings that decode to identical bytes while preserving size and SHA-256.",
+    "Existing CHANGESET_PREIMAGE_CORRUPT / CHANGESET_POSTIMAGE_CORRUPT boundaries can fail closed without introducing a new status, protocol version, trust root or product shape."
+  ],
+  "changes": [
+    "core/changesets.mjs now accepts a persisted non-null Base64 image only when decoding and canonical re-encoding reproduce the exact stored string.",
+    "Noncanonical durable before/after images fall through the existing corruption checks and cannot be applied or used as rollback truth.",
+    "tests/changeset-base64-canonicality.test.mjs adds postimage, preimage and intact-canonical regressions."
+  ],
+  "verification": {
+    "pre_fix_reproduction": "PASS: Node's current Buffer.from('Zg','base64') decodes to byte 'f', re-encodes as 'Zg==', and the old size/hash-only self-consistency predicate accepts the noncanonical text.",
+    "bounded_decode_replay": "4/4 PASS: old decoder accepts the noncanonical representation; the patched decoder rejects it; canonical 'Zg==' remains accepted; canonical round-trip is stable.",
+    "regression_test_added": "tests/changeset-base64-canonicality.test.mjs covers durable postimage/preimage rejection plus intact canonical apply behavior.",
+    "hosted_runtime": "Developer Execution Runtime remains transiently unavailable with HTTP 502; no hosted DWAC execution success is claimed.",
+    "github_actions": "must remain untriggered"
+  },
+  "truth_boundary": "Independent provenance/authentication for coherently rewritten changesets remains external/unresolved; this cycle only removes textual Base64 malleability inside the existing self-consistency boundary."
+}

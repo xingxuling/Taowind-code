@@ -48,6 +48,7 @@ function validAuthorityReceipt(receipt){
   for(const field of ['workspace','materializedDigest','context','rcl','metadata'])if(!Object.prototype.hasOwnProperty.call(receipt,field))return false;
   if(receipt.workspace!==null&&typeof receipt.workspace!=='string')return false;
   if(typeof receipt.allowed!=='boolean'||typeof receipt.reason!=='string'||receipt.reason.length===0)return false;
+  if(receipt.allowed&&receipt.reason!=='RCL_AUTHORITY_GRANTED')return false;
   if(!validSha256OrNull(receipt.policyDigest))return false;
   if(!validSha256OrAbsentOrNull(receipt.materializedDigest))return false;
   if(!validAuthorityContextForMode(receipt.context,receipt.approvalMode)||!validRclPayload(receipt.rcl))return false;

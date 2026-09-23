@@ -12,7 +12,7 @@ function now(){return new Date().toISOString()}
 function atomicJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});const tmp=`${file}.${process.pid}.tmp`;fs.writeFileSync(tmp,JSON.stringify(value,null,2));fs.renameSync(tmp,file)}
 function changeId(runId,changes){return `cs-${sha256Text(`${runId}:${Date.now()}:${JSON.stringify(changes)}`).slice(0,20)}`}
 function encode(bytes){return bytes?bytes.toString('base64'):null}
-function decode(value){return value===null?null:Buffer.from(value,'base64')}
+function decode(value){if(value===null)return null;const bytes=Buffer.from(value,'base64');return bytes.toString('base64')===value?bytes:null}
 function blockedChangePath(value){const rel=path.posix.normalize(String(value||'').replaceAll('\\','/')).replace(/\/+$/,'');return rel.split('/').some(segment=>BLOCKED_CHANGE_SEGMENTS.has(segment.toLowerCase()))}
 function validNullableHash(value){return value===null||(typeof value==='string'&&HASH_RE.test(value))}
 function validNullableString(value){return value===null||typeof value==='string'}
